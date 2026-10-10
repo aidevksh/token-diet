@@ -6,7 +6,7 @@
 
 ## 규칙
 
-- **모든 실험 세션과 에이전트는 Opus 5.5, effort high로 고정한다.** CLI에서는 `--model claude-opus-5-5 --effort high`로 명시하고, 별칭과 `--fallback-model`은 쓰지 않는다. 결과에 기록된 모델이 다르면 그 실행은 버린다.
+- **모든 실험 세션과 에이전트는 Opus 5.5, effort high로 고정한다.** CLI에서는 `--model claude-opus-5-5 --effort high`로 명시하고, 별칭과 `--fallback-model`은 쓰지 않는다. 결과에 기록된 모델이 다르면 그 실행은 버린다. (예외: 아래 "논문 트랙"에서는 모델과 effort를 실험 요인으로 바꿀 수 있다.)
 - 리서치는 가설 30개 이상, 실험은 상위 10개만 한다(토큰 예산 제약).
 - 모델과 effort를 바꾸는 가설은 위 규칙과 충돌하므로 이번 실험에서는 제외한다.
 - **모든 라운드에 대조군 두 개를 함께 돌린다.** `p1_placebo`는 길이는 비슷하고 내용은 무관한 CLAUDE.md, `p2_concise`는 "간결하게 답하라" 한 줄이다. 가설은 위약보다 확실히 나아야 채택한다.
@@ -337,6 +337,29 @@
 - 값 정보(표본 행, 고유값 목록)는 효과의 원인이 아니었다. 빼는 편이 더 나았다.
 - 보고서: `report/u24_u01_정밀검증.html`. 유형별 표: `results/family_runs_r9.md`
 
+## 논문 트랙 실행 규칙 (7차~, 2026-10-11)
+
+u01(사전 맥락 적재)을 논문으로 이어 가기 위한 실험부터 적용한다. 위의 규칙은 아래와 충돌하지 않는 한 그대로 적용한다(대조군, 분해 조건, 무작위 순서, 사전 등록, 5시간 한도 85%, 2단계 검증).
+
+- **모든 실행은 컨테이너에서 한다** (`TD_EXEC=docker`).
+  - 이미지: `env/Dockerfile` → `token-diet:2.1.296`. Claude Code 2.1.296, 사용자 `agent`, 작업 폴더 `/work`.
+  - 에이전트에게는 픽스처와 조건 폴더만 읽기 전용으로 넣는다. 호스트 경로, 사용자 이름, 정답 키(`key.json`), 숨은 테스트는 컨테이너에 들어가지 않는다.
+  - 사전 맥락(`prerun.py`)도 컨테이너 안에서 만든다. 결과는 `/out`으로 반출해 호스트에서 채점한다.
+- **인증**:
+  - `claude setup-token`으로 만든 구독용 OAuth 토큰을 `~/.config/token-diet/oauth_token`(권한 600)에 둔다.
+  - 하네스는 토큰을 표준 입력으로 넘기고, 컨테이너 안에서는 파이프(`CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR`)로만 CLI에 전달한다. 환경 변수나 파일로 남기지 않는다.
+  - 토큰은 저장소, 결과 파일, 보고서에 절대 넣지 않는다.
+  - `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`은 쓰지 않는다. 권한 모드를 기본값으로 강제해 실험 조건이 바뀐다.
+- **모델과 effort**:
+  - 이 트랙에서만 실험 요인으로 바꾼다(`TD_MODEL`, `TD_EFFORT`). 기본은 Opus 5.5 high다.
+  - 결과에 `model`, `effort`, `exec`, `image`를 기록한다. 기록된 모델이 지정한 모델과 다르면 버린다.
+  - Q4 채점자(보고를 읽는 세션)는 에이전트 모델과 관계없이 Opus 5.5 high로 고정한다(`TD_READER_MODEL`).
+- **비교 범위**: 호스트 실행(R1~R6) 결과와 컨테이너 실행 결과는 섞어 비교하지 않는다. 대조군을 같은 날 컨테이너에서 다시 돌린다.
+- **자원**: Docker VM 메모리가 약 3.8GB라 컨테이너당 1GB(`TD_DOCKER_MEM`)로 제한하고 동시 실행은 3~4개로 시작한다. 실험 전에 Docker Desktop이 켜져 있어야 한다.
+- **기록**: 실험마다 `experiments/<ID>/`에 사전 등록(`preregistration.md`, 실행 전 커밋), 실행 계획(`plan.json`), 실험 일지(`log.md`), 자동 기록(`run_log.txt`), 결과(`results.md`)를 남긴다. 형식은 `experiments/README.md`를 따른다. HTML 보고서는 요청이 있을 때만 만든다.
+- **실행**: `python scripts/drive.py experiments/<ID>/plan.json`. 한도 대기, 이어서 돌리기, Q4 채점, 분석을 순서대로 한다. 실행 폴더는 재부팅에도 남는 `~/td-data/runs/<id>/`, 기록 속 홈 경로는 `~`로 남긴다.
+- **진행**: E1(u01 분해와 대조) 진행 중.
+
 ## 최종 권장 설정 (2026-10-10 갱신)
 
 6차 정밀 검증 결과: 모든 유형에 하나만 쓴다면 n09 + u01n(구조만 사전 맥락, `conditions/u01n_noval/`)이 n09 대비 −11%이고 품질 경고가 없다. 코드 수정 작업에는 u24m(`conditions/u24m_noctx/`)이 −24%다. u24는 거짓 성공으로 탈락했다.
@@ -381,4 +404,8 @@ scripts/run.py       # 실행: TD_ROUND=round2 TD_OUT=runs_r2.jsonl python scrip
 scripts/analyze.py   # 분석: python scripts/analyze.py runs_r2.jsonl → results/summary_runs_r2.md
 scripts/env.sh       # 실험 세션 Bash 환경 (venv)
 results/             # runs.jsonl(1차), runs_r2.jsonl(2차), raw/ 원본 JSON, summary*.md
+env/                 # 논문 트랙 컨테이너 (Dockerfile, entry.sh)
+experiments/         # 논문 트랙 실험 기록 (E1~): 사전 등록, 계획, 일지, 결과
+scripts/drive.py     # 계획 파일대로 끝까지 실행 (한도 대기·Q4·분석)
+scripts/analyze_e1.py, analyze_family.py, analyze_u01.py  # E1 분석, 유형별 분석, u01 종합 분석
 ```

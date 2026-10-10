@@ -1,0 +1,1498 @@
+{
+ "rounds": [
+  {
+   "round": "R5-1",
+   "gen": "rules",
+   "cond": "u01_ctx",
+   "eff": [
+    -19,
+    -25,
+    -15,
+    4
+   ]
+  },
+  {
+   "round": "R5-1",
+   "gen": "sales",
+   "cond": "u01_ctx",
+   "eff": [
+    -28,
+    -37,
+    -18,
+    4
+   ]
+  },
+  {
+   "round": "R5-1",
+   "gen": "tariff",
+   "cond": "u01_ctx",
+   "eff": [
+    -12,
+    -18,
+    -4,
+    4
+   ]
+  },
+  {
+   "round": "R5-1",
+   "gen": "all",
+   "cond": "u01_ctx",
+   "eff": [
+    -20,
+    -26,
+    -14,
+    12
+   ]
+  },
+  {
+   "round": "R5-2",
+   "gen": "rules",
+   "cond": "u01_ctx",
+   "eff": [
+    -4,
+    -12,
+    7,
+    8
+   ]
+  },
+  {
+   "round": "R5-2",
+   "gen": "sales",
+   "cond": "u01_ctx",
+   "eff": [
+    -10,
+    -18,
+    -2,
+    8
+   ]
+  },
+  {
+   "round": "R5-2",
+   "gen": "tariff",
+   "cond": "u01_ctx",
+   "eff": [
+    -14,
+    -22,
+    -4,
+    8
+   ]
+  },
+  {
+   "round": "R5-2",
+   "gen": "all",
+   "cond": "u01_ctx",
+   "eff": [
+    -9,
+    -14,
+    -4,
+    24
+   ]
+  },
+  {
+   "round": "R6",
+   "gen": "rules",
+   "cond": "u01_ctx",
+   "eff": [
+    -14,
+    -25,
+    -1,
+    16
+   ]
+  },
+  {
+   "round": "R6",
+   "gen": "rules",
+   "cond": "u01n_noval",
+   "eff": [
+    -17,
+    -24,
+    -9,
+    16
+   ]
+  },
+  {
+   "round": "R6",
+   "gen": "sales",
+   "cond": "u01_ctx",
+   "eff": [
+    -1,
+    -11,
+    11,
+    16
+   ]
+  },
+  {
+   "round": "R6",
+   "gen": "sales",
+   "cond": "u01n_noval",
+   "eff": [
+    -10,
+    -16,
+    -5,
+    16
+   ]
+  },
+  {
+   "round": "R6",
+   "gen": "tariff",
+   "cond": "u01_ctx",
+   "eff": [
+    -8,
+    -14,
+    -2,
+    16
+   ]
+  },
+  {
+   "round": "R6",
+   "gen": "tariff",
+   "cond": "u01n_noval",
+   "eff": [
+    -11,
+    -17,
+    -6,
+    16
+   ]
+  },
+  {
+   "round": "R6",
+   "gen": "all",
+   "cond": "u01_ctx",
+   "eff": [
+    -8,
+    -14,
+    -1,
+    48
+   ]
+  },
+  {
+   "round": "R6",
+   "gen": "all",
+   "cond": "u01n_noval",
+   "eff": [
+    -13,
+    -17,
+    -9,
+    48
+   ]
+  }
+ ],
+ "r6": {
+  "u01_all": [
+   -6,
+   -12,
+   0,
+   56
+  ],
+  "u01n_all": [
+   -11,
+   -15,
+   -7,
+   56
+  ],
+  "u01_base": [
+   -38,
+   -43,
+   -33,
+   56
+  ],
+  "u01n_base": [
+   -41,
+   -45,
+   -38,
+   56
+  ],
+  "pool_nodb": [
+   -9,
+   -15,
+   -4,
+   39
+  ],
+  "noise_nodb": [
+   -4,
+   -11,
+   3,
+   39
+  ],
+  "u01_db": [
+   -2,
+   -11,
+   10,
+   17
+  ],
+  "u01n_db": [
+   -10,
+   -15,
+   -5,
+   17
+  ],
+  "values_db": [
+   -8,
+   -18,
+   2,
+   17
+  ],
+  "values_sales": [
+   -9,
+   -19,
+   0,
+   16
+  ],
+  "values_data_sales": [
+   14,
+   1,
+   35,
+   1
+  ],
+  "small_pool": [
+   21,
+   6,
+   42,
+   3
+  ],
+  "n_nodb": 39,
+  "n_db": 17
+ },
+ "family": [
+  {
+   "fam": "bigfile_rules",
+   "n_tasks": 1,
+   "db": false,
+   "group": "B",
+   "u01": [
+    -14,
+    -37,
+    11,
+    1
+   ],
+   "u01n": [
+    -3,
+    -26,
+    12,
+    1
+   ],
+   "pool": [
+    -8,
+    -24,
+    6,
+    1
+   ],
+   "ctx_u01": 10731,
+   "ctx_u01n": 10731,
+   "turns": {
+    "baseline": 10,
+    "n09_p2_h05": 9,
+    "u01_ctx": 4.33,
+    "u01n_noval": 6
+   }
+  },
+  {
+   "fam": "bugfix_ledger",
+   "n_tasks": 1,
+   "db": false,
+   "group": "C",
+   "u01": [
+    29,
+    1,
+    63,
+    1
+   ],
+   "u01n": [
+    13,
+    -20,
+    54,
+    1
+   ],
+   "pool": [
+    21,
+    -6,
+    54,
+    1
+   ],
+   "ctx_u01": 3128,
+   "ctx_u01n": 3128,
+   "turns": {
+    "baseline": 6.33,
+    "n09_p2_h05": 3.67,
+    "u01_ctx": 6.67,
+    "u01n_noval": 6
+   }
+  },
+  {
+   "fam": "data_sales",
+   "n_tasks": 1,
+   "db": true,
+   "group": "B",
+   "u01": [
+    -15,
+    -28,
+    -4,
+    1
+   ],
+   "u01n": [
+    -3,
+    -7,
+    1,
+    1
+   ],
+   "pool": null,
+   "ctx_u01": 1716,
+   "ctx_u01n": 924,
+   "turns": {
+    "baseline": 5.33,
+    "n09_p2_h05": 4.67,
+    "u01_ctx": 2.33,
+    "u01n_noval": 3.67
+   }
+  },
+  {
+   "fam": "feature_cfgpath",
+   "n_tasks": 1,
+   "db": false,
+   "group": "C",
+   "u01": [
+    11,
+    -6,
+    34,
+    1
+   ],
+   "u01n": [
+    0,
+    -13,
+    21,
+    1
+   ],
+   "pool": [
+    6,
+    -8,
+    27,
+    1
+   ],
+   "ctx_u01": 973,
+   "ctx_u01n": 973,
+   "turns": {
+    "baseline": 6.33,
+    "n09_p2_h05": 5,
+    "u01_ctx": 4.33,
+    "u01n_noval": 4
+   }
+  },
+  {
+   "fam": "math_div44",
+   "n_tasks": 1,
+   "db": false,
+   "group": "D",
+   "u01": [
+    -5,
+    -14,
+    4,
+    1
+   ],
+   "u01n": [
+    3,
+    -4,
+    9,
+    1
+   ],
+   "pool": [
+    -1,
+    -8,
+    6,
+    1
+   ],
+   "ctx_u01": 194,
+   "ctx_u01n": 194,
+   "turns": {
+    "baseline": 1,
+    "n09_p2_h05": 1,
+    "u01_ctx": 1,
+    "u01n_noval": 1
+   }
+  },
+  {
+   "fam": "math_paths",
+   "n_tasks": 1,
+   "db": false,
+   "group": "D",
+   "u01": [
+    -10,
+    -16,
+    -4,
+    1
+   ],
+   "u01n": [
+    -8,
+    -19,
+    2,
+    1
+   ],
+   "pool": [
+    -9,
+    -16,
+    -2,
+    1
+   ],
+   "ctx_u01": 194,
+   "ctx_u01n": 194,
+   "turns": {
+    "baseline": 1,
+    "n09_p2_h05": 1,
+    "u01_ctx": 1,
+    "u01n_noval": 1
+   }
+  },
+  {
+   "fam": "puzzle_schedule",
+   "n_tasks": 1,
+   "db": false,
+   "group": "C",
+   "u01": [
+    33,
+    4,
+    72,
+    1
+   ],
+   "u01n": [
+    26,
+    -8,
+    74,
+    1
+   ],
+   "pool": [
+    29,
+    1,
+    67,
+    1
+   ],
+   "ctx_u01": 1567,
+   "ctx_u01n": 1567,
+   "turns": {
+    "baseline": 3,
+    "n09_p2_h05": 3,
+    "u01_ctx": 2,
+    "u01n_noval": 2.33
+   }
+  },
+  {
+   "fam": "refactor_report",
+   "n_tasks": 1,
+   "db": false,
+   "group": "C",
+   "u01": [
+    22,
+    5,
+    42,
+    1
+   ],
+   "u01n": [
+    2,
+    -10,
+    13,
+    1
+   ],
+   "pool": [
+    12,
+    -3,
+    28,
+    1
+   ],
+   "ctx_u01": 4524,
+   "ctx_u01n": 4524,
+   "turns": {
+    "baseline": 5.67,
+    "n09_p2_h05": 5.67,
+    "u01_ctx": 8,
+    "u01n_noval": 8
+   }
+  },
+  {
+   "fam": "rules",
+   "n_tasks": 16,
+   "db": false,
+   "group": "A",
+   "u01": [
+    -14,
+    -25,
+    -1,
+    16
+   ],
+   "u01n": [
+    -17,
+    -24,
+    -9,
+    16
+   ],
+   "pool": [
+    -15,
+    -24,
+    -5,
+    16
+   ],
+   "ctx_u01": 39925,
+   "ctx_u01n": 39925,
+   "turns": {
+    "baseline": 6.5,
+    "n09_p2_h05": 7.19,
+    "u01_ctx": 3.81,
+    "u01n_noval": 2.56
+   }
+  },
+  {
+   "fam": "sales",
+   "n_tasks": 16,
+   "db": true,
+   "group": "A",
+   "u01": [
+    -1,
+    -11,
+    11,
+    16
+   ],
+   "u01n": [
+    -10,
+    -16,
+    -5,
+    16
+   ],
+   "pool": null,
+   "ctx_u01": 1616,
+   "ctx_u01n": 896,
+   "turns": {
+    "baseline": 5.94,
+    "n09_p2_h05": 4.44,
+    "u01_ctx": 2.5,
+    "u01n_noval": 3.06
+   }
+  },
+  {
+   "fam": "tariff",
+   "n_tasks": 16,
+   "db": false,
+   "group": "A",
+   "u01": [
+    -8,
+    -14,
+    -2,
+    16
+   ],
+   "u01n": [
+    -11,
+    -17,
+    -6,
+    16
+   ],
+   "pool": [
+    -10,
+    -15,
+    -4,
+    16
+   ],
+   "ctx_u01": 367,
+   "ctx_u01n": 367,
+   "turns": {
+    "baseline": 5.94,
+    "n09_p2_h05": 4.5,
+    "u01_ctx": 3,
+    "u01n_noval": 3
+   }
+  }
+ ],
+ "mechanism": {
+  "A|baseline": {
+   "Read": 0.625,
+   "Edit": 0.583,
+   "Write": 0.438,
+   "Bash": 3.479,
+   "first_explore": 0.896,
+   "tool_calls": 5.125,
+   "out": 4315.042,
+   "think": 649.354,
+   "vis": 3665.688,
+   "turns": 6.125,
+   "cost": 0.268,
+   "cache_write": 17177.438,
+   "text_chars": 1180.521,
+   "tool_chars": 5211.771,
+   "n": 48
+  },
+  "A|n09_p2_h05": {
+   "Read": 0.229,
+   "Edit": 0.583,
+   "Write": 0.375,
+   "Bash": 3.083,
+   "first_explore": 0.958,
+   "tool_calls": 4.375,
+   "out": 2829.521,
+   "think": 366.333,
+   "vis": 2463.188,
+   "turns": 5.375,
+   "cost": 0.21,
+   "cache_write": 14572.021,
+   "text_chars": 621.729,
+   "tool_chars": 3405.062,
+   "n": 48
+  },
+  "A|u01_ctx": {
+   "Read": 0,
+   "Edit": 0.5,
+   "Write": 0.375,
+   "Bash": 1.125,
+   "first_explore": 0.354,
+   "tool_calls": 2.104,
+   "out": 2609.042,
+   "think": 580,
+   "vis": 2029.042,
+   "turns": 3.104,
+   "cost": 0.187,
+   "cache_write": 14354.688,
+   "text_chars": 643.521,
+   "tool_chars": 2839.854,
+   "n": 48
+  },
+  "A|u01n_noval": {
+   "Read": 0,
+   "Edit": 0,
+   "Write": 0.333,
+   "Bash": 1.458,
+   "first_explore": 0.083,
+   "tool_calls": 1.875,
+   "out": 2444.667,
+   "think": 525.062,
+   "vis": 1919.604,
+   "turns": 2.875,
+   "cost": 0.193,
+   "cache_write": 15246.979,
+   "text_chars": 699.25,
+   "tool_chars": 2665.229,
+   "n": 48
+  },
+  "B|baseline": {
+   "Read": 0.5,
+   "Edit": 2.5,
+   "Write": 0,
+   "Bash": 3.667,
+   "first_explore": 1.0,
+   "tool_calls": 6.667,
+   "out": 2770.667,
+   "think": 166.5,
+   "vis": 2604.167,
+   "turns": 7.667,
+   "cost": 0.183,
+   "cache_write": 10624.167,
+   "text_chars": 994.833,
+   "tool_chars": 3085.167,
+   "n": 6
+  },
+  "B|n09_p2_h05": {
+   "Read": 0.5,
+   "Edit": 2.5,
+   "Write": 0,
+   "Bash": 2.833,
+   "first_explore": 1.0,
+   "tool_calls": 5.833,
+   "out": 1847.167,
+   "think": 100.667,
+   "vis": 1746.5,
+   "turns": 6.833,
+   "cost": 0.153,
+   "cache_write": 10078,
+   "text_chars": 685.5,
+   "tool_chars": 2079.333,
+   "n": 6
+  },
+  "B|u01_ctx": {
+   "Read": 0.167,
+   "Edit": 0.833,
+   "Write": 0,
+   "Bash": 1.333,
+   "first_explore": 0.167,
+   "tool_calls": 2.333,
+   "out": 1579.5,
+   "think": 363.833,
+   "vis": 1215.667,
+   "turns": 3.333,
+   "cost": 0.135,
+   "cache_write": 10416.167,
+   "text_chars": 595.667,
+   "tool_chars": 1450.5,
+   "n": 6
+  },
+  "B|u01n_noval": {
+   "Read": 0.333,
+   "Edit": 1.667,
+   "Write": 0.167,
+   "Bash": 1.667,
+   "first_explore": 0.333,
+   "tool_calls": 3.833,
+   "out": 1792,
+   "think": 347,
+   "vis": 1445,
+   "turns": 4.833,
+   "cost": 0.153,
+   "cache_write": 11365,
+   "text_chars": 571,
+   "tool_chars": 1728.833,
+   "n": 6
+  },
+  "C|baseline": {
+   "Read": 0,
+   "Edit": 0.5,
+   "Write": 0.333,
+   "Bash": 3.5,
+   "first_explore": 1.0,
+   "tool_calls": 4.333,
+   "out": 4686.75,
+   "think": 1115.25,
+   "vis": 3571.5,
+   "turns": 5.333,
+   "cost": 0.214,
+   "cache_write": 10416.333,
+   "text_chars": 1308.333,
+   "tool_chars": 5260.667,
+   "n": 12
+  },
+  "C|n09_p2_h05": {
+   "Read": 0.083,
+   "Edit": 0,
+   "Write": 0.667,
+   "Bash": 2.583,
+   "first_explore": 1.0,
+   "tool_calls": 3.333,
+   "out": 3085.167,
+   "think": 649.333,
+   "vis": 2435.833,
+   "turns": 4.333,
+   "cost": 0.16,
+   "cache_write": 8926.75,
+   "text_chars": 787.917,
+   "tool_chars": 3570.25,
+   "n": 12
+  },
+  "C|u01_ctx": {
+   "Read": 0.667,
+   "Edit": 0.417,
+   "Write": 2.083,
+   "Bash": 1.083,
+   "first_explore": 0.417,
+   "tool_calls": 4.25,
+   "out": 3721.75,
+   "think": 1382.75,
+   "vis": 2339,
+   "turns": 5.25,
+   "cost": 0.178,
+   "cache_write": 9973.75,
+   "text_chars": 799.167,
+   "tool_chars": 3392.583,
+   "n": 12
+  },
+  "C|u01n_noval": {
+   "Read": 0.25,
+   "Edit": 0.5,
+   "Write": 1.833,
+   "Bash": 1.417,
+   "first_explore": 0.25,
+   "tool_calls": 4.083,
+   "out": 3283.167,
+   "think": 982.917,
+   "vis": 2300.25,
+   "turns": 5.083,
+   "cost": 0.165,
+   "cache_write": 9553.25,
+   "text_chars": 724.667,
+   "tool_chars": 3492.167,
+   "n": 12
+  },
+  "D|baseline": {
+   "Read": 0,
+   "Edit": 0,
+   "Write": 0,
+   "Bash": 0,
+   "first_explore": 0.0,
+   "tool_calls": 0,
+   "out": 2224.833,
+   "think": 1182.167,
+   "vis": 1042.667,
+   "turns": 1,
+   "cost": 0.07,
+   "cache_write": 2511.833,
+   "text_chars": 1105.5,
+   "tool_chars": 0,
+   "n": 6
+  },
+  "D|n09_p2_h05": {
+   "Read": 0,
+   "Edit": 0,
+   "Write": 0,
+   "Bash": 0,
+   "first_explore": 0.0,
+   "tool_calls": 0,
+   "out": 1955.667,
+   "think": 1115.833,
+   "vis": 839.833,
+   "turns": 1,
+   "cost": 0.067,
+   "cache_write": 2811.333,
+   "text_chars": 890.667,
+   "tool_chars": 0,
+   "n": 6
+  },
+  "D|u01_ctx": {
+   "Read": 0,
+   "Edit": 0,
+   "Write": 0,
+   "Bash": 0,
+   "first_explore": 0.0,
+   "tool_calls": 0,
+   "out": 1835.333,
+   "think": 1060.5,
+   "vis": 774.833,
+   "turns": 1,
+   "cost": 0.067,
+   "cache_write": 3117.667,
+   "text_chars": 821.333,
+   "tool_chars": 0,
+   "n": 6
+  },
+  "D|u01n_noval": {
+   "Read": 0,
+   "Edit": 0,
+   "Write": 0,
+   "Bash": 0,
+   "first_explore": 0.0,
+   "tool_calls": 0,
+   "out": 1952.833,
+   "think": 1122.333,
+   "vis": 830.5,
+   "turns": 1,
+   "cost": 0.07,
+   "cache_write": 3117.833,
+   "text_chars": 874.333,
+   "tool_chars": 0,
+   "n": 6
+  }
+ },
+ "traces": {
+  "bugfix_ledger|u01_ctx": [
+   {
+    "rep": 1,
+    "out": 3556,
+    "think": 989,
+    "turns": 10,
+    "seq": [
+     "Read",
+     "Read",
+     "Read",
+     "Edit",
+     "Edit",
+     "Edit",
+     "Edit",
+     "Edit",
+     "Bash"
+    ]
+   },
+   {
+    "rep": 2,
+    "out": 3713,
+    "think": 1203,
+    "turns": 8,
+    "seq": [
+     "Read",
+     "Read",
+     "Read",
+     "Write",
+     "Write",
+     "Write",
+     "Bash"
+    ]
+   },
+   {
+    "rep": 3,
+    "out": 2579,
+    "think": 997,
+    "turns": 2,
+    "seq": [
+     "Bash"
+    ]
+   }
+  ],
+  "refactor_report|n09_p2_h05": [
+   {
+    "rep": 1,
+    "out": 3759,
+    "think": 463,
+    "turns": 9,
+    "seq": [
+     "Bash",
+     "Bash",
+     "Write",
+     "Write",
+     "Write",
+     "Write",
+     "Write",
+     "Bash"
+    ]
+   },
+   {
+    "rep": 2,
+    "out": 3019,
+    "think": 269,
+    "turns": 4,
+    "seq": [
+     "Bash",
+     "Bash",
+     "Bash"
+    ]
+   },
+   {
+    "rep": 3,
+    "out": 3194,
+    "think": 347,
+    "turns": 4,
+    "seq": [
+     "Bash",
+     "Bash",
+     "Bash"
+    ]
+   }
+  ],
+  "refactor_report|u01_ctx": [
+   {
+    "rep": 1,
+    "out": 4026,
+    "think": 1136,
+    "turns": 8,
+    "seq": [
+     "Bash",
+     "Write",
+     "Write",
+     "Write",
+     "Write",
+     "Write",
+     "Bash"
+    ]
+   },
+   {
+    "rep": 2,
+    "out": 3648,
+    "think": 933,
+    "turns": 8,
+    "seq": [
+     "Bash",
+     "Write",
+     "Write",
+     "Write",
+     "Write",
+     "Write",
+     "Bash"
+    ]
+   },
+   {
+    "rep": 3,
+    "out": 4526,
+    "think": 1495,
+    "turns": 8,
+    "seq": [
+     "Bash",
+     "Write",
+     "Write",
+     "Write",
+     "Write",
+     "Write",
+     "Bash"
+    ]
+   }
+  ],
+  "puzzle_schedule|u01_ctx": [
+   {
+    "rep": 1,
+    "out": 2120,
+    "think": 950,
+    "turns": 2,
+    "seq": [
+     "Bash"
+    ]
+   },
+   {
+    "rep": 2,
+    "out": 1879,
+    "think": 1124,
+    "turns": 2,
+    "seq": [
+     "Write"
+    ]
+   },
+   {
+    "rep": 3,
+    "out": 2009,
+    "think": 1062,
+    "turns": 2,
+    "seq": [
+     "Write"
+    ]
+   }
+  ],
+  "bugfix_ledger|n09_p2_h05": [
+   {
+    "rep": 1,
+    "out": 2924,
+    "think": 815,
+    "turns": 4,
+    "seq": [
+     "Bash",
+     "Bash",
+     "Bash"
+    ]
+   },
+   {
+    "rep": 2,
+    "out": 2664,
+    "think": 547,
+    "turns": 4,
+    "seq": [
+     "Bash",
+     "Bash",
+     "Bash"
+    ]
+   },
+   {
+    "rep": 3,
+    "out": 2037,
+    "think": 340,
+    "turns": 3,
+    "seq": [
+     "Bash",
+     "Bash"
+    ]
+   }
+  ],
+  "puzzle_schedule|n09_p2_h05": [
+   {
+    "rep": 1,
+    "out": 1955,
+    "think": 844,
+    "turns": 3,
+    "seq": [
+     "Bash",
+     "Bash"
+    ]
+   },
+   {
+    "rep": 2,
+    "out": 1404,
+    "think": 180,
+    "turns": 3,
+    "seq": [
+     "Bash",
+     "Bash"
+    ]
+   },
+   {
+    "rep": 3,
+    "out": 1162,
+    "think": 22,
+    "turns": 3,
+    "seq": [
+     "Bash",
+     "Bash"
+    ]
+   }
+  ]
+ },
+ "examples": [
+  {
+   "gen": "rules",
+   "task": "rules_L5_s16",
+   "median_pct": -16,
+   "task_pct": -16,
+   "runs": {
+    "n09_p2_h05": {
+     "out": 4663,
+     "think": 241,
+     "turns": 12,
+     "steps": [
+      {
+       "tool": "Bash",
+       "head": "ls -la && cat pricebook.py",
+       "chars": 92
+      },
+      {
+       "tool": "Bash",
+       "head": "grep -c \"^def price_rule\" pricebook.py; awk '/^def /{n++} n>=5' pricebook.py | grep -v '^\\s*base = _base\\|^\\s*return base$\\|^\\s*return base ",
+       "chars": 281
+      },
+      {
+       "tool": "Bash",
+       "head": "grep -o '\"\"\"Rule.*' pricebook.py | sed -E 's/[0-9]+//g' | sort | uniq -c; sed -n '/^def quote/,$p' pricebook.py",
+       "chars": 190
+      },
+      {
+       "tool": "Bash",
+       "head": "grep -n \"RULES\" pricebook.py | head; cat > \"$TMPDIR/chk.py\" 2>/dev/null; S=$SCRATCH; cat > $S/chk.py <<'EOF'",
+       "chars": 1683
+      },
+      {
+       "tool": "ToolSearch",
+       "head": "",
+       "chars": 46
+      },
+      {
+       "tool": "TaskStop",
+       "head": "",
+       "chars": 24
+      },
+      {
+       "tool": "Bash",
+       "head": "grep -n \"RULES\" pricebook.py | head -3; S=$SCRATCH; ls $S; python3 -I $S/chk.py \"$PWD\"",
+       "chars": 286
+      },
+      {
+       "tool": "Write",
+       "head": "$SCRATCH/chk.py",
+       "chars": 1764
+      },
+      {
+       "tool": "Bash",
+       "head": "python3 -I $SCRATCH/chk.py \"$PWD\"",
+       "chars": 231
+      },
+      {
+       "tool": "Bash",
+       "head": "for n in 07 112 116 119 121 131 23 25 31 77; do grep -n -A9 \"^def price_rule_$n(\" pricebook.py | sed '/^[0-9]*-$/q'; done",
+       "chars": 188
+      },
+      {
+       "tool": "Bash",
+       "head": "python3 -I - \"$PWD/pricebook.py\" <<'EOF'",
+       "chars": 1420
+      }
+     ]
+    },
+    "u01_ctx": {
+     "out": 3902,
+     "think": 612,
+     "turns": 14,
+     "steps": [
+      {
+       "tool": "Edit",
+       "head": "./pricebook.py",
+       "chars": 250
+      },
+      {
+       "tool": "Edit",
+       "head": "./pricebook.py",
+       "chars": 247
+      },
+      {
+       "tool": "Edit",
+       "head": "./pricebook.py",
+       "chars": 283
+      },
+      {
+       "tool": "Edit",
+       "head": "./pricebook.py",
+       "chars": 247
+      },
+      {
+       "tool": "Edit",
+       "head": "./pricebook.py",
+       "chars": 274
+      },
+      {
+       "tool": "Edit",
+       "head": "./pricebook.py",
+       "chars": 259
+      },
+      {
+       "tool": "Edit",
+       "head": "./pricebook.py",
+       "chars": 290
+      },
+      {
+       "tool": "Edit",
+       "head": "./pricebook.py",
+       "chars": 271
+      },
+      {
+       "tool": "Edit",
+       "head": "./pricebook.py",
+       "chars": 249
+      },
+      {
+       "tool": "Edit",
+       "head": "./pricebook.py",
+       "chars": 255
+      },
+      {
+       "tool": "Edit",
+       "head": "./pricebook.py",
+       "chars": 324
+      },
+      {
+       "tool": "Edit",
+       "head": "./pricebook.py",
+       "chars": 257
+      },
+      {
+       "tool": "Bash",
+       "head": "python3 -I -c '",
+       "chars": 794
+      }
+     ]
+    }
+   }
+  },
+  {
+   "gen": "sales",
+   "task": "sales_L5_s18",
+   "median_pct": -5,
+   "task_pct": -2,
+   "runs": {
+    "n09_p2_h05": {
+     "out": 2583,
+     "think": 182,
+     "turns": 4,
+     "steps": [
+      {
+       "tool": "Bash",
+       "head": "cd .; ls; sqlite3 shop.db .schema; for t in $(sqlite3 shop.db \".tables\"); do echo \"== $t\"; sqlite3 -header shop.db \"select * from $t limit 4",
+       "chars": 312
+      },
+      {
+       "tool": "Bash",
+       "head": "cd .; sqlite3 shop.db \"",
+       "chars": 1146
+      },
+      {
+       "tool": "Bash",
+       "head": "cd .; sqlite3 shop.db \"select count(*) from (select email from customers group by email having count(distinct lower(trim(segment)))>1);\"",
+       "chars": 2260
+      }
+     ]
+    },
+    "u01_ctx": {
+     "out": 2526,
+     "think": 426,
+     "turns": 2,
+     "steps": [
+      {
+       "tool": "Bash",
+       "head": "cat > $SCRATCH/a.py <<'EOF'",
+       "chars": 2917
+      }
+     ]
+    },
+    "u01n_noval": {
+     "out": 2856,
+     "think": 357,
+     "turns": 3,
+     "steps": [
+      {
+       "tool": "Bash",
+       "head": "cd .; sqlite3 shop.db \"select status,count(*) from orders group by 1; select ordered_at from orders order by random() limit 8; select distin",
+       "chars": 867
+      },
+      {
+       "tool": "Bash",
+       "head": "cd .; cat > \"$SCRATCH/a.py\" <<'EOF'",
+       "chars": 2552
+      }
+     ]
+    }
+   }
+  },
+  {
+   "gen": "tariff",
+   "task": "tariff_L5_s19",
+   "median_pct": -9,
+   "task_pct": -10,
+   "runs": {
+    "n09_p2_h05": {
+     "out": 2201,
+     "think": 358,
+     "turns": 4,
+     "steps": [
+      {
+       "tool": "Bash",
+       "head": "ls -la && cat shipping.py 2>/dev/null; ls tests 2>/dev/null",
+       "chars": 132
+      },
+      {
+       "tool": "Write",
+       "head": "./shipping.py",
+       "chars": 1938
+      },
+      {
+       "tool": "Bash",
+       "head": "python3 -c \"",
+       "chars": 548
+      }
+     ]
+    },
+    "u01_ctx": {
+     "out": 1984,
+     "think": 226,
+     "turns": 3,
+     "steps": [
+      {
+       "tool": "Write",
+       "head": "./shipping.py",
+       "chars": 1945
+      },
+      {
+       "tool": "Bash",
+       "head": "python3 -c \"",
+       "chars": 631
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "ctx_samples": {
+  "rules|u01_ctx": {
+   "task": "rules_L5_s16",
+   "bytes": 40008,
+   "text": "# 작업 폴더 스냅숏 (실행 시작 시점)\n\n## 파일 목록\n```\ntotal 80\ndrwxr-xr-x@ 3 user  staff     96 Oct 10 18:22 .\ndrwx------@ 3 user  staff     96 Oct 11 08:18 ..\n-rw-r--r--@ 1 user  staff  39694 Oct 10 18:22 pricebook.py\n```\n\n## pricebook.py (전문, 39,694자)\n```py\n\"\"\"Bulk discount rules for the B2B price book.\n\nEvery rule takes (qty, unit) in won and returns the payable amount in won.\n- \"whole\" rules: discount = qty * unit * pct // 100 once qty reaches the threshold.\n- \"marginal\" rules: discount = (qty - threshold) * unit * pct // 100, i.e. only units above the threshold.\n- Discounts are floored to the won. When a rule has a cap, the discount (not the price) is capped.\n\"\"\"\n\n\ndef _base(qty, unit):\n    if qty < 0 or unit < 0:\n        raise ValueError(\"negative input\")\n    return qty * unit\n\n\ndef price_rule_01(qty, unit):\n    \"\"\"Rule 01 (marginal): 3% off at 10+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = (qty - 10) * unit * 3 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_02(qty, unit):\n    \"\"\"Rule 02 (marginal): 3% off at 10+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = (qty - 10) * unit * 3 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_03(qty, unit):\n    \"\"\"Rule 03 (marginal): 15% off at 50+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = (qty - 50) * unit * 15 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_04(qty, unit):\n    \"\"\"Rule 04 (whole): 8% off at 50+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 8 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_05(qty, unit):\n    \"\"\"Rule 05 (whole): 10% off at 20+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 20:\n        disc = base * 10 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_06(qty, unit):\n    \"\"\"Rule 06 (whole): 10% off at 20+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 20:\n        disc = base * 10 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_07(qty, unit):\n    \"\"\"Rule 07 (whole): 7% off at 100+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 101:\n        disc = base * 7 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_08(qty, unit):\n    \"\"\"Rule 08 (whole): 15% off at 30+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = base * 15 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_09(qty, unit):\n    \"\"\"Rule 09 (whole): 10% off at 5+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = base * 10 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_10(qty, unit):\n    \"\"\"Rule 10 (whole): 5% off at 50+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 5 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_11(qty, unit):\n    \"\"\"Rule 11 (whole): 12% off at 12+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 12:\n        disc = base * 12 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_12(qty, unit):\n    \"\"\"Rule 12 (whole): 7% off at 50+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 7 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_13(qty, unit):\n    \"\"\"Rule 13 (whole): 5% off at 50+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 5 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_14(qty, unit):\n    \"\"\"Rule 14 (whole): 2% off at 30+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = base * 2 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_15(qty, unit):\n    \"\"\"Rule 15 (whole): 7% off at 50+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 7 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_16(qty, unit):\n    \"\"\"Rule 16 (marginal): 2% off at 10+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = (qty - 10) * unit * 2 // 100\n        if disc > 50000:\n            disc = 50000\n        return base - disc\n    return base\n\n\ndef price_rule_17(qty, unit):\n    \"\"\"Rule 17 (whole): 10% off at 10+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = base * 10 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_18(qty, unit):\n    \"\"\"Rule 18 (whole): 15% off at 50+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 15 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_19(qty, unit):\n    \"\"\"Rule 19 (marginal): 3% off at 50+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = (qty - 50) * unit * 3 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_20(qty, unit):\n    \"\"\"Rule 20 (whole): 3% off at 5+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = base * 3 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_21(qty, unit):\n    \"\"\"Rule 21 (whole): 8% off at 20+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 20:\n        disc = base * 8 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_22(qty, unit):\n    \"\"\"Rule 22 (whole): 15% off at 50+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 15 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_23(qty, unit):\n    \"\"\"Rule 23 (whole): 12% off at 5+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty > 5:\n        disc = base * 12 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_24(qty, unit):\n    \"\"\"Rule 24 (marginal): 8% off at 30+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = (qty - 30) * unit * 8 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_25(qty, unit):\n    \"\"\"Rule 25 (marginal): 15% off at 10+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = min((qty - 10) * unit, 50000) * 15 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_26(qty, unit):\n    \"\"\"Rule 26 (marginal): 5% off at 100+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = (qty - 100) * unit * 5 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_27(qty, unit):\n    \"\"\"Rule 27 (marginal): 3% off at 10+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = (qty - 10) * unit * 3 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_28(qty, unit):\n    \"\"\"Rule 28 (whole): 10% off at 5+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = base * 10 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_29(qty, unit):\n    \"\"\"Rule 29 (whole): 10% off at 10+ units.\"\"\"\n    base = _base(qty, unit)\n    if 10 <= qty:\n        disc = base * 10 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_30(qty, unit):\n    \"\"\"Rule 30 (whole): 2% off at 30+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = (qty * unit) * 2 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_31(qty, unit):\n    \"\"\"Rule 31 (whole): 8% off at 12+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty > 12:\n        disc = base * 8 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_32(qty, unit):\n    \"\"\"Rule 32 (whole): 12% off at 30+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = base * 12 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_33(qty, unit):\n    \"\"\"Rule 33 (whole): 10% off at 30+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = base * 10 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_34(qty, unit):\n    \"\"\"Rule 34 (marginal): 7% off at 30+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = (qty - 30) * unit * 7 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_35(qty, unit):\n    \"\"\"Rule 35 (marginal): 12% off at 100+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = (qty - 100) * unit * 12 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_36(qty, unit):\n    \"\"\"Rule 36 (marginal): 2% off at 20+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 20:\n        disc = (qty - 20) * unit * 2 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_37(qty, unit):\n    \"\"\"Rule 37 (whole): 15% off at 50+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = (qty * unit) * 15 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_38(qty, unit):\n    \"\"\"Rule 38 (marginal): 15% off at 5+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = (qty - 5) * unit * 15 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_39(qty, unit):\n    \"\"\"Rule 39 (marginal): 2% off at 30+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if 30 <= qty:\n        disc = (qty - 30) * unit * 2 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_40(qty, unit):\n    \"\"\"Rule 40 (whole): 15% off at 50+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 15 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_41(qty, unit):\n    \"\"\"Rule 41 (whole): 15% off at 5+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = base * 15 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_42(qty, unit):\n    \"\"\"Rule 42 (marginal): 5% off at 5+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = (qty - 5) * unit * 5 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_43(qty, unit):\n    \"\"\"Rule 43 (marginal): 10% off at 10+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = (qty - 10) * unit * 10 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_44(qty, unit):\n    \"\"\"Rule 44 (whole): 2% off at 10+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = base * 2 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_45(qty, unit):\n    \"\"\"Rule 45 (whole): 15% off at 5+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = base * 15 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_46(qty, unit):\n    \"\"\"Rule 46 (marginal): 2% off at 12+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 13:\n        disc = (qty - 12) * unit * 2 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_47(qty, unit):\n    \"\"\"Rule 47 (marginal): 3% off at 10+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = (qty - 10) * unit * 3 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_48(qty, unit):\n    \"\"\"Rule 48 (whole): 8% off at 50+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 8 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_49(qty, unit):\n    \"\"\"Rule 49 (whole): 7% off at 50+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 7 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_50(qty, unit):\n    \"\"\"Rule 50 (whole): 8% off at 10+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = base * 8 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_51(qty, unit):\n    \"\"\"Rule 51 (marginal): 12% off at 5+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = (qty - 5) * unit * 12 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_52(qty, unit):\n    \"\"\"Rule 52 (whole): 10% off at 30+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = base * 10 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_53(qty, unit):\n    \"\"\"Rule 53 (marginal): 10% off at 12+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 12:\n        disc = (qty - 12) * unit * 10 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_54(qty, unit):\n    \"\"\"Rule 54 (whole): 3% off at 10+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = base * 3 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_55(qty, unit):\n    \"\"\"Rule 55 (whole): 10% off at 20+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 20:\n        disc = base * 10 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_56(qty, unit):\n    \"\"\"Rule 56 (marginal): 12% off at 50+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = (qty - 50) * unit * 12 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_57(qty, unit):\n    \"\"\"Rule 57 (whole): 5% off at 100+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = base * 5 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_58(qty, unit):\n    \"\"\"Rule 58 (whole): 2% off at 5+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = base * 2 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_59(qty, unit):\n    \"\"\"Rule 59 (marginal): 7% off at 30+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = (qty - 30) * unit * 7 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_60(qty, unit):\n    \"\"\"Rule 60 (whole): 15% off at 5+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if 5 <= qty:\n        disc = base * 15 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_61(qty, unit):\n    \"\"\"Rule 61 (whole): 3% off at 50+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 3 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_62(qty, unit):\n    \"\"\"Rule 62 (marginal): 10% off at 20+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 20:\n        disc = (qty - 20) * unit * 10 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_63(qty, unit):\n    \"\"\"Rule 63 (whole): 10% off at 12+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 12:\n        disc = base * 10 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_64(qty, unit):\n    \"\"\"Rule 64 (whole): 12% off at 5+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = base * 12 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_65(qty, unit):\n    \"\"\"Rule 65 (marginal): 10% off at 30+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = (qty - 30) * unit * 10 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_66(qty, unit):\n    \"\"\"Rule 66 (whole): 8% off at 10+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = base * 8 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_67(qty, unit):\n    \"\"\"Rule 67 (marginal): 12% off at 30+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = (qty - 30) * unit * 12 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_68(qty, unit):\n    \"\"\"Rule 68 (whole): 12% off at 100+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if not qty < 100:\n        disc = base * 12 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_69(qty, unit):\n    \"\"\"Rule 69 (marginal): 7% off at 30+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = (qty - 30) * unit * 7 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_70(qty, unit):\n    \"\"\"Rule 70 (whole): 15% off at 12+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 12:\n        disc = base * 15 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_71(qty, unit):\n    \"\"\"Rule 71 (whole): 5% off at 50+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 5 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_72(qty, unit):\n    \"\"\"Rule 72 (whole): 7% off at 5+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = (qty * unit) * 7 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_73(qty, unit):\n    \"\"\"Rule 73 (whole): 10% off at 100+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = base * 10 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_74(qty, unit):\n    \"\"\"Rule 74 (whole): 3% off at 20+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 20:\n        disc = base * 3 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_75(qty, unit):\n    \"\"\"Rule 75 (whole): 12% off at 10+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = base * 12 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_76(qty, unit):\n    \"\"\"Rule 76 (whole): 12% off at 30+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = base * 12 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_77(qty, unit):\n    \"\"\"Rule 77 (whole): 12% off at 30+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = min(base, 100000) * 12 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_78(qty, unit):\n    \"\"\"Rule 78 (marginal): 15% off at 10+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = (qty - 10) * unit * 15 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_79(qty, unit):\n    \"\"\"Rule 79 (whole): 15% off at 20+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 20:\n        disc = base * 15 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_80(qty, unit):\n    \"\"\"Rule 80 (whole): 10% off at 30+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = base * 10 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_81(qty, unit):\n    \"\"\"Rule 81 (whole): 3% off at 20+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 20:\n        disc = base * 3 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_82(qty, unit):\n    \"\"\"Rule 82 (whole): 10% off at 12+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 12:\n        disc = base * 10 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_83(qty, unit):\n    \"\"\"Rule 83 (whole): 5% off at 50+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 5 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_84(qty, unit):\n    \"\"\"Rule 84 (marginal): 12% off at 12+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 12:\n        disc = (qty - 12) * unit * 12 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_85(qty, unit):\n    \"\"\"Rule 85 (whole): 12% off at 100+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = base * 12 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_86(qty, unit):\n    \"\"\"Rule 86 (whole): 2% off at 5+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = base * 2 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_87(qty, unit):\n    \"\"\"Rule 87 (whole): 7% off at 30+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = base * 7 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_88(qty, unit):\n    \"\"\"Rule 88 (whole): 10% off at 100+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = base * 10 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_89(qty, unit):\n    \"\"\"Rule 89 (whole): 5% off at 100+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = base * 5 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_90(qty, unit):\n    \"\"\"Rule 90 (whole): 2% off at 12+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 12:\n        disc = base * 2 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_91(qty, unit):\n    \"\"\"Rule 91 (marginal): 5% off at 5+ units.\"\"\"\n    base = _base(qty, unit)\n    if 5 <= qty:\n        disc = (qty - 5) * unit * 5 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_92(qty, unit):\n    \"\"\"Rule 92 (whole): 3% off at 10+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = base * 3 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_93(qty, unit):\n    \"\"\"Rule 93 (whole): 3% off at 10+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = base * 3 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_94(qty, unit):\n    \"\"\"Rule 94 (whole): 15% off at 100+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = base * 15 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_95(qty, unit):\n    \"\"\"Rule 95 (marginal): 10% off at 12+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 12:\n        disc = (qty - 12) * unit * 10 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_96(qty, unit):\n    \"\"\"Rule 96 (marginal): 8% off at 50+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = (qty - 50) * unit * 8 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_97(qty, unit):\n    \"\"\"Rule 97 (whole): 2% off at 10+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = base * 2 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_98(qty, unit):\n    \"\"\"Rule 98 (marginal): 12% off at 100+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = (qty - 100) * unit * 12 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_99(qty, unit):\n    \"\"\"Rule 99 (whole): 3% off at 30+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = base * 3 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_100(qty, unit):\n    \"\"\"Rule 100 (whole): 7% off at 10+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = base * 7 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_101(qty, unit):\n    \"\"\"Rule 101 (marginal): 2% off at 20+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 20:\n        disc = (qty - 20) * unit * 2 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_102(qty, unit):\n    \"\"\"Rule 102 (whole): 10% off at 12+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 12:\n        disc = base * 10 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_103(qty, unit):\n    \"\"\"Rule 103 (marginal): 12% off at 50+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = (qty - 50) * unit * 12 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_104(qty, unit):\n    \"\"\"Rule 104 (whole): 8% off at 100+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = base * 8 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_105(qty, unit):\n    \"\"\"Rule 105 (whole): 2% off at 10+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if 10 <= qty:\n        disc = base * 2 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_106(qty, unit):\n    \"\"\"Rule 106 (marginal): 10% off at 20+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 20:\n        disc = (qty - 20) * unit * 10 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_107(qty, unit):\n    \"\"\"Rule 107 (marginal): 12% off at 12+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 12:\n        disc = (qty - 12) * unit * 12 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_108(qty, unit):\n    \"\"\"Rule 108 (whole): 2% off at 5+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = base * 2 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_109(qty, unit):\n    \"\"\"Rule 109 (whole): 2% off at 12+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 12:\n        disc = base * 2 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_110(qty, unit):\n    \"\"\"Rule 110 (whole): 5% off at 50+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 5 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_111(qty, unit):\n    \"\"\"Rule 111 (whole): 2% off at 10+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = base * 2 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_112(qty, unit):\n    \"\"\"Rule 112 (whole): 5% off at 100+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = (qty - 100) * unit * 5 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_113(qty, unit):\n    \"\"\"Rule 113 (marginal): 15% off at 5+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty > 5:\n        disc = (qty - 5) * unit * 15 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_114(qty, unit):\n    \"\"\"Rule 114 (whole): 12% off at 5+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = base * 12 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_115(qty, unit):\n    \"\"\"Rule 115 (whole): 12% off at 20+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 20:\n        disc = base * 12 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_116(qty, unit):\n    \"\"\"Rule 116 (whole): 8% off at 100+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty > 100:\n        disc = base * 8 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_117(qty, unit):\n    \"\"\"Rule 117 (whole): 5% off at 100+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = (qty * unit) * 5 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_118(qty, unit):\n    \"\"\"Rule 118 (whole): 5% off at 50+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 5 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_119(qty, unit):\n    \"\"\"Rule 119 (whole): 7% off at 100+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = min(base, 30000) * 7 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_120(qty, unit):\n    \"\"\"Rule 120 (whole): 10% off at 50+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 10 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_121(qty, unit):\n    \"\"\"Rule 121 (marginal): 2% off at 5+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = base * 2 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_122(qty, unit):\n    \"\"\"Rule 122 (marginal): 5% off at 50+ units.\"\"\"\n    base = _base(qty, unit)\n    if 50 <= qty:\n        disc = (qty - 50) * unit * 5 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_123(qty, unit):\n    \"\"\"Rule 123 (whole): 5% off at 50+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 5 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_124(qty, unit):\n    \"\"\"Rule 124 (whole): 12% off at 100+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = base * 12 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_125(qty, unit):\n    \"\"\"Rule 125 (whole): 8% off at 20+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 20:\n        disc = base * 8 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_126(qty, unit):\n    \"\"\"Rule 126 (whole): 5% off at 10+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = base * 5 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_127(qty, unit):\n    \"\"\"Rule 127 (whole): 15% off at 5+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = base * 15 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_128(qty, unit):\n    \"\"\"Rule 128 (whole): 10% off at 100+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = base * 10 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_129(qty, unit):\n    \"\"\"Rule 129 (whole): 7% off at 50+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = base * 7 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_130(qty, unit):\n    \"\"\"Rule 130 (whole): 15% off at 30+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 30:\n        disc = base * 15 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_131(qty, unit):\n    \"\"\"Rule 131 (whole): 10% off at 50+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = min(base, 50000) * 10 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_132(qty, unit):\n    \"\"\"Rule 132 (whole): 10% off at 50+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = (qty * unit) * 10 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_133(qty, unit):\n    \"\"\"Rule 133 (marginal): 2% off at 10+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 10:\n        disc = (qty - 10) * unit * 2 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_134(qty, unit):\n    \"\"\"Rule 134 (whole): 2% off at 12+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 12:\n        disc = base * 2 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_135(qty, unit):\n    \"\"\"Rule 135 (whole): 10% off at 5+ units.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = base * 10 // 100\n        return base - disc\n    return base\n\n\ndef price_rule_136(qty, unit):\n    \"\"\"Rule 136 (whole): 7% off at 5+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if 5 <= qty:\n        disc = base * 7 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_137(qty, unit):\n    \"\"\"Rule 137 (whole): 2% off at 100+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = (qty * unit) * 2 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_138(qty, unit):\n    \"\"\"Rule 138 (whole): 5% off at 5+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = base * 5 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_139(qty, unit):\n    \"\"\"Rule 139 (whole): 10% off at 100+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 100:\n        disc = base * 10 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_140(qty, unit):\n    \"\"\"Rule 140 (marginal): 8% off at 20+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 20:\n        disc = (qty - 20) * unit * 8 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_141(qty, unit):\n    \"\"\"Rule 141 (whole): 12% off at 12+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 12:\n        disc = base * 12 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_142(qty, unit):\n    \"\"\"Rule 142 (marginal): 3% off at 50+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = (qty - 50) * unit * 3 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_143(qty, unit):\n    \"\"\"Rule 143 (marginal): 3% off at 20+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 20:\n        disc = (qty - 20) * unit * 3 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_144(qty, unit):\n    \"\"\"Rule 144 (marginal): 15% off at 5+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = (qty - 5) * unit * 15 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_145(qty, unit):\n    \"\"\"Rule 145 (marginal): 5% off at 12+ units, discount capped at 10,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 12:\n        disc = (qty - 12) * unit * 5 // 100\n        disc = min(disc, 10000)\n        return base - disc\n    return base\n\n\ndef price_rule_146(qty, unit):\n    \"\"\"Rule 146 (marginal): 8% off at 20+ units, discount capped at 30,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 20:\n        disc = (qty - 20) * unit * 8 // 100\n        disc = min(disc, 30000)\n        return base - disc\n    return base\n\n\ndef price_rule_147(qty, unit):\n    \"\"\"Rule 147 (marginal): 5% off at 50+ units, discount capped at 50,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = (qty - 50) * unit * 5 // 100\n        disc = min(disc, 50000)\n        return base - disc\n    return base\n\n\ndef price_rule_148(qty, unit):\n    \"\"\"Rule 148 (whole): 12% off at 5+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 5:\n        disc = base * 12 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_149(qty, unit):\n    \"\"\"Rule 149 (marginal): 15% off at 50+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = (qty - 50) * unit * 15 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\ndef price_rule_150(qty, unit):\n    \"\"\"Rule 150 (marginal): 12% off at 50+ units, discount capped at 100,000 won.\"\"\"\n    base = _base(qty, unit)\n    if qty >= 50:\n        disc = (qty - 50) * unit * 12 // 100\n        disc = min(disc, 100000)\n        return base - disc\n    return base\n\n\nRULES = {i: globals()[f\"price_rule_{i:02d}\"] for i in range(1, 151)}\n\n\ndef quote(rule_id, qty, unit):\n    \"\"\"Return payable amount for a rule id; unknown ids raise KeyError.\"\"\"\n    return RULES[rule_id](qty, unit)\n```\n"
+  },
+  "sales|u01_ctx": {
+   "task": "sales_L5_s18",
+   "bytes": 1612,
+   "text": "# 작업 폴더 스냅숏 (실행 시작 시점)\n\n## 파일 목록\n```\ntotal 792\ndrwxr-xr-x@ 3 user  staff      96 Oct 10 18:22 .\ndrwx------@ 3 user  staff      96 Oct 11 08:18 ..\n-rw-r--r--@ 1 user  staff  405504 Oct 10 18:22 shop.db\n```\n\n## shop.db (SQLite)\n\n### customers (300행)\n```sql\nCREATE TABLE customers(id integer primary key, email text, segment text, joined_at text)\n```\n표본 3행:\n```\n(1, 'u1@ex.com', 'consumer', '2025-02-21T02:53:00Z')\n(2, 'u2@ex.com', ' consumer', '2024-06-16T12:33:00Z')\n(3, 'u3@ex.com', 'SMB', '2024-11-29T23:37:00Z')\n```\n- `segment` 고유값 6개: 'consumer', ' consumer', 'SMB', 'smb', 'enterprise', 'Enterprise '\n\n### products (24행)\n```sql\nCREATE TABLE products(id integer primary key, category text)\n```\n표본 3행:\n```\n(1, 'hw')\n(2, 'hw')\n(3, 'acc')\n```\n- `category` 고유값 4개: 'hw', 'acc', 'svc', 'sw'\n\n### orders (3000행)\n```sql\nCREATE TABLE orders(id integer primary key, customer_id int, ordered_at text, status text)\n```\n표본 3행:\n```\n(1, 167, '2025-08-11T10:12:00Z', 'paid')\n(2, 75, '2025-05-19T17:21:00Z', 'paid')\n(3, 139, '2025-10-16T12:35:00Z', 'paid')\n```\n- `status` 고유값 3개: 'paid', 'pending', 'cancelled'\n\n### order_items (7518행)\n```sql\nCREATE TABLE order_items(order_id int, product_id int, qty int, unit_price int, discount_pct int, primary key(order_id, product_id))\n```\n표본 3행:\n```\n(1, 7, 1, 350000, 33)\n(1, 17, 5, 350000, 15)\n(1, 16, 4, 19900, 0)\n```\n\n### refunds (640행)\n```sql\nCREATE TABLE refunds(order_id int, product_id int, qty int)\n```\n표본 3행:\n```\n(2, 22, 4)\n(11, 2, 3)\n(12, 2, 2)\n```\n"
+  },
+  "sales|u01n_noval": {
+   "task": "sales_L5_s18",
+   "bytes": 893,
+   "text": "# 작업 폴더 스냅숏 (실행 시작 시점)\n\n## 파일 목록\n```\ntotal 792\ndrwxr-xr-x@ 3 user  staff      96 Oct 10 18:22 .\ndrwx------@ 4 user  staff     128 Oct 11 08:18 ..\n-rw-r--r--@ 1 user  staff  405504 Oct 10 18:22 shop.db\n```\n\n## shop.db (SQLite)\n\n### customers (300행)\n```sql\nCREATE TABLE customers(id integer primary key, email text, segment text, joined_at text)\n```\n\n### products (24행)\n```sql\nCREATE TABLE products(id integer primary key, category text)\n```\n\n### orders (3000행)\n```sql\nCREATE TABLE orders(id integer primary key, customer_id int, ordered_at text, status text)\n```\n\n### order_items (7518행)\n```sql\nCREATE TABLE order_items(order_id int, product_id int, qty int, unit_price int, discount_pct int, primary key(order_id, product_id))\n```\n\n### refunds (640행)\n```sql\nCREATE TABLE refunds(order_id int, product_id int, qty int)\n```\n"
+  },
+  "tariff|u01_ctx": {
+   "task": "tariff_L5_s19",
+   "bytes": 358,
+   "text": "# 작업 폴더 스냅숏 (실행 시작 시점)\n\n## 파일 목록\n```\ntotal 8\ndrwxr-xr-x@ 3 user  staff  96 Oct 10 18:22 .\ndrwx------@ 3 user  staff  96 Oct 11 08:18 ..\n-rw-r--r--@ 1 user  staff  64 Oct 10 18:22 README.md\n```\n\n## README.md (전문, 34자)\n```md\n# shipping\n\n배송비 계산 모듈을 이 폴더에 만든다.\n```\n"
+  }
+ },
+ "quality": [
+  {
+   "round": "R5-1",
+   "cond": "baseline",
+   "n": 12,
+   "fs": 0,
+   "low": 0,
+   "q4": 1.0,
+   "fs_tasks": []
+  },
+  {
+   "round": "R5-1",
+   "cond": "n09_p2_h05",
+   "n": 12,
+   "fs": 0,
+   "low": 0,
+   "q4": 1.0,
+   "fs_tasks": []
+  },
+  {
+   "round": "R5-1",
+   "cond": "p2_concise",
+   "n": 12,
+   "fs": 0,
+   "low": 0,
+   "q4": 1.0,
+   "fs_tasks": []
+  },
+  {
+   "round": "R5-1",
+   "cond": "u01_ctx",
+   "n": 12,
+   "fs": 0,
+   "low": 0,
+   "q4": 0.9875,
+   "fs_tasks": []
+  },
+  {
+   "round": "R5-2",
+   "cond": "baseline",
+   "n": 24,
+   "fs": 0,
+   "low": 0,
+   "q4": 0.9862,
+   "fs_tasks": []
+  },
+  {
+   "round": "R5-2",
+   "cond": "n09_p2_h05",
+   "n": 24,
+   "fs": 0,
+   "low": 0,
+   "q4": 0.9889,
+   "fs_tasks": []
+  },
+  {
+   "round": "R5-2",
+   "cond": "p2_concise",
+   "n": 24,
+   "fs": 1,
+   "low": 1,
+   "q4": 0.9826,
+   "fs_tasks": [
+    "tariff_L5_s10"
+   ]
+  },
+  {
+   "round": "R5-2",
+   "cond": "u01_ctx",
+   "n": 24,
+   "fs": 1,
+   "low": 1,
+   "q4": 0.9818,
+   "fs_tasks": [
+    "tariff_L5_s10"
+   ]
+  },
+  {
+   "round": "R6",
+   "cond": "baseline",
+   "n": 72,
+   "fs": 1,
+   "low": 1,
+   "q4": 0.9828,
+   "fs_tasks": [
+    "tariff_L5_s17"
+   ]
+  },
+  {
+   "round": "R6",
+   "cond": "n09_p2_h05",
+   "n": 72,
+   "fs": 0,
+   "low": 0,
+   "q4": 0.9815,
+   "fs_tasks": []
+  },
+  {
+   "round": "R6",
+   "cond": "p2_concise",
+   "n": 72,
+   "fs": 0,
+   "low": 0,
+   "q4": 0.9773,
+   "fs_tasks": []
+  },
+  {
+   "round": "R6",
+   "cond": "u01_ctx",
+   "n": 72,
+   "fs": 0,
+   "low": 0,
+   "q4": 1.0,
+   "fs_tasks": []
+  },
+  {
+   "round": "R6",
+   "cond": "u01n_noval",
+   "n": 72,
+   "fs": 0,
+   "low": 0,
+   "q4": 0.9882,
+   "fs_tasks": []
+  }
+ ]
+}

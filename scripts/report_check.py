@@ -11,7 +11,10 @@ usage: TD_TASKS=tasks_gen2 TD_ROUND=round4 python scripts/report_check.py runs_r
 import argparse, concurrent.futures as cf, json, os, re, subprocess, sys, tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from run import CLAUDE, MODEL, EFFORT, ROOT
+from run import CLAUDE, ROOT
+
+# 보고를 읽는 세션은 에이전트 모델과 관계없이 고정한다 (TD_MODEL을 바꿔도 채점자는 그대로)
+MODEL, EFFORT = os.environ.get('TD_READER_MODEL', 'claude-opus-5-5'), os.environ.get('TD_READER_EFFORT', 'high')
 
 RUNROOT = os.path.join('/private/tmp/claude-501/td-runs', os.environ.get('TD_ROUND', 'round4'))
 TASKS = os.path.join(ROOT, os.environ.get('TD_TASKS', 'tasks_gen2'))
@@ -38,7 +41,7 @@ def score(r):
     gen = r['task'].split('_')[0]
     if gen not in Q:
         return None
-    work = r.get('work') or os.path.join(RUNROOT, r['cond'], r['task'], f"r{r['rep']}")
+    work = os.path.expanduser(r.get('work') or os.path.join(RUNROOT, r['cond'], r['task'], f"r{r['rep']}"))
     report = open(os.path.join(work, '_result.txt')).read()
     key = json.load(open(os.path.join(TASKS, r['task'], 'key.json')))
     ans, cost = ask(Q[gen] + '\n\n--- 보고 시작 ---\n' + report + '\n--- 보고 끝 ---')
