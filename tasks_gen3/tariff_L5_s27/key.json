@@ -1,0 +1,1 @@
+{"gen": "tariff", "params": {"level": 5, "base": {"gyeonggi": 3500, "daegu": 4000, "seoul": 3000, "jeju": 5000, "ulleung": 9000}, "w_free": 1000, "w_step": 500, "w_fee": 500, "free_at": 50000, "member": {"none": 0, "silver": 10, "gold": 15}, "weekend": 500, "fragile": 300, "fragile_cap": 2000, "peak": 120}, "test_seed": 194}

@@ -1,0 +1,1 @@
+{"hooks": {"PostToolUse": [{"matcher": "Bash|Write|Edit", "hooks": [{"type": "command", "command": "/Users/seunghyeokkim/Desktop/token-diet/.venv/bin/python /Users/seunghyeokkim/Desktop/token-diet/conditions/u12_eventstop/hook.py"}]}]}}

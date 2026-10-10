@@ -1,0 +1,7 @@
+date,region,product,qty,unit_price,discount,status
+2025-07-03,서울,keyboard,2,45000,,paid
+2025-07-04,부산,mouse,5,12000,10,paid
+2025-07-09,서울,monitor,1,230000,5,paid
+2025-08-01,대구,keyboard,1,45000,,cancelled
+2025-08-15,,mouse,3,12000,,paid
+2025-08-20,부산,monitor,2,230000,,paid

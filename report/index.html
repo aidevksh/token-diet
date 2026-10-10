@@ -1,0 +1,836 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Token Diet 2차 실험</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: 한 열 보고서(최대 68rem) + 상단 고정 섹션 내비. 차트는 HTML 그리드 행으로 그려 화면 폭에 맞춰 재배치한다. 모눈종이 같은 옅은 세로 격자가 실험 노트 느낌을 준다. */
+:root {
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --surface-2: #eef1f6;
+  --ink: #0e1626;
+  --ink-2: #465163;
+  --muted: #6f7b8f;
+  --line: #dde3eb;
+  --line-strong: #b5bfcc;
+  --accent: #1c5cab;
+  --accent-soft: #e4eefb;
+  --band: rgba(14, 22, 38, 0.045);
+  --v-best: #104281;
+  --v-same: #2a78d6;
+  --v-weak: #86b6ef;
+  --v-none: #a3acb9;
+  --v-bad: #e34948;
+  --v-qual: #eb6834;
+  --v-ctrl: #0e1626;
+  --v-base: #8a94a3;
+  --good-ink: #006300;
+  --bad-ink: #b42323;
+  --font-sans: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --step--1: 0.8125rem;
+  --step-0: 0.9375rem;
+  --step-1: 1.125rem;
+  --step-2: 1.5rem;
+  --step-3: 2.125rem;
+  --step-4: 3rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e131b; --surface: #151c26; --surface-2: #1c2531; --ink: #e8edf4; --ink-2: #b2bccb; --muted: #8692a4;
+    --line: #253041; --line-strong: #3b4859; --accent: #86b6ef; --accent-soft: #1a2a40; --band: rgba(232, 237, 244, 0.05);
+    --v-best: #cde2fb; --v-same: #3987e5; --v-weak: #1c5cab; --v-none: #5d6878; --v-bad: #e66767; --v-qual: #d95926;
+    --v-ctrl: #e8edf4; --v-base: #7d8798; --good-ink: #3fbf3f; --bad-ink: #f08a8a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e131b; --surface: #151c26; --surface-2: #1c2531; --ink: #e8edf4; --ink-2: #b2bccb; --muted: #8692a4;
+  --line: #253041; --line-strong: #3b4859; --accent: #86b6ef; --accent-soft: #1a2a40; --band: rgba(232, 237, 244, 0.05);
+  --v-best: #cde2fb; --v-same: #3987e5; --v-weak: #1c5cab; --v-none: #5d6878; --v-bad: #e66767; --v-qual: #d95926;
+  --v-ctrl: #e8edf4; --v-base: #7d8798; --good-ink: #3fbf3f; --bad-ink: #f08a8a;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 4rem; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-sans); font-size: var(--step-0); line-height: 1.7;
+  word-break: keep-all; overflow-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
+}
+table { font: inherit; color: inherit; border-collapse: collapse; }
+h1, h2, h3, h4 { text-wrap: balance; line-height: 1.3; margin: 0; letter-spacing: -0.01em; }
+p { margin: 0; }
+code, .mono { font-family: var(--font-mono); font-size: 0.92em; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+.wrap { max-width: 68rem; margin: 0 auto; padding-inline: 1.25rem; }
+@media (max-width: 480px) { .wrap { padding-inline: 1rem; } }
+
+/* 상단 내비 */
+.nav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(1.2) blur(8px); -webkit-backdrop-filter: saturate(1.2) blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.nav .wrap { display: flex; align-items: center; gap: 1.25rem; min-height: 3.25rem; }
+.nav .brand { font-family: var(--font-mono); font-weight: 600; font-size: var(--step--1); white-space: nowrap; color: var(--ink); text-decoration: none; }
+.nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 0.25rem; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+.nav ul::-webkit-scrollbar { display: none; }
+.nav a.link { display: block; padding: 0.3rem 0.6rem; border-radius: 6px; color: var(--ink-2); text-decoration: none; font-size: var(--step--1); white-space: nowrap; }
+.nav a.link:hover { background: var(--surface-2); color: var(--ink); }
+.nav a.link.on { color: var(--accent); background: var(--accent-soft); }
+
+/* 히어로 */
+.hero { padding-block: 3.5rem 2.5rem; display: grid; gap: 2rem; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.hero h1 { font-size: var(--step-4); font-weight: 700; letter-spacing: -0.03em; }
+.hero h1 .ko { display: block; font-size: var(--step-2); font-weight: 500; letter-spacing: -0.01em; color: var(--ink-2); margin-top: 0.5rem; }
+.hero .lede { font-size: var(--step-1); color: var(--ink-2); max-width: 44rem; }
+.hero .lede strong { color: var(--ink); }
+.meta-line { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; font-family: var(--font-mono); font-size: var(--step--1); color: var(--muted); }
+
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.kpi { padding: 1.1rem 1.25rem; display: grid; gap: 0.2rem; align-content: start; }
+.kpi + .kpi { border-left: 1px solid var(--line); }
+.kpi .label { font-size: var(--step--1); color: var(--ink-2); }
+.kpi .value { font-size: 2.25rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; }
+.kpi .value.accent { color: var(--accent); }
+.kpi .sub { font-size: 0.78rem; color: var(--muted); }
+@media (max-width: 760px) {
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpi:nth-child(3) { border-left: 0; }
+  .kpi:nth-child(n+3) { border-top: 1px solid var(--line); }
+}
+
+.rule-box { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.rule-box header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.6rem 1rem; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.rule-box header .t { font-family: var(--font-mono); font-size: var(--step--1); color: var(--ink-2); }
+.rule-box pre { margin: 0; padding: 1rem 1.1rem; font-family: var(--font-mono); font-size: 0.9rem; line-height: 1.8; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; color: var(--ink); }
+.btn { font: inherit; font-size: var(--step--1); color: var(--ink); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 6px; padding: 0.25rem 0.7rem; cursor: pointer; }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* 섹션 공통 */
+section.sec { padding-block: 3.5rem; border-top: 1px solid var(--line); }
+.sec-head { display: grid; gap: 0.6rem; margin-bottom: 2rem; max-width: 46rem; }
+.sec-head h2 { font-size: var(--step-3); font-weight: 700; letter-spacing: -0.02em; }
+.sec-head p { color: var(--ink-2); }
+h3 { font-size: var(--step-1); font-weight: 600; margin-bottom: 0.75rem; }
+.prose { max-width: 44rem; display: grid; gap: 0.9rem; }
+.muted { color: var(--muted); }
+.small { font-size: var(--step--1); }
+.stack { display: grid; gap: 2.5rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 820px) { .grid-2, .grid-3 { grid-template-columns: minmax(0, 1fr); } }
+.panel { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 1.25rem; min-width: 0; }
+.panel h4 { font-size: var(--step-0); font-weight: 600; margin-bottom: 0.4rem; }
+.panel .k { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); letter-spacing: 0.04em; }
+.figure { display: grid; gap: 0.9rem; min-width: 0; }
+.fig-title { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.25rem 1rem; }
+.fig-title h3 { margin: 0; }
+.fig-note { font-size: var(--step--1); color: var(--muted); }
+
+ul.clean { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+ul.dash { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.35rem; }
+ul.dash li::marker { color: var(--muted); }
+
+/* 판정 표시 */
+.v-best { --c: var(--v-best); } .v-same { --c: var(--v-same); } .v-weak { --c: var(--v-weak); }
+.v-none { --c: var(--v-none); } .v-bad { --c: var(--v-bad); } .v-qual { --c: var(--v-qual); }
+.v-ctrl { --c: var(--v-ctrl); } .v-untested { --c: var(--muted); }
+.pill { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; line-height: 1.5; padding: 0.1rem 0.55rem 0.1rem 0.45rem; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
+.pill::before { content: ""; flex: none; width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--c); }
+.pill.v-ctrl::before { border-radius: 1px; background: transparent; border: 1.5px solid var(--c); transform: rotate(45deg); width: 0.48rem; height: 0.48rem; }
+.pill.v-untested::before { background: transparent; border: 1.5px solid var(--muted); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; font-size: var(--step--1); color: var(--ink-2); }
+.legend .sw { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legend .line-sw { display: inline-block; width: 1.1rem; height: 0; border-top: 1px solid var(--line-strong); }
+.legend .band-sw { display: inline-block; width: 1.1rem; height: 0.8rem; background: var(--band); border: 1px solid var(--line); }
+.legend .p2-sw { display: inline-block; width: 0; height: 0.9rem; border-left: 1.5px solid var(--accent); }
+
+/* 탭 */
+.tabs { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.tab { font: inherit; font-size: var(--step--1); padding: 0.35rem 0.8rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer; }
+.tab:hover { border-color: var(--line-strong); color: var(--ink); }
+.tab[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.tab .sub { font-family: var(--font-mono); font-size: 0.7rem; opacity: 0.75; margin-left: 0.3rem; }
+
+/* 포레스트 플롯(행 그리드) */
+.chart { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 0.75rem 0.75rem 0.5rem; min-width: 0; }
+.fp-row {
+  display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr) 8.5rem 7rem;
+  grid-template-areas: "label track value pill"; align-items: center; column-gap: 0.75rem;
+  min-height: 2rem; border-radius: 6px; padding-inline: 0.4rem;
+}
+.fp-row.data { cursor: default; }
+.fp-row.data:hover, .fp-row.data:focus-visible { background: var(--surface-2); }
+.fp-row.data:focus-visible { outline-offset: -2px; }
+.fp-label { grid-area: label; min-width: 0; display: flex; align-items: baseline; gap: 0.5rem; line-height: 1.35; }
+.fp-label .id { font-family: var(--font-mono); font-weight: 600; font-size: 0.8rem; white-space: nowrap; }
+.fp-label .nm { font-size: var(--step--1); color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.fp-track { grid-area: track; position: relative; height: 2rem; min-width: 0; }
+.fp-value { grid-area: value; font-family: var(--font-mono); font-size: 0.78rem; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; color: var(--ink); }
+.fp-value .ci { color: var(--muted); }
+.fp-pill { grid-area: pill; justify-self: start; }
+.fp-head .fp-track, .fp-axis .fp-track { height: 1.4rem; }
+.gl { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px solid var(--line); }
+.gl.zero { border-left-color: var(--line-strong); }
+.gl.p2 { border-left: 1.5px solid var(--accent); opacity: 0.55; }
+.bandz { position: absolute; top: 0; bottom: 0; background: var(--band); }
+.whisk { position: absolute; top: 50%; height: 2px; margin-top: -1px; background: var(--c); border-radius: 1px; }
+.dot { position: absolute; top: 50%; width: 11px; height: 11px; border-radius: 50%; transform: translate(-50%, -50%); background: var(--c); box-shadow: 0 0 0 2px var(--surface); }
+.dot.v-ctrl { width: 9px; height: 9px; border-radius: 1px; background: var(--surface); border: 2px solid var(--c); transform: translate(-50%, -50%) rotate(45deg); box-shadow: none; }
+.dot.hollow { background: var(--surface); border: 2px solid var(--c); box-shadow: none; width: 10px; height: 10px; }
+.na { position: absolute; inset: 0; display: flex; align-items: center; font-size: var(--step--1); color: var(--muted); padding-left: 0.5rem; }
+.tick { position: absolute; top: 0.15rem; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tick.first { transform: none; } .tick.last { transform: translateX(-100%); }
+.toplab { position: absolute; bottom: 0.1rem; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent); white-space: nowrap; }
+.axis-cap { font-size: 0.75rem; color: var(--muted); padding: 0.25rem 0.4rem 0; }
+@media (max-width: 680px) {
+  .fp-row { grid-template-columns: minmax(0, 1fr) 7.6rem; grid-template-areas: "label pill" "track value"; row-gap: 0; padding-block: 0.25rem; }
+  .fp-head, .fp-axis { padding-block: 0; }
+  .fp-head .fp-label, .fp-axis .fp-label, .fp-head .fp-pill, .fp-axis .fp-pill { display: none; }
+  .fp-head, .fp-axis { grid-template-areas: "track value"; }
+  .fp-pill { justify-self: end; }
+  .fp-track { height: 1.6rem; }
+}
+
+/* 덤벨, 문제별 차트 */
+.db-row { display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr) 9rem; grid-template-areas: "label track value"; align-items: center; column-gap: 0.75rem; min-height: 2rem; padding-inline: 0.4rem; border-radius: 6px; }
+.db-row.data:hover, .db-row.data:focus-visible { background: var(--surface-2); }
+.db-row .fp-value { grid-area: value; }
+.conn { position: absolute; top: 50%; height: 2px; margin-top: -1px; background: var(--line-strong); }
+@media (max-width: 680px) {
+  .db-row { grid-template-columns: minmax(0, 1fr) 7.6rem; grid-template-areas: "label value" "track track"; padding-block: 0.25rem; }
+  .db-row.fp-head, .db-row.fp-axis { grid-template-areas: "track track"; }
+  .db-row.fp-head .fp-label, .db-row.fp-axis .fp-label, .db-row.fp-head .fp-value, .db-row.fp-axis .fp-value { display: none; }
+}
+.in-row { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); align-items: center; column-gap: 0.75rem; min-height: 1.45rem; padding-inline: 0.4rem; border-radius: 4px; }
+.in-row.data:hover, .in-row.data:focus-visible { background: var(--surface-2); }
+.in-row .fp-track { height: 1.45rem; }
+.in-row .lab { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-2); white-space: nowrap; }
+.in-group { font-size: 0.75rem; font-weight: 600; color: var(--ink-2); padding: 0.6rem 0.4rem 0.15rem; }
+.in-row .dot { width: 9px; height: 9px; }
+.in-row .dot.v-ctrl { width: 8px; height: 8px; }
+
+/* 툴팁 */
+.tip { position: fixed; z-index: 50; pointer-events: none; max-width: 18rem; background: var(--ink); color: var(--bg); border-radius: 8px; padding: 0.55rem 0.75rem; font-size: 0.78rem; line-height: 1.55; box-shadow: 0 6px 24px rgba(0,0,0,0.18); }
+.tip b { font-family: var(--font-mono); }
+.tip .r { display: flex; justify-content: space-between; gap: 1rem; font-variant-numeric: tabular-nums; }
+.tip .r span:last-child { font-family: var(--font-mono); }
+.tip .n { margin-top: 0.3rem; opacity: 0.85; }
+
+/* 표 */
+details.tv { font-size: var(--step--1); }
+details.tv summary { cursor: pointer; color: var(--ink-2); width: fit-content; }
+details.tv summary:hover { color: var(--accent); }
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); margin-top: 0.6rem; }
+table.t { width: 100%; font-size: var(--step--1); }
+table.t th, table.t td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.t thead th { font-weight: 600; color: var(--ink-2); background: var(--surface-2); white-space: nowrap; position: sticky; top: 0; }
+table.t tbody tr:last-child td { border-bottom: 0; }
+table.t td.num, table.t th.num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.t td.idc { font-family: var(--font-mono); font-weight: 600; white-space: nowrap; }
+table.t td.src { color: var(--muted); }
+table.t td.nowrap { white-space: nowrap; }
+.good { color: var(--good-ink); } .bad { color: var(--bad-ink); }
+
+/* 막대 목록 (출력 구성) */
+.bars { display: grid; gap: 0.55rem; }
+.bar-row { display: grid; grid-template-columns: minmax(0, 13rem) minmax(0, 1fr) 7.5rem; align-items: center; gap: 0.75rem; }
+.bar-row .lab { font-size: var(--step--1); color: var(--ink-2); line-height: 1.35; }
+.bar-track { height: 14px; position: relative; }
+.bar { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 4px 4px 0; background: var(--c); }
+.bar-row .val { font-family: var(--font-mono); font-size: 0.78rem; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.c-tool { --c: var(--v-same); } .c-text { --c: var(--v-qual); }
+@media (max-width: 560px) { .bar-row { grid-template-columns: minmax(0, 1fr) 6.5rem; } .bar-row .bar-track { grid-column: 1 / -1; grid-row: 2; } }
+
+/* 과정 */
+.flow { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.flow li { list-style: none; padding: 1rem 0.9rem 1.1rem; display: grid; gap: 0.35rem; align-content: start; position: relative; min-width: 0; }
+.flow li + li { border-left: 1px solid var(--line); }
+.flow .n { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); font-weight: 600; }
+.flow h4 { font-size: var(--step-0); font-weight: 600; }
+.flow p { font-size: 0.8rem; color: var(--ink-2); line-height: 1.55; }
+.flow code { font-size: 0.74rem; overflow-wrap: anywhere; }
+@media (max-width: 980px) { .flow { grid-template-columns: repeat(3, minmax(0, 1fr)); } .flow li:nth-child(4) { border-left: 0; } .flow li:nth-child(n+4) { border-top: 1px solid var(--line); } }
+@media (max-width: 560px) { .flow { grid-template-columns: minmax(0, 1fr); } .flow li + li { border-left: 0; border-top: 1px solid var(--line); } }
+
+.rounds { display: grid; gap: 0; border-left: 2px solid var(--line); margin-left: 0.4rem; }
+.round { position: relative; padding: 0 0 1.75rem 1.5rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 15rem); gap: 0.5rem 2rem; }
+.round:last-child { padding-bottom: 0; }
+.round::before { content: ""; position: absolute; left: -7px; top: 0.35rem; width: 12px; height: 12px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); }
+.round h4 { font-size: var(--step-1); font-weight: 600; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.6rem; }
+.round h4 .tag { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); font-weight: 500; }
+.round .body { display: grid; gap: 0.5rem; min-width: 0; }
+.round .body p { color: var(--ink-2); font-size: var(--step--1); }
+.round .find { font-size: var(--step--1); padding: 0.5rem 0.75rem; background: var(--surface-2); border-radius: 6px; }
+.round .find b { font-weight: 600; }
+.round .nums { display: grid; gap: 0.5rem; align-content: start; font-size: var(--step--1); }
+.mini { display: grid; grid-template-columns: 3.5rem minmax(0, 1fr) 4.5rem; align-items: center; gap: 0.5rem; }
+.mini .k { color: var(--muted); font-size: 0.75rem; }
+.mini .bt { height: 8px; position: relative; background: var(--surface-2); border-radius: 4px; }
+.mini .bf { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 4px; }
+.mini .v { font-family: var(--font-mono); font-size: 0.75rem; text-align: right; font-variant-numeric: tabular-nums; }
+@media (max-width: 700px) { .round { grid-template-columns: minmax(0, 1fr); } }
+
+/* 필터 칩 */
+.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.chip { font: inherit; font-size: var(--step--1); padding: 0.25rem 0.75rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer; }
+.chip:hover { border-color: var(--line-strong); }
+.chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.chip .c { font-family: var(--font-mono); font-size: 0.7rem; margin-left: 0.25rem; opacity: 0.8; }
+table.hyp td:nth-child(2) { min-width: 9rem; }
+table.hyp td:nth-child(3) { min-width: 12rem; }
+table.hyp td:nth-child(5) { min-width: 11rem; }
+tr.grp td { background: var(--surface-2); font-weight: 600; font-size: 0.78rem; color: var(--ink-2); padding-block: 0.35rem; }
+
+/* 유의미한 가설 카드 */
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 760px) { .cards { grid-template-columns: minmax(0, 1fr); } }
+.card { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 1.2rem 1.25rem; display: grid; gap: 0.7rem; align-content: start; min-width: 0; }
+.card.lead { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.card .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; }
+.card .top .id { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+.card h4 { font-size: var(--step-1); font-weight: 600; }
+.card .big { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; align-items: baseline; }
+.card .big .n { font-size: 1.9rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
+.card .big .u { font-size: var(--step--1); color: var(--muted); }
+.card .q { font-family: var(--font-mono); font-size: 0.8rem; background: var(--surface-2); border-radius: 6px; padding: 0.55rem 0.7rem; line-height: 1.65; color: var(--ink); white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; }
+.card p { font-size: var(--step--1); color: var(--ink-2); }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 820px) { .facts { grid-template-columns: minmax(0, 1fr); } }
+.fact { border-top: 2px solid var(--ink); padding-top: 0.75rem; display: grid; gap: 0.4rem; align-content: start; }
+.fact h4 { font-size: var(--step-0); font-weight: 600; }
+.fact p { font-size: var(--step--1); color: var(--ink-2); }
+.fact .cmp { display: grid; gap: 0.3rem; margin-top: 0.25rem; }
+.fact .cmp div { display: flex; justify-content: space-between; gap: 0.75rem; font-size: var(--step--1); border-bottom: 1px dotted var(--line); padding-bottom: 0.2rem; }
+.fact .cmp span:last-child { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* 결론, 한계 */
+ol.concl { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: c; }
+ol.concl li { counter-increment: c; display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); gap: 0.25rem 1rem; padding-block: 1.1rem; border-bottom: 1px solid var(--line); }
+ol.concl li:first-child { padding-top: 0; }
+ol.concl li::before { content: counter(c, decimal-leading-zero); font-family: var(--font-mono); font-size: var(--step--1); color: var(--accent); font-weight: 600; padding-top: 0.15rem; }
+ol.concl h4 { font-size: var(--step-1); font-weight: 600; margin-bottom: 0.3rem; }
+ol.concl p { color: var(--ink-2); max-width: 46rem; }
+.lims { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.lim { padding: 1.1rem 1.25rem; display: grid; gap: 0.35rem; align-content: start; border-bottom: 1px solid var(--line); min-width: 0; }
+.lim:nth-child(odd) { border-right: 1px solid var(--line); }
+.lim:nth-last-child(-n+2) { border-bottom: 0; }
+.lim h4 { font-size: var(--step-0); font-weight: 600; }
+.lim p { font-size: var(--step--1); color: var(--ink-2); }
+.lim .fix { font-size: 0.78rem; color: var(--accent); }
+@media (max-width: 760px) { .lims { grid-template-columns: minmax(0, 1fr); } .lim:nth-child(odd) { border-right: 0; } .lim:nth-last-child(2) { border-bottom: 1px solid var(--line); } }
+
+/* 2차 실험 계획 */
+.q-block { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.q-block > header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--line); display: grid; gap: 0.35rem; }
+.q-block > header .tr { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.q-block > header .tag { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; color: var(--accent); }
+.q-block > header .prio { font-size: 0.72rem; padding: 0.05rem 0.5rem; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--ink-2); }
+.q-block > header h4 { font-size: var(--step-1); font-weight: 600; }
+.q-block > header p { color: var(--ink-2); font-size: var(--step--1); }
+.q-body { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.q-body > div { padding: 1rem 1.25rem; min-width: 0; display: grid; gap: 0.4rem; align-content: start; }
+.q-body > div + div { border-left: 1px solid var(--line); }
+.q-body .k { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.04em; }
+.q-body ul { margin: 0; padding-left: 1rem; display: grid; gap: 0.3rem; font-size: var(--step--1); color: var(--ink-2); }
+@media (max-width: 860px) { .q-body { grid-template-columns: minmax(0, 1fr); } .q-body > div + div { border-left: 0; border-top: 1px solid var(--line); } }
+.cond-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.cc { font-family: var(--font-mono); font-size: 0.72rem; padding: 0.1rem 0.45rem; border-radius: 4px; background: var(--surface-2); color: var(--ink); white-space: nowrap; }
+.cc.new { background: var(--accent-soft); color: var(--accent); }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.steps li { display: grid; grid-template-columns: 2.25rem minmax(0, 1fr); gap: 1rem; padding-block: 0.9rem; border-bottom: 1px solid var(--line); }
+.steps li:last-child { border-bottom: 0; }
+.steps .sn { width: 1.9rem; height: 1.9rem; border-radius: 50%; border: 1.5px solid var(--accent); color: var(--accent); display: grid; place-items: center; font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600; }
+.steps h4 { font-size: var(--step-0); font-weight: 600; }
+.steps p, .steps ul { font-size: var(--step--1); color: var(--ink-2); }
+.criteria { display: grid; gap: 0; }
+.crit { display: grid; grid-template-columns: 8rem minmax(0, 1fr); gap: 1rem; padding: 0.6rem 0; border-bottom: 1px solid var(--line); font-size: var(--step--1); }
+.crit:last-child { border-bottom: 0; }
+.crit .k { color: var(--muted); }
+@media (max-width: 520px) { .crit { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; } }
+.decide { display: grid; gap: 0.6rem; }
+.dec { display: grid; grid-template-columns: minmax(0, 1fr) 1.5rem minmax(0, 1.2fr); gap: 0.75rem; align-items: center; padding: 0.75rem 1rem; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: var(--step--1); }
+.dec .if { color: var(--ink); }
+.dec .arr { color: var(--muted); text-align: center; font-family: var(--font-mono); }
+.dec .then { color: var(--ink-2); }
+@media (max-width: 640px) { .dec { grid-template-columns: minmax(0, 1fr); gap: 0.25rem; } .dec .arr { text-align: left; } }
+
+footer.foot { padding-block: 2.5rem 3.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: var(--step--1); }
+footer.foot code { font-size: 0.78rem; }
+</style>
+<style>
+.v-worse { --c: var(--v-bad); }
+.pill.v-worse::before { background: var(--c); }
+.comp { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); height: 2.6rem; border-radius: 6px; overflow: hidden; gap: 2px; background: var(--surface); }
+.comp > div { background: var(--c); position: relative; min-width: 0; }
+.comp-legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: 0.4rem 1rem; font-size: var(--step--1); color: var(--ink-2); }
+.comp-legend span.sw { display: inline-block; width: 0.7rem; height: 0.7rem; border-radius: 2px; background: var(--c); margin-right: 0.4rem; vertical-align: -0.05rem; }
+.comp-legend b { font-family: var(--font-mono); font-weight: 600; color: var(--ink); margin-left: 0.25rem; }
+.c1 { --c: #104281; } .c2 { --c: #2a78d6; } .c3 { --c: #86b6ef; } .c4 { --c: #eb6834; } .c5 { --c: #eda100; } .c6 { --c: #a3acb9; } .c7 { --c: #4a3aa7; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .c1 { --c: #cde2fb; } :root:not([data-theme="light"]) .c7 { --c: #9085e9; } }
+:root[data-theme="dark"] .c1 { --c: #cde2fb; } :root[data-theme="dark"] .c7 { --c: #9085e9; }
+.kpis.k3 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.note-box { border-left: 3px solid var(--v-qual); background: var(--surface); padding: 0.9rem 1.1rem; border-radius: 0 8px 8px 0; font-size: var(--step--1); color: var(--ink-2); display: grid; gap: 0.35rem; }
+.note-box b { color: var(--ink); }
+.clip { position: absolute; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); }
+</style>
+
+<nav class="nav" aria-label="섹션">
+  <div class="wrap">
+    <a class="brand" href="#top">token-diet · 2차</a>
+    <ul>
+      <li><a class="link" href="#goal">목표</a></li>
+      <li><a class="link" href="#hyps">가설</a></li>
+      <li><a class="link" href="#process">과정</a></li>
+      <li><a class="link" href="#results">결과</a></li>
+      <li><a class="link" href="#quality">품질</a></li>
+      <li><a class="link" href="#sig">유의미한 가설</a></li>
+      <li><a class="link" href="#concl">결론</a></li>
+      <li><a class="link" href="#limits">한계와 다음 단계</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="top">
+<div class="wrap">
+
+<header class="hero">
+  <div class="eyebrow">Token Diet · 2차 실험 보고서 · 2026-10-10</div>
+  <h1>n09 위에 네 가지를 더 얹자 출력 토큰이 16% 더 줄었다
+    <span class="ko">가설 36개를 1단계에서 거르고 새 문제 24개로 다시 쟀다. 2단계를 통과한 것은 조합 하나였다.</span>
+  </h1>
+  <p class="lede">1차 실험의 권장 설정 n09(베이스라인 대비 −40%) 위에, 1차에서 실험하지 않은 가설을 모두 얹어 실험했다. 결과적으로 <strong>사전 맥락 적재, 탐색 정지, 짧은 경로, 내장 Concise 스타일을 묶은 조합(u24)</strong>이 n09보다 16% 더 줄였고, 측정한 품질 차원에서 하락이 없었다. 단독으로는 어느 가설도 2단계에서 n09를 확실히 넘지 못했다.</p>
+  <div class="meta-line"><span>claude-opus-5-5 · effort high</span><span>Claude Code CLI 2.1.296</span><span>에이전트 실행 765회 · 정가 $165.54 (Q4 채점 $17.76 별도)</span></div>
+  <div class="kpis" role="list">
+    <div class="kpi" role="listitem"><span class="label">n09 대비 출력 토큰</span><span class="value accent">−16%</span><span class="sub">u24, 새 문제 24개 · 95% CI −21 ~ −11%</span></div>
+    <div class="kpi" role="listitem"><span class="label">베이스라인 대비</span><span class="value">−50%</span><span class="sub">n09는 같은 날 −41%</span></div>
+    <div class="kpi" role="listitem"><span class="label">턴 수 · 총비용</span><span class="value">−65% · −35%</span><span class="sub">베이스라인 대비 (n09: −29% · −28%)</span></div>
+    <div class="kpi" role="listitem"><span class="label">품질이 떨어진 문제</span><span class="value">0 / 24</span><span class="sub">거짓 성공 0, Q4 차이 +0.008</span></div>
+  </div>
+</header>
+
+
+<section class="sec" id="goal">
+  <div class="sec-head">
+    <span class="eyebrow">실험 목표</span>
+    <h2>n09 위에 무엇을 더 얹으면 더 줄어드는가</h2>
+    <p>1차 실험의 결론은 CLAUDE.md 세 줄(n09)이었다. 간결하게 답하고, 첫 해법을 채택하고, 검증은 마지막에 한 번만 한다. 2차 실험은 1차에서 실험하지 않은 가설을 모두 n09 위에 얹어, n09보다 더 줄이면서 품질을 지키는 것이 있는지 확인했다.</p>
+  </div>
+  <div class="stack">
+    <div class="rule-box">
+      <header><span class="t">비교 기준 n09 · conditions/n09_p2_h05/CLAUDE.md</span></header>
+      <pre>- 간결하게 답하고, 불필요한 출력을 줄인다.
+- 조건을 만족하는 첫 해법을 채택한다. 같은 결론을 다시 검산하지 않고, 방금 쓴 파일을 다시 열어 확인하지 않는다.
+- 검증 실행은 모든 수정을 마친 뒤 한 번만 한다.</pre>
+    </div>
+    <div class="figure">
+      <div class="fig-title"><h3>출발점: n09에 남은 출력은 어디에 있었나</h3><span class="fig-note">1차 2단계 n09 24회, 실행당 평균 2,662토큰 (로그 분석)</span></div>
+      <div class="chart" style="padding:1rem">
+        <div class="comp" id="compBar" role="img" aria-label="n09 잔여 출력 구성 막대"></div>
+        <div class="comp-legend" id="compLegend" style="margin-top:0.8rem"></div>
+      </div>
+      <p class="fig-note">thinking은 각 범주에 나눠 넣었고 전체의 12%다. 해법 본문을 빼면 줄일 여지는 탐색, 최종 보고, 검증 순으로 크다. 그래서 2차 가설은 주로 탐색 턴과 보고를 겨냥했다.</p>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <span class="k">판정 기준 (실행 전 고정)</span>
+        <h4 style="margin-bottom:0.6rem">n09보다 우수해야 채택</h4>
+        <ul class="dash small">
+          <li>n09 대비 출력 토큰 변화의 95% CI 상한 &lt; 0</li>
+          <li>품질: 베이스라인 대비 종합 점수 차이의 단측 95% 하한 &gt; −0.05, Q4 보고 충분성도 같은 기준</li>
+          <li>거짓 성공이 베이스라인보다 많으면 다른 결과와 관계없이 탈락</li>
+          <li>1단계(문제 12개)에서 고르고, 2단계(새 문제 24개)에서 다시 통과해야 채택</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <span class="k">고정 조건</span>
+        <h4 style="margin-bottom:0.6rem">실험 환경</h4>
+        <ul class="dash small">
+          <li>모든 실행 claude-opus-5-5, effort high</li>
+          <li>Claude Code CLI 2.1.296으로 고정, 결과에 버전 기록</li>
+          <li>기본 시스템 프롬프트 관련 환경 변수 3개를 모든 조건에 명시해 고정</li>
+          <li>대조군 4개(베이스라인, 위약 P1, 간결 P2, n09)를 매 단계 같은 날 함께 실행</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="hyps">
+  <div class="sec-head">
+    <span class="eyebrow">가설</span>
+    <h2>다섯 방향의 리서치에서 나온 가설 36개</h2>
+    <p>리서치 에이전트 5개가 각각 LLM 추론 효율 연구, 하네스·도구 생태계, 비CS 학문("언제 멈출 것인가"), 자체 로그 분석, Claude 특화 지시 설계를 조사했다. 원안 49개를 중복끼리 합쳐 u01~u23으로 정리하고, 1차 때 실험하지 못한 원안 4개(o10~o17)를 더했다. 분해 조건을 포함하면 36개다. 모든 가설은 n09 위에 얹었다.</p>
+  </div>
+  <div class="figure">
+    <div class="chips" id="hypChips" role="group" aria-label="분류 필터"></div>
+    <div class="tbl-wrap" style="margin-top:0">
+      <table class="t hyp" id="hypTable">
+        <thead><tr><th>ID</th><th>가설</th><th>근거</th><th>수단</th><th class="num">1단계 n09 대비</th><th>1단계 판정</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="fig-note">실험하지 않은 것: Morph fast-apply(외부 API 키 필요), effort 조절(모델·effort 고정 규칙). u18과 u19는 effort 조절과 비슷한 효과를 낼 수 있어 "경계"로 표시하고 실험했다.</p>
+  </div>
+</section>
+
+
+<section class="sec" id="process">
+  <div class="sec-head">
+    <span class="eyebrow">과정</span>
+    <h2>하네스 정비, 시험 실행, 2단계 검증</h2>
+    <p>가설 대부분이 hook, 설정, 시스템 프롬프트를 바꾸는 방식이라 실험 하네스부터 고쳤다. 조건마다 한 번씩 시험 실행해 장치가 실제로 작동하는지 확인한 뒤 본 실험을 돌렸다.</p>
+  </div>
+  <div class="stack">
+    <ol class="flow" style="margin:0;padding:0">
+      <li><span class="n">1</span><h4>리서치</h4><p>에이전트 5개(Opus, effort xhigh)가 원안 49개를 냈다. 중복을 합쳐 23개로 정리하고 출처를 확인했다.</p></li>
+      <li><span class="n">2</span><h4>하네스 정비</h4><p>CLI 2.1.296 고정과 버전 기록, 시스템 프롬프트 환경 변수 고정, 조건별 환경 변수·사전 스크립트·MCP·스키마 지원을 넣었다.</p></li>
+      <li><span class="n">3</span><h4>판정 사전 고정</h4><p><code>analyze_gen.py</code>에 n09 대비 비교와 "n09보다 우수" 판정을 실행 전에 넣었다.</p></li>
+      <li><span class="n">4</span><h4>시험 실행 21회</h4><p>hook 주입문, 예산 신호, Stop hook 차단, MCP 연결, 구조화 출력이 기록에 나타나는지 조건마다 확인했다.</p></li>
+      <li><span class="n">5</span><h4>1단계 480회</h4><p>대조군 4개 + 가설 36개 × 문제 12개. 순서는 무작위로 섞었다. 보고 충분성(Q4) 채점 320회.</p></li>
+      <li><span class="n">6</span><h4>2단계 264회</h4><p>1단계 통과 6개 + 조합 1개 + 대조군 4개 × 새 문제 24개. 5시간 한도 85%에서 멈췄다가 한도가 풀린 뒤 이어서 돌렸다.</p></li>
+    </ol>
+    <div class="grid-2">
+      <div class="panel">
+        <span class="k">시험 실행에서 확인한 것</span>
+        <ul class="dash small" style="margin-top:0.4rem">
+          <li>예산 신호(u08)와 재주입 문구(u14a)는 도구 결과 뒤에 그대로 들어갔다.</li>
+          <li>토큰 잔량 신호(u18)는 50,000에서 줄어들며 표시됐다.</li>
+          <li>Stop hook(u09)은 보고에 빠진 규칙 번호를 정확히 찾아냈다.</li>
+          <li>Serena MCP(o13)는 연결됐지만, 모델은 대부분 Read와 Bash를 썼다.</li>
+          <li>Sketch-of-Thought(o17)는 1차의 Chain of Draft와 달리 API가 거부하지 않았다.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <span class="k">1차와 달라진 점</span>
+        <ul class="dash small" style="margin-top:0.4rem">
+          <li>비교 기준이 베이스라인에서 n09로 바뀌었다. 모든 가설을 n09 위에 얹었다.</li>
+          <li>R3·R4에서 빠졌던 위약(P1)을 다시 넣었다.</li>
+          <li>CLI 버전이 2.1.295에서 2.1.296으로 바뀌어, 1차 수치와 직접 비교하지 않고 같은 날 돌린 대조군과만 비교했다.</li>
+          <li>원시 로그를 라운드별 폴더에 저장해 같은 이름 덮어쓰기를 막았다.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="sec" id="results">
+  <div class="sec-head">
+    <span class="eyebrow">결과</span>
+    
+    <h2>단독 가설의 우위는 2단계에서 대부분 사라졌다</h2>
+    <p>점은 n09 대비 출력 토큰 변화, 선은 95% 신뢰구간이다. 1단계에서 n09보다 우수했던 6개 가운데 2단계에서도 우수했던 것은 사전 맥락 적재(u01) 하나였고, 그마저 거짓 성공 1건으로 탈락했다. 대신 품질 위험이 없는 우수 조건 4개를 묶은 조합(u24)이 −16%로 통과했다. 행에 마우스를 올리거나 Tab으로 이동하면 베이스라인 대비 수치, 총비용, 턴 수, 품질이 보인다.</p>
+
+  </div>
+  <div class="stack">
+    <div class="figure">
+      <div class="tabs" role="tablist" id="fpTabs" aria-label="단계"></div>
+      <p class="fig-note" id="fpMeta"></p>
+      <div class="legend" id="fpLegend"></div>
+      <div class="chart" id="fpChart" role="tabpanel"></div>
+      <details class="tv"><summary>표로 보기</summary><div class="tbl-wrap"><table class="t" id="fpTable"></table></div></details>
+    </div>
+    
+    <div class="figure">
+      <div class="fig-title"><h3>1단계 → 2단계: n09 대비 출력 토큰</h3><span class="fig-note">1단계 문제 12개, 2단계 새 문제 24개</span></div>
+      <div class="tbl-wrap" style="margin-top:0">
+        <table class="t">
+          <thead><tr><th>조건</th><th class="num">1단계</th><th class="num">2단계 (95% CI)</th><th class="num">2단계 턴 수</th><th>2단계 판정</th></tr></thead>
+          <tbody>
+            <tr><td><span class="mono" style="font-weight:600">u24</span> 조합 u01+u05+u16+u11</td><td class="num">—</td><td class="num"><b>−16%</b> (−21 ~ −11)</td><td class="num">−65%</td><td><span class="pill v-best">n09보다 우수</span></td></tr>
+            <tr><td><span class="mono" style="font-weight:600">u01</span> 사전 맥락 적재</td><td class="num">−20%</td><td class="num">−9% (−14 ~ −3)</td><td class="num">−61%</td><td><span class="pill v-qual">탈락: 거짓 성공 1건</span></td></tr>
+            <tr><td><span class="mono" style="font-weight:600">u05</span> 탐색 정지 + 명세 신뢰</td><td class="num">−12%</td><td class="num">−2% (−10 ~ +6)</td><td class="num">−39%</td><td><span class="pill v-none">n09와 같음</span></td></tr>
+            <tr><td><span class="mono" style="font-weight:600">u10</span> 절차 기억</td><td class="num">−8%</td><td class="num">−1% (−6 ~ +5)</td><td class="num">−40%</td><td><span class="pill v-none">n09와 같음</span></td></tr>
+            <tr><td><span class="mono" style="font-weight:600">u16</span> 경로·인자 군더더기 제거</td><td class="num">−10%</td><td class="num">+1% (−7 ~ +9)</td><td class="num">−21%</td><td><span class="pill v-none">n09와 같음</span></td></tr>
+            <tr><td><span class="mono" style="font-weight:600">u11</span> 내장 Concise 스타일</td><td class="num">−9%</td><td class="num">+3% (−6 ~ +12)</td><td class="num">−24%</td><td><span class="pill v-none">n09와 같음</span></td></tr>
+            <tr><td><span class="mono" style="font-weight:600">u19</span> 숙고 억제 공식 문구 (경계)</td><td class="num">−10%</td><td class="num">+11% (+3 ~ +20)</td><td class="num">−24%</td><td><span class="pill v-worse">n09보다 못함</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fig-note">턴 수는 베이스라인 대비다. 같은 날 n09는 −29%였다. 1단계 우위가 줄어든 것은 문제 12개로 고르면 우연히 좋았던 조건이 뽑히는 선택 효과로 보인다. 1차의 r11(강조형 P2)과 같은 현상이다.</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="sec" id="quality">
+  <div class="sec-head">
+    <span class="eyebrow">품질</span>
+    
+    <h2>"서둘러라"는 신호가 처음으로 품질을 깎았다</h2>
+    <p>1차 실험 1,400회 동안 정확도 하락은 거의 없었다. 이번에는 시간·예산·종료를 재촉하는 신호를 준 조건에서 정확도 하락과 거짓 성공이 처음으로 나왔다. 반면 일을 덜 하게 만드는 지시(탐색 정지, 첫 해법 채택)에서는 나오지 않았다.</p>
+
+  </div>
+  <div class="stack">
+    <div class="figure">
+      <div class="fig-title"><h3>품질 이상이 나온 조건</h3><span class="fig-note">정확도 하락 문제 수, 거짓 성공, PARTIAL 보고, Q4 하한</span></div>
+      <div class="tbl-wrap" style="margin-top:0"><table class="t" id="qualTable"></table></div>
+    </div>
+    
+    <div class="grid-2">
+      <div class="note-box">
+        <b>재촉 신호 계열 (1단계)</b>
+        <span>예산·시간 신호 u08은 Q4 하한이 −0.138이라 품질 판정 불가였다. 신호만 준 u08a는 정확도 하락 2건과 거짓 성공 1건, 검증 통과 직후 종료 신호 u12는 거짓 성공 1건, 토큰 잔량 신호 u18과 숙고 억제 u19는 정확도 하락 1건씩이었다. 짧은 별칭 o10도 거짓 성공 1건으로 탈락했다.</span>
+      </div>
+      <div class="note-box">
+        <b>2단계 거짓 성공 2건 (u01, P2)</b>
+        <span>두 건 모두 같은 문제(tariff s10)에서 나왔다. 명세의 "기본 요금 중 최저값"을 해석하다가 무작위 주문 400건 중 1건을 틀렸고, 보고는 DONE이었다. 같은 문제에서 베이스라인, n09, u24는 모두 맞혔다. 사전에 정한 규칙대로 거짓 성공은 탈락으로 처리했다. 명세가 모호한 곳에서 줄이기 지시가 위험해질 수 있다는 신호다.</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<section class="sec" id="sig">
+  <div class="sec-head">
+    <span class="eyebrow">유의미한 가설</span>
+    <h2>새 권장 설정 u24와, 그 안에서 실제로 일한 것</h2>
+    <p>2단계를 통과한 것은 u24 하나다. u24는 1단계에서 n09보다 우수했던 조건 중 품질 위험이 없는 넷을 묶었다. 경계 조건인 u19와, 같은 생성기에서 뽑아 외적 타당도가 낮은 u10은 뺐다.</p>
+  </div>
+  <div class="stack">
+    <div class="cards">
+      <article class="card lead">
+        <div class="top"><span class="id">u24_combo</span><span class="pill v-best">n09보다 우수 · 새 권장</span></div>
+        <h4>n09 + 사전 맥락 + 탐색 정지 + 짧은 경로 + Concise 스타일</h4>
+        <div class="big"><span><span class="n">−16%</span> <span class="u">n09 대비</span></span><span><span class="n">−50%</span> <span class="u">베이스라인 대비</span></span><span><span class="n">−65%</span> <span class="u">턴</span></span></div>
+        <p>품질 하락 0/24, 거짓 성공 0, Q4 차이 +0.008. 총비용은 베이스라인 대비 −35%로, 사전 맥락 때문에 입력이 늘었는데도 n09(−28%)보다 더 줄었다.</p>
+      </article>
+      <article class="card">
+        <div class="top"><span class="id">u01_ctx</span><span class="pill v-qual">탈락 (거짓 성공 1건)</span></div>
+        <h4>사전 맥락 적재: 조합의 주된 동력</h4>
+        <div class="big"><span><span class="n">−9%</span> <span class="u">n09 대비 (2단계)</span></span><span><span class="n">−61%</span> <span class="u">턴</span></span></div>
+        <p>실행 전에 파일 목록, 작은 파일 전문, DB 스키마와 표본을 만들어 CLAUDE.md에 넣었다. 확인용 탐색 턴이 사라져 턴이 크게 줄었다. 단독으로는 모호한 명세 문제에서 거짓 성공이 나왔지만, 조합에서는 나오지 않았다.</p>
+      </article>
+    </div>
+    <div class="figure">
+      <h3>u24 구성 (conditions/u24_combo)</h3>
+      <div class="rule-box">
+        <header><span class="t">CLAUDE.md (n09 세 줄 뒤에 추가) + 설정</span></header>
+        <pre>- 무엇을 어디서 어떻게 바꿀지(또는 무엇을 계산할지) 정해지면 탐색을 멈추고 바로 작업한다. 조회 결과가 계획을 바꾸지 않았다면 같은 종류의 조회를 더 하지 않는다.
+- 결과가 어떻게 나와도 다음 행동이 같을 조회는 하지 않는다. 요청에 적힌 정의와 처리 규칙은 그대로 적용하고, 데이터나 코드에서 그 규칙이 필요한지 따로 확인하지 않는다. 필요한 점검은 해법 스크립트 안에 넣는다.
+- Bash 호출에는 description을 달지 않는다.
+- 작업 폴더의 파일 목록, 파일 내용, DB 구조는 아래 스냅숏에 이미 있다. 다시 열어 보지 않고 바로 작업한다.
+
+@.claude/ctx.md          ← 실행 전 prerun.py가 생성 (u01)
+settings: {"outputStyle": "Concise"}               (u11)
+env: CLAUDE_CODE_TMPDIR=/tmp/s, 짧은 실행 폴더      (u16)</pre>
+      </div>
+    </div>
+    <div class="figure">
+      <h3>2차 실험에서 확인한 사실</h3>
+      <div class="facts">
+        <div class="fact">
+          <h4>턴을 없애면 thinking은 오히려 늘 수 있다</h4>
+          <p>u24의 thinking은 베이스라인 대비 −5%로, n09(−40%)보다 많다. 턴이 줄어 한 턴에 더 많이 생각하지만, 턴마다 붙던 도구 인자와 해설이 사라져 전체 출력은 더 줄었다.</p>
+          <div class="cmp"><div><span>n09 thinking / 턴</span><span>−40% / −29%</span></div><div><span>u24 thinking / 턴</span><span>−5% / −65%</span></div></div>
+        </div>
+        <div class="fact">
+          <h4>작은 효과는 따로는 안 보이고 묶어야 보인다</h4>
+          <p>u05, u16, u11은 2단계에서 단독으로 n09와 구분되지 않았다. 묶은 u24는 −16%로 신뢰구간이 0에서 멀다. 효과가 실제로 더해진 것인지는 분해 실험이 필요하다.</p>
+          <div class="cmp"><div><span>u01 단독 (2단계)</span><span>−9%</span></div><div><span>u05·u16·u11 단독</span><span>−2 ~ +3%</span></div><div><span>u24 조합</span><span>−16%</span></div></div>
+        </div>
+        <div class="fact">
+          <h4>표현을 바꾸는 가설은 n09 위에서 포화됐다</h4>
+          <p>이유 붙이기, 긍정형, if-then, 위치 변경, 보고 형식, 구조화 보고, 시스템 프롬프트 교체는 모두 n09와 같거나 못했다. 무인 실행 선언(u07)은 오히려 +17%였다.</p>
+          <div class="cmp"><div><span>u15a~d 문구 변형</span><span>−5 ~ +9%</span></div><div><span>u03·u09·u21 보고</span><span>+1 ~ +3%</span></div><div><span>u07 무인 실행</span><span>+17%</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="sec" id="concl">
+  <div class="sec-head">
+    <span class="eyebrow">결론</span>
+    <h2>턴을 없애는 하네스 개입이 문구보다 강했다</h2>
+  </div>
+  <ol class="concl">
+    <li><div><h4>권장 설정을 n09에서 u24로 바꿀 근거가 생겼다</h4><p>u24는 새 문제 24개에서 n09보다 16% 더 줄였고(베이스라인 대비 −50%), 총비용 −35%, 턴 −65%였다. 정확도, 거짓 성공, 변경 최소성, 보고 충분성 하락이 없었다.</p></div></li>
+    <li><div><h4>효과는 "탐색 턴 제거"에서 나왔다</h4><p>n09에 남은 출력 중 탐색이 22%였고, 사전 맥락 적재가 이 턴을 없앴다. 1차 실험에서는 도구 사용 방식을 강제하면 턴이 늘어 실패했다. 이번에는 필요한 정보를 미리 줘서 턴 자체를 없앴고, 그래서 성공했다.</p></div></li>
+    <li><div><h4>"덜 하게"와 "서두르게"는 다르다</h4><p>일의 양을 줄이는 지시는 품질을 해치지 않았다. 시간·예산·종료 신호처럼 판단을 재촉하는 개입은 정확도 하락과 거짓 성공을 처음으로 만들었다. 다른 모델을 다룬 연구(BATS 등)의 효과가 이 태스크에서는 품질 비용과 함께 왔다.</p></div></li>
+    <li><div><h4>문구와 형식의 변형은 더 이상 효과가 없다</h4><p>n09 위에서 문구, 위치, 보고 형식, 시스템 프롬프트를 바꾼 가설은 모두 n09와 같거나 못했다. 1차의 "간결 지시는 표현에 둔감하다"는 결론이 n09 수준에서도 유지된다.</p></div></li>
+    <li><div><h4>도구 계열 원안 4개는 효과가 없었다</h4><p>Serena MCP는 연결됐지만 거의 쓰이지 않았다(−4%). 매크로 확장(+5%)과 짧은 별칭(+1%, 거짓 성공 1건)도 효과가 없었다. Sketch-of-Thought는 API가 거부하지 않았지만 n09와 같았다(−2%).</p></div></li>
+    <li><div><h4>1단계 선별만으로는 부족하다는 것이 다시 확인됐다</h4><p>1단계 우수 6개 중 5개가 2단계에서 n09와 같거나 못했다. 2단계 검증 규칙이 없었다면 효과 없는 설정 5개를 채택했을 것이다.</p></div></li>
+  </ol>
+</section>
+
+
+<section class="sec" id="limits">
+  <div class="sec-head">
+    <span class="eyebrow">한계와 다음 단계</span>
+    <h2>u24를 바로 일반화하기 전에 확인할 것</h2>
+  </div>
+  <div class="stack">
+    <div class="lims">
+      <div class="lim"><h4>조합은 2단계에서 처음 돌렸다</h4><p>u24는 1단계 결과를 보고 만든 조합이라, 1단계 선별 없이 2단계에만 들어갔다. 사후에 만든 조합이므로 새 문제로 한 번 더 확인해야 한다.</p><span class="fix">→ 새 seed 24개로 u24 재확인</span></div>
+      <div class="lim"><h4>정보 추가 효과와 섞여 있다</h4><p>사전 맥락에는 DB 열의 고유값 목록이 들어가, 함정(공백 섞인 세그먼트 등)이 미리 보인다. 출력 절감과 정보 제공의 효과가 섞였고, 실사용에서는 무엇을 미리 넣을지 정하기 어렵다.</p><span class="fix">→ 고유값 목록을 뺀 u01 분해 조건</span></div>
+      <div class="lim"><h4>명세가 모호한 문제에 약할 수 있다</h4><p>2단계 거짓 성공 2건이 모두 모호한 한 문장에서 나왔다. 줄이기 지시가 해석을 확인하는 행동까지 줄였을 가능성이 있다.</p><span class="fix">→ 모호한 명세 태스크(트랙 A)</span></div>
+      <div class="lim"><h4>정확도 천장은 여전하다</h4><p>u24의 하락 0/24는 하락 확률 95% 상한 약 12.5%까지만 말해 준다. 이번에 처음 하락이 관찰된 것도 재촉 신호 계열뿐이다.</p><span class="fix">→ 베이스라인 점수 0.5~0.8 태스크</span></div>
+      <div class="lim"><h4>작은 생성기 태스크 3종</h4><p>실행당 출력 2천~8천 토큰이고 파일이 몇 개뿐이다. 사전 맥락은 큰 저장소에서 다 넣을 수 없으므로 효과가 달라질 수 있다.</p><span class="fix">→ 큰 저장소 태스크(트랙 B), 실사용 1주(트랙 C)</span></div>
+      <div class="lim"><h4>운영상 기록</h4><p>CLI가 2.1.296으로 바뀌어 1차 수치와 직접 비교하지 않았다. 사용자 요청으로 "실험은 상위 10개만" 규칙을 이번 라운드에서 풀었다. 2단계는 5시간 한도 때문에 두 번에 나눠 돌렸다.</p><span class="fix">→ 다음 라운드부터 CLI 버전 고정 유지</span></div>
+    </div>
+    <div class="figure">
+      <h3>다음 실험 제안</h3>
+      <ol class="steps">
+        <li><span class="sn">1</span><div><h4>u24 재확인과 분해</h4><p>새 seed 24개에서 n09, u24, u01만, u24에서 u01을 뺀 조건(u05+u16+u11), 고유값 목록을 뺀 u24를 비교한다. 조합 효과가 더해진 것인지, 사전 맥락 하나의 효과인지 가린다.</p></div></li>
+        <li><span class="sn">2</span><div><h4>모호한 명세 태스크</h4><p>1차 보고서의 트랙 A 설계(해석 지점이 있는 생성기, 가정 공개율 지표)에 u24를 넣는다. 이번 거짓 성공 2건이 우연인지 확인한다.</p></div></li>
+        <li><span class="sn">3</span><div><h4>실사용 적용</h4><p>사전 맥락은 프로젝트마다 범용 프로파일러를 SessionStart hook으로 붙이는 형태로 옮기고, 1주 동안 세션당 출력 토큰과 재작업 비율을 본다.</p></div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+</div>
+<footer class="foot"><div class="wrap">출처: <code>results/runs_r7.jsonl</code>(1단계), <code>results/runs_r8.jsonl</code>(2단계), <code>q4_r7.jsonl</code>, <code>q4_r8.jsonl</code>, <code>results/summary_runs_r7.md</code>, <code>summary_runs_r8.md</code>, <code>hypotheses.md</code>의 "5차 리서치". 변화율은 같은 문제끼리 짝지은 비율의 기하평균, 괄호는 95% 부트스트랩 신뢰구간이다.</div></footer>
+</main>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+var DATA = {"meta": {"u01_ctx": {"name": "사전 맥락 적재", "cat": "탐색", "src": "Aider repo map, Agentless, 로그(첫 턴은 확인용)", "how": "실행 전 파일·DB 요약을 만들어 CLAUDE.md에 @import"}, "u05_explore": {"name": "탐색 정지 + 명세 신뢰", "cat": "탐색", "src": "Charnov 한계 가치 정리, 정보의 가치, Choosing Wisely", "how": "CLAUDE.md 두 줄"}, "u05a_stoprule": {"name": "탐색 정지 규칙만 (u05 분해)", "cat": "탐색", "src": "Charnov (1976)", "how": "CLAUDE.md 한 줄"}, "u05b_trustspec": {"name": "명세 신뢰만 (u05 분해)", "cat": "탐색", "src": "Howard (1966), Cassel & Guest (2012)", "how": "CLAUDE.md 한 줄"}, "u02_bashmax": {"name": "Bash 출력 한도 상향", "cat": "하네스 설정", "src": "로그: rules 89%에서 출력 잘림", "how": "bashOutputMaxChars 128000"}, "u16_paths": {"name": "경로·인자 군더더기 제거", "cat": "하네스 설정", "src": "로그: 도구 인자의 3~4%가 절대 경로", "how": "짧은 실행 폴더 + CLAUDE_CODE_TMPDIR + description 생략"}, "u23_obsdiet": {"name": "긴 도구 출력 축약", "cat": "하네스 설정", "src": "SoL-Pi (arXiv 2609.20519)", "how": "PostToolUse updatedToolOutput"}, "u13a_minprompt": {"name": "최소 시스템 프롬프트로 교체", "cat": "하네스 설정", "src": "mini-swe-agent, Prompt-Induced Waste", "how": "--system-prompt-file"}, "u13b_fullprompt": {"name": "전체 시스템 프롬프트", "cat": "하네스 설정", "src": "Claude Code 환경 변수 문서", "how": "CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=0"}, "u03_report": {"name": "보고 필수 항목 + 재진술 금지", "cat": "보고", "src": "Haviland & Clark given-new, 로그(보고 521 중 핵심 146)", "how": "CLAUDE.md"}, "u09_stopcheck": {"name": "Stop hook 보고 검사기", "cat": "보고", "src": "Stop hook, SWE-agent ACI 가드레일", "how": "빠진 변경이 있을 때만 보고를 다시 쓰게 함"}, "u21_schema": {"name": "구조화 최종 보고", "cat": "보고", "src": "CLI --json-schema", "how": "JSON 스키마로 보고 강제"}, "u06_focus": {"name": "포커스 모드", "cat": "진행 보고", "src": "CLI 내장 문단 (바이너리 확인)", "how": "settings viewMode: focus"}, "u07_unattended": {"name": "무인 실행 선언", "cat": "진행 보고", "src": "Opus 5.5 프롬프팅 문서", "how": "CLAUDE.md"}, "u11_concise": {"name": "내장 Concise output style", "cat": "진행 보고", "src": "output-styles 문서", "how": "settings outputStyle: Concise"}, "u08_budget": {"name": "예산·시간 신호", "cat": "신호", "src": "BATS (arXiv 2511.17006), Opus 5.5 Time signals", "how": "PostToolBatch hook + 문구"}, "u08a_signal": {"name": "예산 신호만 (u08 분해)", "cat": "신호", "src": "BATS", "how": "PostToolBatch hook"}, "u08b_timetext": {"name": "시간 문구만 (u08 분해)", "cat": "신호", "src": "Opus 5.5 문서 권장 문장", "how": "CLAUDE.md"}, "u12_eventstop": {"name": "검증 통과 직후 종료 신호", "cat": "신호", "src": "First Try Matters (arXiv 2510.08308), urgency gating", "how": "PostToolUse hook"}, "u18_tokbudget": {"name": "토큰 잔량 신호 (경계)", "cat": "신호", "src": "CLI 내부 total_tokens 신호", "how": "TOTAL_TOKENS_REMINDER_BUDGET=50000"}, "u19_nodeliberate": {"name": "숙고 억제 공식 문구 (경계)", "cat": "thinking", "src": "Anthropic 문서 \"Answer directly without deliberating\"", "how": "CLAUDE.md"}, "o17_sot": {"name": "Sketch-of-Thought (원안 #17)", "cat": "thinking", "src": "Aytes et al. 2025", "how": "CLAUDE.md"}, "u10_procmem": {"name": "절차 기억", "cat": "절차·문구", "src": "Agentic Plan Caching, Agent Workflow Memory", "how": "작업 유형별 절차 3줄"}, "u04_notests": {"name": "검증용 새 테스트 금지", "cat": "절차·문구", "src": "arXiv 2602.07900, Opus 5 문서", "how": "CLAUDE.md"}, "u14a_reinject": {"name": "도구 결과 뒤 규칙 재주입", "cat": "절차·문구", "src": "Lost in the Middle, instruction drift", "how": "PostToolBatch hook"}, "u14b_userprompt": {"name": "사용자 프롬프트 옆에만 배치", "cat": "절차·문구", "src": "Fable 5.1 문서", "how": "UserPromptSubmit hook"}, "u15a_reason": {"name": "이유를 붙인 n09", "cat": "절차·문구", "src": "Anthropic best practices", "how": "CLAUDE.md"}, "u15b_positive": {"name": "긍정형 n09", "cat": "절차·문구", "src": "Anthropic best practices", "how": "CLAUDE.md"}, "u15c_ifthen": {"name": "if-then형 n09", "cat": "절차·문구", "src": "Gollwitzer (1999) 실행 의도", "how": "CLAUDE.md"}, "u15d_roundtrip": {"name": "왕복 최소화 프레이밍", "cat": "절차·문구", "src": "속도-정확도 교환", "how": "CLAUDE.md"}, "u17_interp": {"name": "해석 하나 고르기", "cat": "절차·문구", "src": "임무형 지휘 ADP 6-0", "how": "CLAUDE.md"}, "u20_autocheck": {"name": "편집 후 구문 자동 검사", "cat": "절차·문구", "src": "Aider lint/auto-test", "how": "PostToolUse hook"}, "u22_rounding": {"name": "반올림 규칙 먼저 정하기", "cat": "절차·문구", "src": "로그: tariff 반올림 수정", "how": "CLAUDE.md"}, "o10_alias": {"name": "짧은 별칭 (원안 #10)", "cat": "도구", "src": "Huffman 코딩", "how": "PATH 래퍼 py, sq, rd"}, "o12_macro": {"name": "매크로 확장 hook (원안 #12)", "cat": "도구", "src": "비대칭 코덱", "how": "PreToolUse updatedInput"}, "o13_serena": {"name": "Serena 심볼 편집 MCP (원안 #13)", "cat": "도구", "src": "Serena", "how": "MCP 서버"}, "u24_combo": {"name": "조합: u01 + u05 + u16 + u11", "cat": "조합", "src": "1단계 우수 조건 중 품질 위험 없는 것", "how": "2단계에서 추가"}, "baseline": {"name": "베이스라인", "cat": null, "src": "", "how": ""}, "p1_placebo": {"name": "위약 P1", "cat": null, "src": "", "how": ""}, "p2_concise": {"name": "간결 한 줄 P2", "cat": null, "src": "", "how": ""}, "n09_p2_h05": {"name": "n09 (P2 + H05)", "cat": null, "src": "", "how": ""}}, "stages": {"s1": {"meta": "1단계 · 40조건 × 문제 12개(seed 1~4) · 480회 · $100.19 · 문제당 1회", "rows": [{"id": "u01_ctx", "tok": -45, "lo": -50, "hi": -39, "th": 9, "p2": -31, "n09": -20, "n09lo": -26, "n09hi": -14, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -36, "turns": -58, "dq4": -0.012, "dq4_lb": -0.037, "verdict": "후보 (P2보다 우수), n09보다 우수"}, {"id": "u05_explore", "tok": -40, "lo": -45, "hi": -33, "th": -14, "p2": -24, "n09": -12, "n09lo": -21, "n09hi": -2, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -32, "turns": -32, "dq4": -0.012, "dq4_lb": -0.037, "verdict": "후보 (P2보다 우수), n09보다 우수"}, {"id": "u05a_stoprule", "tok": -39, "lo": -46, "hi": -28, "th": -29, "p2": -22, "n09": -11, "n09lo": -21, "n09hi": 2, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -29, "turns": -26, "dq4": 0.0, "dq4_lb": 0.0, "verdict": "후보 (P2보다 우수), n09와 같음"}, {"id": "u08_budget", "tok": -39, "lo": -46, "hi": -29, "th": 4, "p2": -22, "n09": -11, "n09lo": -20, "n09hi": -1, "dq_lb": -0.02, "worse": 1, "n": 12, "fs": 0, "partial": 0, "cost": -40, "turns": -34, "dq4": -0.046, "dq4_lb": -0.138, "verdict": "품질 판정 불가/저하"}, {"id": "u06_focus", "tok": -38, "lo": -45, "hi": -28, "th": -33, "p2": -21, "n09": -9, "n09lo": -19, "n09hi": 3, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -28, "turns": -21, "dq4": 0.0, "dq4_lb": 0.0, "verdict": "후보 (P2보다 우수), n09와 같음"}, {"id": "u08b_timetext", "tok": -38, "lo": -48, "hi": -24, "th": -41, "p2": -22, "n09": -10, "n09lo": -22, "n09hi": 7, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -25, "turns": -15, "dq4": -0.024, "dq4_lb": -0.049, "verdict": "후보 (P2와 같음), n09와 같음"}, {"id": "u16_paths", "tok": -38, "lo": -43, "hi": -32, "th": -17, "p2": -22, "n09": -10, "n09lo": -19, "n09hi": -1, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -24, "turns": -18, "dq4": -0.011, "dq4_lb": -0.034, "verdict": "후보 (P2보다 우수), n09보다 우수"}, {"id": "u19_nodeliberate", "tok": -38, "lo": -43, "hi": -33, "th": -24, "p2": -22, "n09": -10, "n09lo": -19, "n09hi": -1, "dq_lb": -0.02, "worse": 1, "n": 12, "fs": 0, "partial": 1, "cost": -30, "turns": -26, "dq4": -0.011, "dq4_lb": -0.034, "verdict": "후보 (P2보다 우수), n09보다 우수"}, {"id": "u10_procmem", "tok": -37, "lo": -42, "hi": -31, "th": -8, "p2": -21, "n09": -8, "n09lo": -16, "n09hi": 0, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -26, "turns": -32, "dq4": -0.011, "dq4_lb": -0.034, "verdict": "후보 (P2보다 우수), n09보다 우수"}, {"id": "u11_concise", "tok": -37, "lo": -43, "hi": -31, "th": -26, "p2": -21, "n09": -9, "n09lo": -18, "n09hi": 0, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -26, "turns": -22, "dq4": -0.011, "dq4_lb": -0.034, "verdict": "후보 (P2보다 우수), n09보다 우수"}, {"id": "u13a_minprompt", "tok": -37, "lo": -45, "hi": -27, "th": -26, "p2": -21, "n09": -9, "n09lo": -21, "n09hi": 7, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 1, "cost": -33, "turns": -17, "dq4": 0.0, "dq4_lb": 0.0, "verdict": "후보 (P2보다 우수), n09와 같음"}, {"id": "u02_bashmax", "tok": -36, "lo": -43, "hi": -25, "th": -20, "p2": -19, "n09": -6, "n09lo": -17, "n09hi": 5, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -24, "turns": -17, "dq4": -0.012, "dq4_lb": -0.037, "verdict": "후보 (P2보다 우수), n09와 같음"}, {"id": "u15d_roundtrip", "tok": -35, "lo": -43, "hi": -24, "th": -29, "p2": -17, "n09": -5, "n09lo": -16, "n09hi": 7, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -30, "turns": -11, "dq4": 0.0, "dq4_lb": 0.0, "verdict": "후보 (P2보다 우수), n09와 같음"}, {"id": "o13_serena", "tok": -34, "lo": -41, "hi": -24, "th": -37, "p2": -17, "n09": -4, "n09lo": -13, "n09hi": 7, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -36, "turns": -10, "dq4": -0.011, "dq4_lb": -0.034, "verdict": "후보 (P2보다 우수), n09와 같음"}, {"id": "u15a_reason", "tok": -34, "lo": -43, "hi": -23, "th": -23, "p2": -17, "n09": -4, "n09lo": -16, "n09hi": 10, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -28, "turns": -6, "dq4": -0.012, "dq4_lb": -0.037, "verdict": "후보 (P2와 같음), n09와 같음"}, {"id": "u23_obsdiet", "tok": -34, "lo": -42, "hi": -23, "th": -21, "p2": -16, "n09": -4, "n09lo": -13, "n09hi": 6, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -30, "turns": -9, "dq4": -0.011, "dq4_lb": -0.034, "verdict": "후보 (P2보다 우수), n09와 같음"}, {"id": "o17_sot", "tok": -33, "lo": -39, "hi": -24, "th": -15, "p2": -15, "n09": -2, "n09lo": -14, "n09hi": 11, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -19, "turns": -13, "dq4": -0.024, "dq4_lb": -0.049, "verdict": "후보 (P2보다 우수), n09와 같음"}, {"id": "u08a_signal", "tok": -33, "lo": -43, "hi": -20, "th": 16, "p2": -16, "n09": -3, "n09lo": -16, "n09hi": 11, "dq_lb": -0.028, "worse": 2, "n": 12, "fs": 1, "partial": 0, "cost": -39, "turns": -34, "dq4": -0.018, "dq4_lb": -0.054, "verdict": "탈락 (거짓 성공·거부)"}, {"id": "u14a_reinject", "tok": -33, "lo": -39, "hi": -26, "th": -2, "p2": -15, "n09": -3, "n09lo": -13, "n09hi": 9, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -25, "turns": -23, "dq4": 0.0, "dq4_lb": 0.0, "verdict": "후보 (P2보다 우수), n09와 같음"}, {"id": "u04_notests", "tok": -32, "lo": -40, "hi": -22, "th": -16, "p2": -14, "n09": -1, "n09lo": -11, "n09hi": 10, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 2, "cost": -28, "turns": -14, "dq4": 0.0, "dq4_lb": 0.0, "verdict": "후보 (P2와 같음), n09와 같음"}, {"id": "u12_eventstop", "tok": -32, "lo": -41, "hi": -17, "th": -16, "p2": -14, "n09": -1, "n09lo": -14, "n09hi": 16, "dq_lb": -0.052, "worse": 1, "n": 12, "fs": 1, "partial": 0, "cost": -25, "turns": -9, "dq4": 0.0, "dq4_lb": 0.0, "verdict": "탈락 (거짓 성공·거부)"}, {"id": "n09_p2_h05", "tok": -31, "lo": -38, "hi": -24, "th": -22, "p2": -13, "n09": null, "n09lo": null, "n09hi": null, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -24, "turns": -17, "dq4": 0.0, "dq4_lb": 0.0, "verdict": "후보 (P2와 같음)"}, {"id": "o10_alias", "tok": -31, "lo": -40, "hi": -19, "th": -25, "p2": -13, "n09": 1, "n09lo": -9, "n09hi": 11, "dq_lb": -0.015, "worse": 1, "n": 12, "fs": 1, "partial": 0, "cost": -27, "turns": -17, "dq4": -0.005, "dq4_lb": -0.016, "verdict": "탈락 (거짓 성공·거부)"}, {"id": "u09_stopcheck", "tok": -31, "lo": -37, "hi": -23, "th": -15, "p2": -13, "n09": 1, "n09lo": -7, "n09hi": 9, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 1, "cost": -20, "turns": -17, "dq4": -0.011, "dq4_lb": -0.034, "verdict": "후보 (P2와 같음), n09와 같음"}, {"id": "u17_interp", "tok": -31, "lo": -39, "hi": -23, "th": -15, "p2": -13, "n09": 0, "n09lo": -12, "n09hi": 13, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -28, "turns": -16, "dq4": -0.012, "dq4_lb": -0.037, "verdict": "후보 (P2와 같음), n09와 같음"}, {"id": "u22_rounding", "tok": -31, "lo": -37, "hi": -24, "th": -1, "p2": -12, "n09": 1, "n09lo": -5, "n09hi": 9, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -29, "turns": -19, "dq4": -0.011, "dq4_lb": -0.034, "verdict": "후보 (P2와 같음), n09와 같음"}, {"id": "u03_report", "tok": -30, "lo": -38, "hi": -19, "th": -21, "p2": -11, "n09": 3, "n09lo": -7, "n09hi": 12, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 1, "cost": -24, "turns": -19, "dq4": -0.011, "dq4_lb": -0.034, "verdict": "후보 (P2와 같음), n09와 같음"}, {"id": "u20_autocheck", "tok": -30, "lo": -37, "hi": -19, "th": -9, "p2": -11, "n09": 2, "n09lo": -9, "n09hi": 14, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -23, "turns": -7, "dq4": -0.011, "dq4_lb": -0.034, "verdict": "후보 (P2와 같음), n09와 같음"}, {"id": "u21_schema", "tok": -30, "lo": -36, "hi": -24, "th": 24, "p2": -12, "n09": 2, "n09lo": -9, "n09hi": 12, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -30, "turns": 5, "dq4": 0.0, "dq4_lb": 0.0, "verdict": "후보 (P2와 같음), n09와 같음"}, {"id": "u05b_trustspec", "tok": -29, "lo": -37, "hi": -18, "th": 8, "p2": -10, "n09": 4, "n09lo": -7, "n09hi": 15, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -31, "turns": -29, "dq4": -0.011, "dq4_lb": -0.034, "verdict": "후보 (P2와 같음), n09와 같음"}, {"id": "u13b_fullprompt", "tok": -29, "lo": -39, "hi": -20, "th": -30, "p2": -11, "n09": 3, "n09lo": -6, "n09hi": 13, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 1, "cost": -6, "turns": 1, "dq4": 0.0, "dq4_lb": 0.0, "verdict": "후보 (P2와 같음), n09와 같음"}, {"id": "u14b_userprompt", "tok": -29, "lo": -34, "hi": -23, "th": -6, "p2": -10, "n09": 4, "n09lo": -7, "n09hi": 15, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -19, "turns": -15, "dq4": -0.011, "dq4_lb": -0.034, "verdict": "후보 (P2와 같음), n09와 같음"}, {"id": "o12_macro", "tok": -28, "lo": -37, "hi": -16, "th": -9, "p2": -9, "n09": 5, "n09lo": -8, "n09hi": 19, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -27, "turns": -6, "dq4": -0.012, "dq4_lb": -0.037, "verdict": "후보 (P2와 같음), n09와 같음"}, {"id": "u15b_positive", "tok": -25, "lo": -32, "hi": -18, "th": -5, "p2": -6, "n09": 9, "n09lo": -4, "n09hi": 21, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -20, "turns": -13, "dq4": 0.0, "dq4_lb": 0.0, "verdict": "후보 (P2와 같음), n09와 같음"}, {"id": "u15c_ifthen", "tok": -25, "lo": -34, "hi": -16, "th": -33, "p2": -5, "n09": 9, "n09lo": -6, "n09hi": 26, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -24, "turns": -5, "dq4": -0.011, "dq4_lb": -0.034, "verdict": "후보 (P2와 같음), n09와 같음"}, {"id": "u18_tokbudget", "tok": -23, "lo": -35, "hi": -8, "th": 14, "p2": -2, "n09": 12, "n09lo": -2, "n09hi": 30, "dq_lb": -0.02, "worse": 1, "n": 12, "fs": 0, "partial": 0, "cost": -30, "turns": -10, "dq4": -0.011, "dq4_lb": -0.034, "verdict": "효과 불분명"}, {"id": "p2_concise", "tok": -21, "lo": -32, "hi": -6, "th": 3, "p2": null, "n09": 15, "n09lo": -4, "n09hi": 42, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -17, "turns": -8, "dq4": 0.0, "dq4_lb": 0.0, "verdict": "효과 불분명"}, {"id": "u07_unattended", "tok": -20, "lo": -29, "hi": -10, "th": -11, "p2": 1, "n09": 17, "n09lo": 2, "n09hi": 32, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": -15, "turns": -9, "dq4": -0.011, "dq4_lb": -0.034, "verdict": "후보 (P2와 같음), n09보다 못함"}, {"id": "p1_placebo", "tok": 2, "lo": -6, "hi": 11, "th": 17, "p2": 29, "n09": 48, "n09lo": 31, "n09hi": 68, "dq_lb": 0.0, "worse": 0, "n": 12, "fs": 0, "partial": 0, "cost": 2, "turns": -1, "dq4": -0.011, "dq4_lb": -0.034, "verdict": "효과 불분명"}]}, "s2": {"meta": "2단계 · 11조건 × 새 문제 24개(seed 5~12) · 264회 · $57.64 · 문제당 1회", "rows": [{"id": "u24_combo", "tok": -50, "lo": -54, "hi": -46, "th": -5, "p2": -28, "n09": -16, "n09lo": -21, "n09hi": -11, "dq_lb": 0.0, "worse": 0, "n": 24, "fs": 0, "partial": 0, "cost": -35, "turns": -65, "dq4": 0.008, "dq4_lb": 0.003, "verdict": "후보 (P2보다 우수), n09보다 우수"}, {"id": "u01_ctx", "tok": -46, "lo": -51, "hi": -40, "th": -1, "p2": -22, "n09": -9, "n09lo": -14, "n09hi": -3, "dq_lb": -0.0, "worse": 1, "n": 24, "fs": 1, "partial": 0, "cost": -33, "turns": -61, "dq4": -0.004, "dq4_lb": -0.022, "verdict": "탈락 (거짓 성공·거부)"}, {"id": "u05_explore", "tok": -42, "lo": -48, "hi": -34, "th": -33, "p2": -16, "n09": -2, "n09lo": -10, "n09hi": 6, "dq_lb": 0.0, "worse": 0, "n": 24, "fs": 0, "partial": 0, "cost": -30, "turns": -39, "dq4": -0.007, "dq4_lb": -0.022, "verdict": "후보 (P2보다 우수), n09와 같음"}, {"id": "n09_p2_h05", "tok": -41, "lo": -46, "hi": -35, "th": -40, "p2": -15, "n09": null, "n09lo": null, "n09hi": null, "dq_lb": 0.0, "worse": 0, "n": 24, "fs": 0, "partial": 1, "cost": -28, "turns": -29, "dq4": 0.003, "dq4_lb": 0.0, "verdict": "후보 (P2보다 우수)"}, {"id": "u10_procmem", "tok": -41, "lo": -45, "hi": -37, "th": -23, "p2": -15, "n09": -1, "n09lo": -6, "n09hi": 5, "dq_lb": 0.0, "worse": 0, "n": 24, "fs": 0, "partial": 0, "cost": -29, "turns": -40, "dq4": 0.0, "dq4_lb": 0.0, "verdict": "후보 (P2보다 우수), n09와 같음"}, {"id": "u16_paths", "tok": -40, "lo": -44, "hi": -34, "th": -25, "p2": -14, "n09": 1, "n09lo": -7, "n09hi": 9, "dq_lb": 0.0, "worse": 0, "n": 24, "fs": 0, "partial": 0, "cost": -30, "turns": -21, "dq4": 0.003, "dq4_lb": 0.0, "verdict": "후보 (P2보다 우수), n09와 같음"}, {"id": "u11_concise", "tok": -39, "lo": -44, "hi": -32, "th": -39, "p2": -12, "n09": 3, "n09lo": -6, "n09hi": 12, "dq_lb": 0.0, "worse": 0, "n": 24, "fs": 0, "partial": 0, "cost": -29, "turns": -24, "dq4": -0.001, "dq4_lb": -0.012, "verdict": "후보 (P2보다 우수), n09와 같음"}, {"id": "u19_nodeliberate", "tok": -34, "lo": -41, "hi": -25, "th": -45, "p2": -6, "n09": 11, "n09lo": 3, "n09hi": 20, "dq_lb": 0.0, "worse": 0, "n": 24, "fs": 0, "partial": 0, "cost": -26, "turns": -24, "dq4": -0.006, "dq4_lb": -0.019, "verdict": "후보 (P2와 같음), n09보다 못함"}, {"id": "p2_concise", "tok": -30, "lo": -35, "hi": -24, "th": -27, "p2": null, "n09": 17, "n09lo": 7, "n09hi": 27, "dq_lb": -0.0, "worse": 1, "n": 24, "fs": 1, "partial": 0, "cost": -22, "turns": -16, "dq4": -0.004, "dq4_lb": -0.016, "verdict": "탈락 (거짓 성공·거부)"}, {"id": "p1_placebo", "tok": -5, "lo": -11, "hi": 0, "th": 4, "p2": 36, "n09": 59, "n09lo": 45, "n09hi": 73, "dq_lb": 0.0, "worse": 0, "n": 24, "fs": 0, "partial": 0, "cost": -3, "turns": -15, "dq4": 0.002, "dq4_lb": -0.011, "verdict": "효과 불분명"}]}}};
+</script>
+<script>
+(function () {
+  "use strict";
+  var MINUS = "−";
+  function pct(v) { if (v === null || v === undefined) return "—"; if (v === 0) return "0%"; return (v < 0 ? MINUS + Math.abs(v) : "+" + v) + "%"; }
+  function num(v) { return v === null || v === undefined ? "—" : (v < 0 ? MINUS + Math.abs(v) : v === 0 ? "0" : "+" + v); }
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  var META = DATA.meta;
+  function nm(id) { return (META[id] || {}).name || id; }
+
+  /* 판정 → 색 */
+  function vkey(r) {
+    if (["baseline", "p1_placebo", "p2_concise", "n09_p2_h05"].indexOf(r.id) >= 0) return ["ctrl", "대조군"];
+    var v = r.verdict || "";
+    if (v.indexOf("탈락") >= 0) return ["qual", "탈락: 거짓 성공"];
+    if (v.indexOf("품질") >= 0) return ["qual", "품질 판정 불가"];
+    if (v.indexOf("n09보다 우수") >= 0) return ["best", "n09보다 우수"];
+    if (v.indexOf("n09보다 못함") >= 0) return ["worse", "n09보다 못함"];
+    if (v.indexOf("역효과") >= 0) return ["worse", "역효과"];
+    if (v.indexOf("n09와 같음") >= 0) return ["none", "n09와 같음"];
+    return ["none", "효과 불분명"];
+  }
+
+  /* 잔여 출력 구성 */
+  var COMP = [["해법 작성", 43, "c1"], ["탐색", 22, "c2"], ["진단 스크립트", 6, "c3"], ["최종 보고", 22, "c4"], ["검증", 5, "c5"], ["해법 수정", 2, "c6"]];
+  var cb = document.getElementById("compBar"); cb.style.gridTemplateColumns = COMP.map(function (c) { return c[1] + "fr"; }).join(" ");
+  var cl = document.getElementById("compLegend");
+  COMP.forEach(function (c) { cb.appendChild(el("div", c[2])); cl.appendChild(el("div", c[2], '<span class="sw"></span>' + c[0] + "<b>" + c[1] + "%</b>")); });
+
+  /* 툴팁 */
+  var tip = document.getElementById("tip");
+  function showTip(html, x, y) { tip.innerHTML = html; tip.hidden = false; var w = tip.offsetWidth, h = tip.offsetHeight; var l = x + 14, t = y + 14; if (l + w > innerWidth - 8) l = Math.max(8, x - w - 14); if (t + h > innerHeight - 8) t = Math.max(8, y - h - 14); tip.style.left = l + "px"; tip.style.top = t + "px"; }
+  function hideTip() { tip.hidden = true; }
+  function bindTip(row, f) { row.addEventListener("pointermove", function (e) { showTip(f(), e.clientX, e.clientY); }); row.addEventListener("pointerleave", hideTip); row.addEventListener("focus", function () { var r = row.getBoundingClientRect(); showTip(f(), r.left + r.width * 0.45, r.bottom - 6); }); row.addEventListener("blur", hideTip); }
+  addEventListener("scroll", hideTip, { passive: true });
+
+  function xpos(v, d) { return (Math.max(d[0], Math.min(d[1], v)) - d[0]) / (d[1] - d[0]) * 100; }
+  var D = [-30, 30], TICKS = [-30, -20, -10, 0, 10, 20, 30];
+
+  function tipHtml(r) {
+    var h = "<b>" + esc(r.id) + "</b> " + esc(nm(r.id));
+    if (r.id !== "n09_p2_h05") h += '<div class="r"><span>n09 대비</span><span>' + pct(r.n09) + " (" + num(r.n09lo) + " ~ " + num(r.n09hi) + "%)</span></div>";
+    h += '<div class="r"><span>베이스라인 대비</span><span>' + pct(r.tok) + "</span></div>";
+    h += '<div class="r"><span>thinking</span><span>' + pct(r.th) + "</span></div>";
+    h += '<div class="r"><span>총비용</span><span>' + pct(r.cost) + "</span></div>";
+    h += '<div class="r"><span>턴 수</span><span>' + pct(r.turns) + "</span></div>";
+    h += '<div class="r"><span>정확도 하락 / 거짓 성공</span><span>' + r.worse + " / " + r.fs + "</span></div>";
+    h += '<div class="r"><span>Q4 차이 (하한)</span><span>' + r.dq4.toFixed(3) + " (" + r.dq4_lb.toFixed(3) + ")</span></div>";
+    return h;
+  }
+
+  function renderFP(key) {
+    var S = DATA.stages[key], chart = document.getElementById("fpChart"); chart.innerHTML = "";
+    document.getElementById("fpMeta").textContent = S.meta;
+    var rows = S.rows.filter(function (r) { return r.id !== "n09_p2_h05"; }).slice().sort(function (a, b) { return a.n09 - b.n09; });
+    var lg = document.getElementById("fpLegend"); lg.innerHTML = ""; var seen = {};
+    rows.forEach(function (r) { seen[vkey(r)[0]] = vkey(r)[1]; });
+    ["best", "none", "worse", "qual", "ctrl"].forEach(function (k) { if (seen[k]) lg.appendChild(el("span", "sw", '<span class="pill v-' + k + '" style="padding:0;background:none"></span>' + (k === "qual" ? "품질 문제" : k === "none" ? "n09와 같음" : seen[k]))); });
+    lg.appendChild(el("span", "sw", '<span class="p2-sw"></span>n09 (0%)'));
+    var head = el("div", "fp-row fp-head"); head.appendChild(el("div", "fp-label")); var ht = el("div", "fp-track");
+    var zl = el("span", "toplab", "n09"); zl.style.left = xpos(0, D) + "%"; ht.appendChild(zl);
+    head.appendChild(ht); head.appendChild(el("div", "fp-value", '<span class="ci">n09 대비 (95% CI)</span>')); head.appendChild(el("div", "fp-pill")); chart.appendChild(head);
+    rows.forEach(function (r) {
+      var v = vkey(r), row = el("div", "fp-row data"); row.tabIndex = 0;
+      row.setAttribute("aria-label", r.id + " " + nm(r.id) + ", n09 대비 " + pct(r.n09) + ", " + v[1]);
+      row.appendChild(el("div", "fp-label", '<span class="id">' + esc(r.id.split("_")[0]) + '</span><span class="nm">' + esc(nm(r.id)) + "</span>"));
+      var t = el("div", "fp-track");
+      TICKS.forEach(function (x) { var g = el("div", "gl" + (x === 0 ? " p2" : "")); g.style.left = xpos(x, D) + "%"; t.appendChild(g); });
+      var a = xpos(r.n09lo, D), b = xpos(r.n09hi, D);
+      var w = el("div", "whisk v-" + v[0]); w.style.left = a + "%"; w.style.width = (b - a) + "%"; t.appendChild(w);
+      var dt = el("div", "dot v-" + v[0]); dt.style.left = xpos(r.n09, D) + "%"; t.appendChild(dt);
+      if (r.n09 > D[1]) { var c = el("span", "clip", "▶ " + pct(r.n09)); c.style.right = "0"; t.appendChild(c); }
+      row.appendChild(t);
+      row.appendChild(el("div", "fp-value", pct(r.n09) + ' <span class="ci">(' + num(r.n09lo) + " ~ " + num(r.n09hi) + ")</span>"));
+      var pc = el("div", "fp-pill"); pc.appendChild(el("span", "pill v-" + v[0], v[1])); row.appendChild(pc);
+      bindTip(row, function () { return tipHtml(r); });
+      chart.appendChild(row);
+    });
+    var ax = el("div", "fp-row fp-axis"); ax.appendChild(el("div", "fp-label")); var at = el("div", "fp-track");
+    TICKS.forEach(function (x, i) { var s = el("span", "tick" + (i === 0 ? " first" : i === TICKS.length - 1 ? " last" : ""), pct(x)); s.style.left = xpos(x, D) + "%"; at.appendChild(s); });
+    ax.appendChild(at); ax.appendChild(el("div", "fp-value")); ax.appendChild(el("div", "fp-pill")); chart.appendChild(ax);
+    chart.appendChild(el("div", "axis-cap", "n09 대비 출력 토큰 변화. 왼쪽일수록 n09보다 더 줄었다. 범위 밖 값은 ▶로 표시했다."));
+    var html = '<thead><tr><th>조건</th><th>이름</th><th class="num">n09 대비 (95% CI)</th><th class="num">베이스라인 대비</th><th class="num">thinking</th><th class="num">총비용</th><th class="num">턴</th><th class="num">하락/거짓 성공</th><th class="num">Q4 하한</th><th>판정</th></tr></thead><tbody>';
+    S.rows.slice().sort(function (a, b) { return (a.n09 === null ? -99 : a.n09) - (b.n09 === null ? -99 : b.n09); }).forEach(function (r) {
+      html += '<tr><td class="idc">' + esc(r.id) + "</td><td>" + esc(nm(r.id)) + '</td><td class="num">' + (r.id === "n09_p2_h05" ? "기준" : pct(r.n09) + " (" + num(r.n09lo) + " ~ " + num(r.n09hi) + ")") + '</td><td class="num">' + pct(r.tok) + " (" + num(r.lo) + " ~ " + num(r.hi) + ')</td><td class="num">' + pct(r.th) + '</td><td class="num">' + pct(r.cost) + '</td><td class="num">' + pct(r.turns) + '</td><td class="num">' + r.worse + "/" + r.n + " · " + r.fs + '</td><td class="num">' + r.dq4_lb.toFixed(3) + '</td><td><span class="pill v-' + vkey(r)[0] + '">' + vkey(r)[1] + "</span></td></tr>";
+    });
+    document.getElementById("fpTable").innerHTML = html + "</tbody>";
+  }
+  var tabsEl = document.getElementById("fpTabs"), ORDER = ["s2", "s1"];
+  var LABEL = { s1: ["1단계", "문제 12개 · 40조건"], s2: ["2단계 검증", "새 문제 24개 · 11조건"] };
+  function select(k) { Array.prototype.forEach.call(tabsEl.children, function (b) { b.setAttribute("aria-selected", b.dataset.k === k ? "true" : "false"); }); renderFP(k); }
+  ORDER.forEach(function (k) { var b = el("button", "tab", LABEL[k][0] + '<span class="sub">' + LABEL[k][1] + "</span>"); b.type = "button"; b.setAttribute("role", "tab"); b.dataset.k = k; b.addEventListener("click", function () { select(k); }); tabsEl.appendChild(b); });
+  select("s2");
+
+  /* 품질 표 */
+  var qrows = [];
+  ["s1", "s2"].forEach(function (k) { DATA.stages[k].rows.forEach(function (r) { if (r.worse || r.fs || r.partial || r.dq4_lb <= -0.05) qrows.push([k, r]); }); });
+  var qh = '<thead><tr><th>단계</th><th>조건</th><th class="num">정확도 하락 문제</th><th class="num">거짓 성공</th><th class="num">PARTIAL 보고</th><th class="num">Q4 차이 (하한)</th><th>판정</th></tr></thead><tbody>';
+  qrows.forEach(function (x) { var r = x[1]; qh += "<tr><td>" + (x[0] === "s1" ? "1단계" : "2단계") + '</td><td><span class="mono" style="font-weight:600">' + esc(r.id) + '</span> <span class="muted">' + esc(nm(r.id)) + '</span></td><td class="num ' + (r.worse ? "bad" : "") + '">' + r.worse + "/" + r.n + '</td><td class="num ' + (r.fs ? "bad" : "") + '">' + r.fs + '</td><td class="num">' + r.partial + '</td><td class="num ' + (r.dq4_lb <= -0.05 ? "bad" : "") + '">' + r.dq4.toFixed(3) + " (" + r.dq4_lb.toFixed(3) + ')</td><td><span class="pill v-' + vkey(r)[0] + '">' + vkey(r)[1] + "</span></td></tr>"; });
+  document.getElementById("qualTable").innerHTML = qh + "</tbody>";
+
+  /* 가설 표 */
+  var s1 = {}; DATA.stages.s1.rows.forEach(function (r) { s1[r.id] = r; });
+  var s2 = {}; DATA.stages.s2.rows.forEach(function (r) { s2[r.id] = r; });
+  var hb = document.querySelector("#hypTable tbody"), chips = document.getElementById("hypChips"), filt = "all";
+  var CATS = []; Object.keys(META).forEach(function (id) { var c = META[id].cat; if (c && CATS.indexOf(c) < 0) CATS.push(c); });
+  function renderHyp() {
+    hb.innerHTML = "";
+    Object.keys(META).forEach(function (id) {
+      var m = META[id]; if (!m.cat || (filt !== "all" && m.cat !== filt)) return;
+      var r = s1[id] || s2[id], v = r ? vkey(r) : ["untested", "미실험"];
+      var res = r ? pct(r.n09) + (s1[id] ? "" : " (2단계)") : "—";
+      var tr = el("tr");
+      tr.innerHTML = '<td class="idc">' + esc(id.split("_")[0]) + "</td><td>" + esc(m.name) + '</td><td class="src">' + esc(m.src) + '</td><td class="small">' + esc(m.how) + '</td><td class="num">' + res + '</td><td><span class="pill v-' + v[0] + '">' + v[1] + "</span></td>";
+      hb.appendChild(tr);
+    });
+  }
+  [["all", "전체"]].concat(CATS.map(function (c) { return [c, c]; })).forEach(function (c) {
+    var n = c[0] === "all" ? Object.keys(META).filter(function (id) { return META[id].cat; }).length : Object.keys(META).filter(function (id) { return META[id].cat === c[0]; }).length;
+    var b = el("button", "chip", esc(c[1]) + '<span class="c">' + n + "</span>"); b.type = "button"; b.setAttribute("aria-pressed", c[0] === filt ? "true" : "false");
+    b.addEventListener("click", function () { filt = c[0]; Array.prototype.forEach.call(chips.children, function (x) { x.setAttribute("aria-pressed", "false"); }); b.setAttribute("aria-pressed", "true"); renderHyp(); });
+    chips.appendChild(b);
+  });
+  renderHyp();
+
+  /* 내비 현재 위치 */
+  var links = Array.prototype.slice.call(document.querySelectorAll(".nav a.link"));
+  if ("IntersectionObserver" in window) { var io = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) links.forEach(function (a) { a.classList.toggle("on", a.getAttribute("href") === "#" + en.target.id); }); }); }, { rootMargin: "-30% 0px -60% 0px" }); document.querySelectorAll("section.sec").forEach(function (s) { io.observe(s); }); }
+})();
+</script>

@@ -1,0 +1,41 @@
+date,region,product,qty,unit_price,discount,status
+2025-07-12,부산,mouse,9,230000,,paid
+2025-02-08,제주,webcam,4,45000, ,paid
+2025-08-08,광주,,1,8900, ,paid
+2025-08-05,서울,webcam,8,12000,33,refunded
+2025-07-18,,keyboard,3,12000,,paid
+2025-01-12,광주,keyboard,,12000,33,paid
+2025-04-19,대구,keyboard,5,230000,33,paid
+2025-09-24,서울,monitor,5,12000, ,paid
+2025-10-04,서울,hub ,,45000,33,cancelled
+2025-01-16,부산,hub ,4,8900,5,cancelled
+2025-09-23,부산,webcam,4,12000,,paid
+2025-01-26,부산,,1,8900,10,cancelled
+2025-07-08,부산,monitor,9,230000,5,refunded
+2025-10-20,광주,webcam,,59000,5,refunded
+2025-06-01,,keyboard,7,12000,,cancelled
+2025-12-22,,hub ,6,8900,5,paid
+2025-03-23,제주,keyboard,,59000,33,refunded
+2025-05-26,,,2,230000,5,paid
+2025-09-23,대구,mouse,0,230000,10,refunded
+2025-06-05,광주,hub ,0,59000,10,cancelled
+2025-03-19,,,4,230000,33,refunded
+2025-06-03,,monitor,9,8900,,paid
+2025-06-25,대구,hub ,1,230000,,paid
+,광주,mouse,3,45000,,cancelled
+2025-05-28,서울,keyboard,1,12000,,refunded
+2025-10-11,제주,monitor,0,8900,33,paid
+2025-04-11,부산,keyboard,0,59000, ,paid
+2025-01-03,광주,keyboard,5,8900,10,paid
+2025,부산,keyboard,5,8900,33,paid
+,,,1,230000,10,paid
+2025-09-05,대구,,9,45000,33,refunded
+2025-01-25,대구,hub ,8,59000, ,paid
+2025-05-05,광주,keyboard,8,230000,,paid
+2025-10-05,,monitor,8,8900,,paid
+2025-03-28,광주,webcam,2,230000,33,paid
+2025-06-26,서울,,3,12000,,paid
+2025-11-28,서울,monitor,3,59000,10,paid
+2025,대구,webcam,5,59000,33,paid
+2025-10-26,서울,monitor,4,45000,5,paid
+,서울,mouse,9,59000,,refunded

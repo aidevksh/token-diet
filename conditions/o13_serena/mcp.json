@@ -1,0 +1,23 @@
+{
+ "mcpServers": {
+  "serena": {
+   "command": "/private/tmp/claude-501/-Users-seunghyeokkim-Desktop-token-diet/a603f967-6094-41a6-8062-26c84de0781b/scratchpad/uvenv/bin/uvx",
+   "args": [
+    "--python",
+    "3.11",
+    "--from",
+    "git+https://github.com/oraios/serena",
+    "serena",
+    "start-mcp-server",
+    "--context",
+    "claude-code",
+    "--project",
+    "{WORK}",
+    "--enable-web-dashboard",
+    "False",
+    "--enable-gui-log-window",
+    "False"
+   ]
+  }
+ }
+}

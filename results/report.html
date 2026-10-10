@@ -1,0 +1,1402 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Token Diet 실험 보고서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: 한 열 보고서(최대 68rem) + 상단 고정 섹션 내비. 차트는 HTML 그리드 행으로 그려 화면 폭에 맞춰 재배치한다. 모눈종이 같은 옅은 세로 격자가 실험 노트 느낌을 준다. */
+:root {
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --surface-2: #eef1f6;
+  --ink: #0e1626;
+  --ink-2: #465163;
+  --muted: #6f7b8f;
+  --line: #dde3eb;
+  --line-strong: #b5bfcc;
+  --accent: #1c5cab;
+  --accent-soft: #e4eefb;
+  --band: rgba(14, 22, 38, 0.045);
+  --v-best: #104281;
+  --v-same: #2a78d6;
+  --v-weak: #86b6ef;
+  --v-none: #a3acb9;
+  --v-bad: #e34948;
+  --v-qual: #eb6834;
+  --v-ctrl: #0e1626;
+  --v-base: #8a94a3;
+  --good-ink: #006300;
+  --bad-ink: #b42323;
+  --font-sans: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --step--1: 0.8125rem;
+  --step-0: 0.9375rem;
+  --step-1: 1.125rem;
+  --step-2: 1.5rem;
+  --step-3: 2.125rem;
+  --step-4: 3rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e131b; --surface: #151c26; --surface-2: #1c2531; --ink: #e8edf4; --ink-2: #b2bccb; --muted: #8692a4;
+    --line: #253041; --line-strong: #3b4859; --accent: #86b6ef; --accent-soft: #1a2a40; --band: rgba(232, 237, 244, 0.05);
+    --v-best: #cde2fb; --v-same: #3987e5; --v-weak: #1c5cab; --v-none: #5d6878; --v-bad: #e66767; --v-qual: #d95926;
+    --v-ctrl: #e8edf4; --v-base: #7d8798; --good-ink: #3fbf3f; --bad-ink: #f08a8a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e131b; --surface: #151c26; --surface-2: #1c2531; --ink: #e8edf4; --ink-2: #b2bccb; --muted: #8692a4;
+  --line: #253041; --line-strong: #3b4859; --accent: #86b6ef; --accent-soft: #1a2a40; --band: rgba(232, 237, 244, 0.05);
+  --v-best: #cde2fb; --v-same: #3987e5; --v-weak: #1c5cab; --v-none: #5d6878; --v-bad: #e66767; --v-qual: #d95926;
+  --v-ctrl: #e8edf4; --v-base: #7d8798; --good-ink: #3fbf3f; --bad-ink: #f08a8a;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 4rem; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-sans); font-size: var(--step-0); line-height: 1.7;
+  word-break: keep-all; overflow-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
+}
+table { font: inherit; color: inherit; border-collapse: collapse; }
+h1, h2, h3, h4 { text-wrap: balance; line-height: 1.3; margin: 0; letter-spacing: -0.01em; }
+p { margin: 0; }
+code, .mono { font-family: var(--font-mono); font-size: 0.92em; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+.wrap { max-width: 68rem; margin: 0 auto; padding-inline: 1.25rem; }
+@media (max-width: 480px) { .wrap { padding-inline: 1rem; } }
+
+/* 상단 내비 */
+.nav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(1.2) blur(8px); -webkit-backdrop-filter: saturate(1.2) blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.nav .wrap { display: flex; align-items: center; gap: 1.25rem; min-height: 3.25rem; }
+.nav .brand { font-family: var(--font-mono); font-weight: 600; font-size: var(--step--1); white-space: nowrap; color: var(--ink); text-decoration: none; }
+.nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 0.25rem; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+.nav ul::-webkit-scrollbar { display: none; }
+.nav a.link { display: block; padding: 0.3rem 0.6rem; border-radius: 6px; color: var(--ink-2); text-decoration: none; font-size: var(--step--1); white-space: nowrap; }
+.nav a.link:hover { background: var(--surface-2); color: var(--ink); }
+.nav a.link.on { color: var(--accent); background: var(--accent-soft); }
+
+/* 히어로 */
+.hero { padding-block: 3.5rem 2.5rem; display: grid; gap: 2rem; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.hero h1 { font-size: var(--step-4); font-weight: 700; letter-spacing: -0.03em; }
+.hero h1 .ko { display: block; font-size: var(--step-2); font-weight: 500; letter-spacing: -0.01em; color: var(--ink-2); margin-top: 0.5rem; }
+.hero .lede { font-size: var(--step-1); color: var(--ink-2); max-width: 44rem; }
+.hero .lede strong { color: var(--ink); }
+.meta-line { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; font-family: var(--font-mono); font-size: var(--step--1); color: var(--muted); }
+
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.kpi { padding: 1.1rem 1.25rem; display: grid; gap: 0.2rem; align-content: start; }
+.kpi + .kpi { border-left: 1px solid var(--line); }
+.kpi .label { font-size: var(--step--1); color: var(--ink-2); }
+.kpi .value { font-size: 2.25rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; }
+.kpi .value.accent { color: var(--accent); }
+.kpi .sub { font-size: 0.78rem; color: var(--muted); }
+@media (max-width: 760px) {
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpi:nth-child(3) { border-left: 0; }
+  .kpi:nth-child(n+3) { border-top: 1px solid var(--line); }
+}
+
+.rule-box { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.rule-box header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.6rem 1rem; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.rule-box header .t { font-family: var(--font-mono); font-size: var(--step--1); color: var(--ink-2); }
+.rule-box pre { margin: 0; padding: 1rem 1.1rem; font-family: var(--font-mono); font-size: 0.9rem; line-height: 1.8; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; color: var(--ink); }
+.btn { font: inherit; font-size: var(--step--1); color: var(--ink); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 6px; padding: 0.25rem 0.7rem; cursor: pointer; }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* 섹션 공통 */
+section.sec { padding-block: 3.5rem; border-top: 1px solid var(--line); }
+.sec-head { display: grid; gap: 0.6rem; margin-bottom: 2rem; max-width: 46rem; }
+.sec-head h2 { font-size: var(--step-3); font-weight: 700; letter-spacing: -0.02em; }
+.sec-head p { color: var(--ink-2); }
+h3 { font-size: var(--step-1); font-weight: 600; margin-bottom: 0.75rem; }
+.prose { max-width: 44rem; display: grid; gap: 0.9rem; }
+.muted { color: var(--muted); }
+.small { font-size: var(--step--1); }
+.stack { display: grid; gap: 2.5rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 820px) { .grid-2, .grid-3 { grid-template-columns: minmax(0, 1fr); } }
+.panel { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 1.25rem; min-width: 0; }
+.panel h4 { font-size: var(--step-0); font-weight: 600; margin-bottom: 0.4rem; }
+.panel .k { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); letter-spacing: 0.04em; }
+.figure { display: grid; gap: 0.9rem; min-width: 0; }
+.fig-title { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.25rem 1rem; }
+.fig-title h3 { margin: 0; }
+.fig-note { font-size: var(--step--1); color: var(--muted); }
+
+ul.clean { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+ul.dash { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.35rem; }
+ul.dash li::marker { color: var(--muted); }
+
+/* 판정 표시 */
+.v-best { --c: var(--v-best); } .v-same { --c: var(--v-same); } .v-weak { --c: var(--v-weak); }
+.v-none { --c: var(--v-none); } .v-bad { --c: var(--v-bad); } .v-qual { --c: var(--v-qual); }
+.v-ctrl { --c: var(--v-ctrl); } .v-untested { --c: var(--muted); }
+.pill { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; line-height: 1.5; padding: 0.1rem 0.55rem 0.1rem 0.45rem; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
+.pill::before { content: ""; flex: none; width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--c); }
+.pill.v-ctrl::before { border-radius: 1px; background: transparent; border: 1.5px solid var(--c); transform: rotate(45deg); width: 0.48rem; height: 0.48rem; }
+.pill.v-untested::before { background: transparent; border: 1.5px solid var(--muted); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; font-size: var(--step--1); color: var(--ink-2); }
+.legend .sw { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legend .line-sw { display: inline-block; width: 1.1rem; height: 0; border-top: 1px solid var(--line-strong); }
+.legend .band-sw { display: inline-block; width: 1.1rem; height: 0.8rem; background: var(--band); border: 1px solid var(--line); }
+.legend .p2-sw { display: inline-block; width: 0; height: 0.9rem; border-left: 1.5px solid var(--accent); }
+
+/* 탭 */
+.tabs { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.tab { font: inherit; font-size: var(--step--1); padding: 0.35rem 0.8rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer; }
+.tab:hover { border-color: var(--line-strong); color: var(--ink); }
+.tab[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.tab .sub { font-family: var(--font-mono); font-size: 0.7rem; opacity: 0.75; margin-left: 0.3rem; }
+
+/* 포레스트 플롯(행 그리드) */
+.chart { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 0.75rem 0.75rem 0.5rem; min-width: 0; }
+.fp-row {
+  display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr) 8.5rem 7rem;
+  grid-template-areas: "label track value pill"; align-items: center; column-gap: 0.75rem;
+  min-height: 2rem; border-radius: 6px; padding-inline: 0.4rem;
+}
+.fp-row.data { cursor: default; }
+.fp-row.data:hover, .fp-row.data:focus-visible { background: var(--surface-2); }
+.fp-row.data:focus-visible { outline-offset: -2px; }
+.fp-label { grid-area: label; min-width: 0; display: flex; align-items: baseline; gap: 0.5rem; line-height: 1.35; }
+.fp-label .id { font-family: var(--font-mono); font-weight: 600; font-size: 0.8rem; white-space: nowrap; }
+.fp-label .nm { font-size: var(--step--1); color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.fp-track { grid-area: track; position: relative; height: 2rem; min-width: 0; }
+.fp-value { grid-area: value; font-family: var(--font-mono); font-size: 0.78rem; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; color: var(--ink); }
+.fp-value .ci { color: var(--muted); }
+.fp-pill { grid-area: pill; justify-self: start; }
+.fp-head .fp-track, .fp-axis .fp-track { height: 1.4rem; }
+.gl { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px solid var(--line); }
+.gl.zero { border-left-color: var(--line-strong); }
+.gl.p2 { border-left: 1.5px solid var(--accent); opacity: 0.55; }
+.bandz { position: absolute; top: 0; bottom: 0; background: var(--band); }
+.whisk { position: absolute; top: 50%; height: 2px; margin-top: -1px; background: var(--c); border-radius: 1px; }
+.dot { position: absolute; top: 50%; width: 11px; height: 11px; border-radius: 50%; transform: translate(-50%, -50%); background: var(--c); box-shadow: 0 0 0 2px var(--surface); }
+.dot.v-ctrl { width: 9px; height: 9px; border-radius: 1px; background: var(--surface); border: 2px solid var(--c); transform: translate(-50%, -50%) rotate(45deg); box-shadow: none; }
+.dot.hollow { background: var(--surface); border: 2px solid var(--c); box-shadow: none; width: 10px; height: 10px; }
+.na { position: absolute; inset: 0; display: flex; align-items: center; font-size: var(--step--1); color: var(--muted); padding-left: 0.5rem; }
+.tick { position: absolute; top: 0.15rem; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tick.first { transform: none; } .tick.last { transform: translateX(-100%); }
+.toplab { position: absolute; bottom: 0.1rem; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent); white-space: nowrap; }
+.axis-cap { font-size: 0.75rem; color: var(--muted); padding: 0.25rem 0.4rem 0; }
+@media (max-width: 680px) {
+  .fp-row { grid-template-columns: minmax(0, 1fr) 7.6rem; grid-template-areas: "label pill" "track value"; row-gap: 0; padding-block: 0.25rem; }
+  .fp-head, .fp-axis { padding-block: 0; }
+  .fp-head .fp-label, .fp-axis .fp-label, .fp-head .fp-pill, .fp-axis .fp-pill { display: none; }
+  .fp-head, .fp-axis { grid-template-areas: "track value"; }
+  .fp-pill { justify-self: end; }
+  .fp-track { height: 1.6rem; }
+}
+
+/* 덤벨, 문제별 차트 */
+.db-row { display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr) 9rem; grid-template-areas: "label track value"; align-items: center; column-gap: 0.75rem; min-height: 2rem; padding-inline: 0.4rem; border-radius: 6px; }
+.db-row.data:hover, .db-row.data:focus-visible { background: var(--surface-2); }
+.db-row .fp-value { grid-area: value; }
+.conn { position: absolute; top: 50%; height: 2px; margin-top: -1px; background: var(--line-strong); }
+@media (max-width: 680px) {
+  .db-row { grid-template-columns: minmax(0, 1fr) 7.6rem; grid-template-areas: "label value" "track track"; padding-block: 0.25rem; }
+  .db-row.fp-head, .db-row.fp-axis { grid-template-areas: "track track"; }
+  .db-row.fp-head .fp-label, .db-row.fp-axis .fp-label, .db-row.fp-head .fp-value, .db-row.fp-axis .fp-value { display: none; }
+}
+.in-row { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); align-items: center; column-gap: 0.75rem; min-height: 1.45rem; padding-inline: 0.4rem; border-radius: 4px; }
+.in-row.data:hover, .in-row.data:focus-visible { background: var(--surface-2); }
+.in-row .fp-track { height: 1.45rem; }
+.in-row .lab { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-2); white-space: nowrap; }
+.in-group { font-size: 0.75rem; font-weight: 600; color: var(--ink-2); padding: 0.6rem 0.4rem 0.15rem; }
+.in-row .dot { width: 9px; height: 9px; }
+.in-row .dot.v-ctrl { width: 8px; height: 8px; }
+
+/* 툴팁 */
+.tip { position: fixed; z-index: 50; pointer-events: none; max-width: 18rem; background: var(--ink); color: var(--bg); border-radius: 8px; padding: 0.55rem 0.75rem; font-size: 0.78rem; line-height: 1.55; box-shadow: 0 6px 24px rgba(0,0,0,0.18); }
+.tip b { font-family: var(--font-mono); }
+.tip .r { display: flex; justify-content: space-between; gap: 1rem; font-variant-numeric: tabular-nums; }
+.tip .r span:last-child { font-family: var(--font-mono); }
+.tip .n { margin-top: 0.3rem; opacity: 0.85; }
+
+/* 표 */
+details.tv { font-size: var(--step--1); }
+details.tv summary { cursor: pointer; color: var(--ink-2); width: fit-content; }
+details.tv summary:hover { color: var(--accent); }
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); margin-top: 0.6rem; }
+table.t { width: 100%; font-size: var(--step--1); }
+table.t th, table.t td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.t thead th { font-weight: 600; color: var(--ink-2); background: var(--surface-2); white-space: nowrap; position: sticky; top: 0; }
+table.t tbody tr:last-child td { border-bottom: 0; }
+table.t td.num, table.t th.num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.t td.idc { font-family: var(--font-mono); font-weight: 600; white-space: nowrap; }
+table.t td.src { color: var(--muted); }
+table.t td.nowrap { white-space: nowrap; }
+.good { color: var(--good-ink); } .bad { color: var(--bad-ink); }
+
+/* 막대 목록 (출력 구성) */
+.bars { display: grid; gap: 0.55rem; }
+.bar-row { display: grid; grid-template-columns: minmax(0, 13rem) minmax(0, 1fr) 7.5rem; align-items: center; gap: 0.75rem; }
+.bar-row .lab { font-size: var(--step--1); color: var(--ink-2); line-height: 1.35; }
+.bar-track { height: 14px; position: relative; }
+.bar { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 4px 4px 0; background: var(--c); }
+.bar-row .val { font-family: var(--font-mono); font-size: 0.78rem; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.c-tool { --c: var(--v-same); } .c-text { --c: var(--v-qual); }
+@media (max-width: 560px) { .bar-row { grid-template-columns: minmax(0, 1fr) 6.5rem; } .bar-row .bar-track { grid-column: 1 / -1; grid-row: 2; } }
+
+/* 과정 */
+.flow { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.flow li { list-style: none; padding: 1rem 0.9rem 1.1rem; display: grid; gap: 0.35rem; align-content: start; position: relative; min-width: 0; }
+.flow li + li { border-left: 1px solid var(--line); }
+.flow .n { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); font-weight: 600; }
+.flow h4 { font-size: var(--step-0); font-weight: 600; }
+.flow p { font-size: 0.8rem; color: var(--ink-2); line-height: 1.55; }
+.flow code { font-size: 0.74rem; overflow-wrap: anywhere; }
+@media (max-width: 980px) { .flow { grid-template-columns: repeat(3, minmax(0, 1fr)); } .flow li:nth-child(4) { border-left: 0; } .flow li:nth-child(n+4) { border-top: 1px solid var(--line); } }
+@media (max-width: 560px) { .flow { grid-template-columns: minmax(0, 1fr); } .flow li + li { border-left: 0; border-top: 1px solid var(--line); } }
+
+.rounds { display: grid; gap: 0; border-left: 2px solid var(--line); margin-left: 0.4rem; }
+.round { position: relative; padding: 0 0 1.75rem 1.5rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 15rem); gap: 0.5rem 2rem; }
+.round:last-child { padding-bottom: 0; }
+.round::before { content: ""; position: absolute; left: -7px; top: 0.35rem; width: 12px; height: 12px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); }
+.round h4 { font-size: var(--step-1); font-weight: 600; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.6rem; }
+.round h4 .tag { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); font-weight: 500; }
+.round .body { display: grid; gap: 0.5rem; min-width: 0; }
+.round .body p { color: var(--ink-2); font-size: var(--step--1); }
+.round .find { font-size: var(--step--1); padding: 0.5rem 0.75rem; background: var(--surface-2); border-radius: 6px; }
+.round .find b { font-weight: 600; }
+.round .nums { display: grid; gap: 0.5rem; align-content: start; font-size: var(--step--1); }
+.mini { display: grid; grid-template-columns: 3.5rem minmax(0, 1fr) 4.5rem; align-items: center; gap: 0.5rem; }
+.mini .k { color: var(--muted); font-size: 0.75rem; }
+.mini .bt { height: 8px; position: relative; background: var(--surface-2); border-radius: 4px; }
+.mini .bf { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 4px; }
+.mini .v { font-family: var(--font-mono); font-size: 0.75rem; text-align: right; font-variant-numeric: tabular-nums; }
+@media (max-width: 700px) { .round { grid-template-columns: minmax(0, 1fr); } }
+
+/* 필터 칩 */
+.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.chip { font: inherit; font-size: var(--step--1); padding: 0.25rem 0.75rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer; }
+.chip:hover { border-color: var(--line-strong); }
+.chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.chip .c { font-family: var(--font-mono); font-size: 0.7rem; margin-left: 0.25rem; opacity: 0.8; }
+table.hyp td:nth-child(2) { min-width: 9rem; }
+table.hyp td:nth-child(3) { min-width: 12rem; }
+table.hyp td:nth-child(5) { min-width: 11rem; }
+tr.grp td { background: var(--surface-2); font-weight: 600; font-size: 0.78rem; color: var(--ink-2); padding-block: 0.35rem; }
+
+/* 유의미한 가설 카드 */
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 760px) { .cards { grid-template-columns: minmax(0, 1fr); } }
+.card { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 1.2rem 1.25rem; display: grid; gap: 0.7rem; align-content: start; min-width: 0; }
+.card.lead { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.card .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; }
+.card .top .id { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+.card h4 { font-size: var(--step-1); font-weight: 600; }
+.card .big { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; align-items: baseline; }
+.card .big .n { font-size: 1.9rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
+.card .big .u { font-size: var(--step--1); color: var(--muted); }
+.card .q { font-family: var(--font-mono); font-size: 0.8rem; background: var(--surface-2); border-radius: 6px; padding: 0.55rem 0.7rem; line-height: 1.65; color: var(--ink); white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; }
+.card p { font-size: var(--step--1); color: var(--ink-2); }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 820px) { .facts { grid-template-columns: minmax(0, 1fr); } }
+.fact { border-top: 2px solid var(--ink); padding-top: 0.75rem; display: grid; gap: 0.4rem; align-content: start; }
+.fact h4 { font-size: var(--step-0); font-weight: 600; }
+.fact p { font-size: var(--step--1); color: var(--ink-2); }
+.fact .cmp { display: grid; gap: 0.3rem; margin-top: 0.25rem; }
+.fact .cmp div { display: flex; justify-content: space-between; gap: 0.75rem; font-size: var(--step--1); border-bottom: 1px dotted var(--line); padding-bottom: 0.2rem; }
+.fact .cmp span:last-child { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* 결론, 한계 */
+ol.concl { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: c; }
+ol.concl li { counter-increment: c; display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); gap: 0.25rem 1rem; padding-block: 1.1rem; border-bottom: 1px solid var(--line); }
+ol.concl li:first-child { padding-top: 0; }
+ol.concl li::before { content: counter(c, decimal-leading-zero); font-family: var(--font-mono); font-size: var(--step--1); color: var(--accent); font-weight: 600; padding-top: 0.15rem; }
+ol.concl h4 { font-size: var(--step-1); font-weight: 600; margin-bottom: 0.3rem; }
+ol.concl p { color: var(--ink-2); max-width: 46rem; }
+.lims { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.lim { padding: 1.1rem 1.25rem; display: grid; gap: 0.35rem; align-content: start; border-bottom: 1px solid var(--line); min-width: 0; }
+.lim:nth-child(odd) { border-right: 1px solid var(--line); }
+.lim:nth-last-child(-n+2) { border-bottom: 0; }
+.lim h4 { font-size: var(--step-0); font-weight: 600; }
+.lim p { font-size: var(--step--1); color: var(--ink-2); }
+.lim .fix { font-size: 0.78rem; color: var(--accent); }
+@media (max-width: 760px) { .lims { grid-template-columns: minmax(0, 1fr); } .lim:nth-child(odd) { border-right: 0; } .lim:nth-last-child(2) { border-bottom: 1px solid var(--line); } }
+
+/* 2차 실험 계획 */
+.q-block { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.q-block > header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--line); display: grid; gap: 0.35rem; }
+.q-block > header .tr { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.q-block > header .tag { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; color: var(--accent); }
+.q-block > header .prio { font-size: 0.72rem; padding: 0.05rem 0.5rem; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--ink-2); }
+.q-block > header h4 { font-size: var(--step-1); font-weight: 600; }
+.q-block > header p { color: var(--ink-2); font-size: var(--step--1); }
+.q-body { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.q-body > div { padding: 1rem 1.25rem; min-width: 0; display: grid; gap: 0.4rem; align-content: start; }
+.q-body > div + div { border-left: 1px solid var(--line); }
+.q-body .k { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.04em; }
+.q-body ul { margin: 0; padding-left: 1rem; display: grid; gap: 0.3rem; font-size: var(--step--1); color: var(--ink-2); }
+@media (max-width: 860px) { .q-body { grid-template-columns: minmax(0, 1fr); } .q-body > div + div { border-left: 0; border-top: 1px solid var(--line); } }
+.cond-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.cc { font-family: var(--font-mono); font-size: 0.72rem; padding: 0.1rem 0.45rem; border-radius: 4px; background: var(--surface-2); color: var(--ink); white-space: nowrap; }
+.cc.new { background: var(--accent-soft); color: var(--accent); }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.steps li { display: grid; grid-template-columns: 2.25rem minmax(0, 1fr); gap: 1rem; padding-block: 0.9rem; border-bottom: 1px solid var(--line); }
+.steps li:last-child { border-bottom: 0; }
+.steps .sn { width: 1.9rem; height: 1.9rem; border-radius: 50%; border: 1.5px solid var(--accent); color: var(--accent); display: grid; place-items: center; font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600; }
+.steps h4 { font-size: var(--step-0); font-weight: 600; }
+.steps p, .steps ul { font-size: var(--step--1); color: var(--ink-2); }
+.criteria { display: grid; gap: 0; }
+.crit { display: grid; grid-template-columns: 8rem minmax(0, 1fr); gap: 1rem; padding: 0.6rem 0; border-bottom: 1px solid var(--line); font-size: var(--step--1); }
+.crit:last-child { border-bottom: 0; }
+.crit .k { color: var(--muted); }
+@media (max-width: 520px) { .crit { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; } }
+.decide { display: grid; gap: 0.6rem; }
+.dec { display: grid; grid-template-columns: minmax(0, 1fr) 1.5rem minmax(0, 1.2fr); gap: 0.75rem; align-items: center; padding: 0.75rem 1rem; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: var(--step--1); }
+.dec .if { color: var(--ink); }
+.dec .arr { color: var(--muted); text-align: center; font-family: var(--font-mono); }
+.dec .then { color: var(--ink-2); }
+@media (max-width: 640px) { .dec { grid-template-columns: minmax(0, 1fr); gap: 0.25rem; } .dec .arr { text-align: left; } }
+
+footer.foot { padding-block: 2.5rem 3.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: var(--step--1); }
+footer.foot code { font-size: 0.78rem; }
+</style>
+
+<nav class="nav" aria-label="섹션">
+  <div class="wrap">
+    <a class="brand" href="#top">token-diet</a>
+    <ul>
+      <li><a class="link" href="#goal">목표</a></li>
+      <li><a class="link" href="#process">과정</a></li>
+      <li><a class="link" href="#hyps">가설 목록</a></li>
+      <li><a class="link" href="#results">실험 결과</a></li>
+      <li><a class="link" href="#sig">유의미한 가설</a></li>
+      <li><a class="link" href="#concl">결론</a></li>
+      <li><a class="link" href="#limits">아쉬운 점</a></li>
+      <li><a class="link" href="#next">2차 실험</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap">
+    <header class="hero">
+      <div class="eyebrow">Token Diet · 출력 토큰 절감 실험 · 1차 실험 보고서</div>
+      <h1>CLAUDE.md 세 줄로 출력 토큰 40% 감소
+        <span class="ko">가설 55개, 에이전트 실행 1,380회. 측정한 품질 지표는 그대로였다.</span>
+      </h1>
+      <p class="lede">Claude Code가 일할 때 내는 출력 토큰(응답, thinking, 도구 호출 인자)을 <strong>품질을 해치지 않고</strong> 얼마나 줄일 수 있는지 실험했다. 결과적으로 남은 것은 짧은 지시 세 줄이다. 간결하게 답하고, 첫 해법을 채택하고, 검증은 마지막에 한 번만 한다.</p>
+      <div class="meta-line">
+        <span>2026-10-09 ~ 10-10</span>
+        <span>claude-opus-5-5 · effort high 고정</span>
+        <span>라운드 R1~R4 (CLAUDE.md의 1~4차)</span>
+      </div>
+
+      <div class="kpis" role="list">
+        <div class="kpi" role="listitem">
+          <span class="label">출력 토큰</span>
+          <span class="value accent">−40%</span>
+          <span class="sub">n09, 새 문제 24개 · 95% CI −45 ~ −34%</span>
+        </div>
+        <div class="kpi" role="listitem">
+          <span class="label">thinking 토큰</span>
+          <span class="value">−51%</span>
+          <span class="sub">같은 조건, 베이스라인 대비</span>
+        </div>
+        <div class="kpi" role="listitem">
+          <span class="label">품질이 떨어진 문제</span>
+          <span class="value">0 / 24</span>
+          <span class="sub">정확도 · 거짓 성공 · 변경 최소성 · 보고 충분성</span>
+        </div>
+        <div class="kpi" role="listitem">
+          <span class="label">에이전트 실행</span>
+          <span class="value">1,380회</span>
+          <span class="sub">정가 $279.51 (Q4 채점·파일럿 제외)</span>
+        </div>
+      </div>
+
+      <div class="rule-box">
+        <header>
+          <span class="t">최종 권장 설정 · conditions/n09_p2_h05/CLAUDE.md</span>
+          <button class="btn" type="button" id="copyRule">복사</button>
+        </header>
+        <pre id="ruleText">- 간결하게 답하고, 불필요한 출력을 줄인다.
+- 조건을 만족하는 첫 해법을 채택한다. 같은 결론을 다시 검산하지 않고, 방금 쓴 파일을 다시 열어 확인하지 않는다.
+- 검증 실행은 모든 수정을 마친 뒤 한 번만 한다.</pre>
+      </div>
+    </header>
+
+    <!-- 목표 -->
+    <section class="sec" id="goal">
+      <div class="sec-head">
+        <span class="eyebrow">실험 목표</span>
+        <h2>품질은 유지하고 출력 토큰만 줄인다</h2>
+        <p>품질 제약이 없으면 "아무것도 하지 않기"가 최고 점수가 된다. 그래서 모든 판정은 출력 감소와 품질 유지를 함께 만족해야 통과한다.</p>
+      </div>
+
+      <div class="stack">
+        <div class="grid-3">
+          <div class="panel">
+            <span class="k">도구 호출 인자</span>
+            <h4>Write, Edit, Bash에 넘기는 내용</h4>
+            <p class="small muted">tool_use 블록으로 측정한다. 눈에 보이는 출력의 약 95%를 차지한다.</p>
+          </div>
+          <div class="panel">
+            <span class="k">thinking</span>
+            <h4>내부 추론</h4>
+            <p class="small muted">로그에 본문이 남지 않는다. 블록 834개 중 저장된 본문은 996자였지만 토큰은 그대로 과금된다. <code>thinkingTokens</code>로 잰다.</p>
+          </div>
+          <div class="panel">
+            <span class="k">응답 텍스트</span>
+            <h4>사용자에게 보이는 답변</h4>
+            <p class="small muted">텍스트 블록으로 측정한다. 실제로는 전체의 약 5%뿐이라, 문체를 압축해도 효과가 작다.</p>
+          </div>
+        </div>
+
+        <div class="figure">
+          <div class="fig-title">
+            <h3>사전 관찰: 눈에 보이는 출력은 대부분 파일 쓰기다</h3>
+            <span class="fig-note">기존 실사용 로그 40개 세션, 문자 수 기준 (thinking 제외)</span>
+          </div>
+          <div class="chart" style="padding:1rem 1rem 0.9rem">
+            <div class="legend" style="margin-bottom:0.8rem">
+              <span class="sw"><span class="pill c-tool" style="--c:var(--v-same);padding:0;background:none"></span>도구 호출 인자</span>
+              <span class="sw"><span class="pill" style="--c:var(--v-qual);padding:0;background:none"></span>응답 텍스트</span>
+            </div>
+            <div class="bars" id="compBars"></div>
+          </div>
+          <p class="fig-note">Bash heredoc(<code>cat &gt; file &lt;&lt;EOF</code>)과 Write를 더하면 보이는 출력의 약 60%가 파일 전체 쓰기다. 그래서 처음에는 도구 호출을 겨냥한 가설의 우선순위를 높게 잡았다. 결과는 반대였다(아래 결과 참고).</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <span class="k">지표</span>
+            <h4 style="margin-bottom:0.6rem">무엇을 재는가</h4>
+            <ul class="dash small">
+              <li><b>주 지표</b>: 출력 토큰. <code>modelUsage["claude-opus-5-5"].outputTokens</code></li>
+              <li><b>효과</b>: 문제별 (조건 / 베이스라인) 비율의 기하평균. 큰 태스크가 결과를 좌우하지 않게 한다. 95% CI는 부트스트랩.</li>
+              <li><b>품질</b>: R1·R2는 숨은 테스트 통과율. R3부터 Q1 정확도, Q3 거짓 성공, Q4 보고 충분성, Q5 변경 최소성.</li>
+              <li><b>보조</b>: 총비용, 턴 수, 소요 시간, 5시간·주간 한도 사용률.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <span class="k">판정 (scripts/analyze.py에 사전 고정)</span>
+            <h4 style="margin-bottom:0.6rem">채택 조건</h4>
+            <ul class="dash small">
+              <li>베이스라인 대비 10% 이상 감소, CI 상한 &lt; 0%</li>
+              <li>위약(P1) 대비 CI 상한 &lt; 0%</li>
+              <li>품질 유지: 비열등성 검정, 허용 폭 δ = 0.05 (R3부터)</li>
+              <li>거짓 성공은 거부권 지표: +2%p 이상이면 탈락</li>
+              <li>1단계(문제 12개) 선별 후 2단계(새 문제 24개)를 통과해야 채택</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 과정 -->
+    <section class="sec" id="process">
+      <div class="sec-head">
+        <span class="eyebrow">과정</span>
+        <h2>네 라운드 동안 측정 방법을 계속 고쳤다</h2>
+        <p>라운드마다 앞 라운드의 약점을 고쳤다. R1에는 위약이 없었고, R2에서는 품질이 모두 만점이라 품질 하락을 감지할 수 없었다. R3부터 품질 판정을 새로 설계했다.</p>
+      </div>
+
+      <div class="stack">
+        <div class="figure">
+          <h3>한 번의 실행이 거치는 과정</h3>
+          <ol class="flow" style="margin:0;padding:0">
+            <li><span class="n">1</span><h4>조건 준비</h4><p><code>conditions/&lt;id&gt;/</code>의 CLAUDE.md를 실행 폴더에 복사하고, hook은 <code>--settings</code>로 넘긴다.</p></li>
+            <li><span class="n">2</span><h4>격리 실행</h4><p>실험 폴더 밖 새 세션에서 깨끗한 픽스처 복사본으로 실행한다. 사용자 설정은 빼고, 실행 순서는 <code>--seed</code>로 섞는다.</p></li>
+            <li><span class="n">3</span><h4>토큰 측정</h4><p>stream-json 결과의 <code>outputTokens</code>와 <code>thinkingTokens</code>를 읽는다. 보이는 출력은 둘의 차이다.</p></li>
+            <li><span class="n">4</span><h4>자동 채점</h4><p>숨은 테스트와 속성 테스트(Q1), 보고와 실제 결과 대조(Q3), 미끼 코드 15개로 변경 최소성(Q5)을 잰다.</p></li>
+            <li><span class="n">5</span><h4>보고 충분성</h4><p>조건 정보를 받지 않은 세션이 최종 보고만 읽고 사실 질문에 답한다. 답을 정답과 대조한다(Q4).</p></li>
+            <li><span class="n">6</span><h4>분석</h4><p>같은 문제끼리 짝지어 비율의 기하평균을 내고, 부트스트랩 CI와 비열등성 검정으로 판정한다.</p></li>
+          </ol>
+        </div>
+
+        <div class="figure">
+          <h3>라운드별 진행</h3>
+          <div class="rounds">
+            <div class="round">
+              <div class="body">
+                <h4>R1 · 첫 실험 <span class="tag">1차 · 10-09</span></h4>
+                <p>리서치 에이전트 3개(CS 압축, 비CS 학문, LLM 연구·도구)가 낸 가설 45개를 35개로 정리하고, 그중 10개(H01~H10)를 실험했다. 고정 태스크 7개(수학, 버그 수정, 기능 추가, 리팩터, 퍼즐, 데이터 분석), 반복 3회.</p>
+                <div class="find"><b>발견</b>: H10 바이오피드백 −25%, H04·H05·H07 −17~18%. 하지만 위약 대조군이 없어서, 이 "채택"은 R2에서 모두 "위약과 구분 안 됨"으로 다시 판정했다.</div>
+              </div>
+              <div class="nums"><div class="mini"><span class="k">실행</span><span class="bt"><span class="bf" style="width:60%"></span></span><span class="v">252회</span></div><div class="mini"><span class="k">비용</span><span class="bt"><span class="bf" style="width:41.9%"></span></span><span class="v">$36.93</span></div><div class="mini"><span class="k">조건</span><span class="bt"><span class="bf" style="width:50%"></span></span><span class="v">11+1</span></div></div>
+            </div>
+            <div class="round">
+              <div class="body">
+                <h4>R2 · 대조군과 분해 조건 <span class="tag">2차 · 10-09</span></h4>
+                <p>위약 P1(무관한 CLAUDE.md)과 간결 지시 P2(한 줄)를 추가했다. 묶음 가설 H10은 hook만 넣은 조건과 문구만 넣은 조건으로 나눴다. 큰 파일 태스크를 추가하고 반복을 4회로 늘렸다.</p>
+                <div class="find"><b>발견</b>: "간결하게 답하라" 한 줄(P2)이 −25%였다. 이보다 확실히 나은 가설은 없었다. H10의 효과는 hook이 아니라 문구에서 나왔다.</div>
+              </div>
+              <div class="nums"><div class="mini"><span class="k">실행</span><span class="bt"><span class="bf" style="width:100%"></span></span><span class="v">420회</span></div><div class="mini"><span class="k">비용</span><span class="bt"><span class="bf" style="width:83.9%"></span></span><span class="v">$73.93</span></div><div class="mini"><span class="k">조건</span><span class="bt"><span class="bf" style="width:68%"></span></span><span class="v">15</span></div></div>
+            </div>
+            <div class="round">
+              <div class="body">
+                <h4>R3 · 품질 판정 재설계 <span class="tag">3차 · 10-09</span></h4>
+                <p>문제 생성기 3개(규칙 수정, 매출 분석, 배송비 명세 구현)로 같은 문제를 모든 조건이 푸는 짝 비교로 바꿨다. 난이도 보정 파일럿 27회도 모두 만점이어서, 정확도 외에 거짓 성공·보고 충분성·변경 최소성을 추가했다. 1단계 문제 12개(17조건)로 선별하고 2단계 새 문제 24개(6조건)로 다시 확인했다.</p>
+                <div class="find"><b>발견</b>: P2 + H05 조합(n09)이 새 문제에서 −40%, P2보다 17% 더 줄였다. 보고 형식만 바꾸는 가설은 거의 줄이지 못했다.</div>
+              </div>
+              <div class="nums"><div class="mini"><span class="k">실행</span><span class="bt"><span class="bf" style="width:82.9%"></span></span><span class="v">348회</span></div><div class="mini"><span class="k">비용</span><span class="bt"><span class="bf" style="width:91.4%"></span></span><span class="v">$80.53</span></div><div class="mini"><span class="k">조건</span><span class="bt"><span class="bf" style="width:77%"></span></span><span class="v">17</span></div></div>
+            </div>
+            <div class="round">
+              <div class="body">
+                <h4>R4 · 추가 가설 20개 <span class="tag">4차 · 10-09</span></h4>
+                <p>처음 35개 중 남은 것 7개와, 결과에서 나온 질문(문구 길이, 언어, 위치, 강도, 분해)으로 만든 13개를 실험했다. 1단계 22조건 × 12문제, 2단계 4조건 × 새 24문제. 2단계는 R3 2단계 결과와 짝지어 분석했다.</p>
+                <div class="find"><b>발견</b>: 간결 지시는 문구 길이와 언어에 둔감했다. 도구 사용 방식을 지시한 가설은 이번에도 모두 효과가 없었다. 강조형 + H05(r21)는 보고를 빈약하게 만들었다.</div>
+              </div>
+              <div class="nums"><div class="mini"><span class="k">실행</span><span class="bt"><span class="bf" style="width:85.7%"></span></span><span class="v">360회</span></div><div class="mini"><span class="k">비용</span><span class="bt"><span class="bf" style="width:100%"></span></span><span class="v">$88.12</span></div><div class="mini"><span class="k">조건</span><span class="bt"><span class="bf" style="width:100%"></span></span><span class="v">22</span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <span class="k">설계 안전장치</span>
+            <h4 style="margin-bottom:0.6rem">결론을 바꾼 장치들</h4>
+            <ul class="dash small">
+              <li><b>대조군 두 개</b>: P1 위약(무관한 프로젝트 배경 3줄), P2 간결 한 줄. 가설은 위약보다 확실히 나아야 한다.</li>
+              <li><b>분해 조건</b>: 묶은 가설은 요소별로 나눈다. H10 → hook만 / 문구만, H05 → 첫 해법만 / 재확인 금지만.</li>
+              <li><b>2단계 검증</b>: 12문제 선별 뒤 새 24문제로 다시 잰다. 1단계 우위가 사라지는 경우가 있었다(r11).</li>
+              <li><b>사전 고정</b>: 판정 기준은 실행 전에 코드로 고정하고, 결과를 본 뒤 바꾸지 않는다.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <span class="k">운영 규칙</span>
+            <h4 style="margin-bottom:0.6rem">재현성과 비용 관리</h4>
+            <ul class="dash small">
+              <li>모든 세션 <code>--model claude-opus-5-5 --effort high</code>. 별칭과 fallback은 쓰지 않는다. 다른 모델이 기록되면 버린다.</li>
+              <li>베이스라인은 같은 날 함께 실행한다. 모델 업데이트 영향을 막기 위해서다.</li>
+              <li>5시간 한도 사용률이 85%를 넘으면 새 실행을 시작하지 않는다. 다시 실행하면 이어서 돈다.</li>
+              <li>라운드마다 결과 파일과 실행 폴더를 분리한다(<code>TD_OUT</code>, <code>TD_ROUND</code>).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 가설 목록 -->
+    <section class="sec" id="hyps">
+      <div class="sec-head">
+        <span class="eyebrow">가설 목록</span>
+        <h2>리서치 가설 35개와 결과에서 파생된 20개</h2>
+        <p>데이터 압축(LZ77, Huffman, 델타 인코딩), 인지과학(만족화, 예측 부호화), 언어학(Grice 격률, 전보체), LLM 연구(Chain of Draft, TALE)에서 가설을 가져왔다. 각 가설의 판정은 그 가설을 잰 가장 엄격한 라운드 기준이다.</p>
+      </div>
+      <div class="figure">
+        <div class="chips" id="hypChips" role="group" aria-label="분류 필터"></div>
+        <div class="tbl-wrap" style="margin-top:0">
+          <table class="t hyp" id="hypTable">
+            <thead><tr><th>#</th><th>가설</th><th>출처와 메커니즘</th><th>실험 조건</th><th>결과 (출력 토큰)</th><th>판정</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="fig-note">결과의 %는 베이스라인 대비 출력 토큰 변화다. R1·R2는 고정 태스크 7개, R3·R4 1단계는 생성기 문제 12개, "2단계"는 새 문제 24개 기준이다.</p>
+      </div>
+    </section>
+
+    <!-- 실험 결과 -->
+    <section class="sec" id="results">
+      <div class="sec-head">
+        <span class="eyebrow">실험 결과</span>
+        <h2>대부분은 "간결하게" 한 줄을 넘지 못했다</h2>
+        <p>점은 베이스라인 대비 출력 토큰 변화의 추정치, 선은 95% 신뢰구간이다. 회색 띠(0 ~ −10%)는 채택 하한에 못 미치는 구간이고, 파란 세로선은 그 라운드의 P2 위치다. 행에 마우스를 올리거나 Tab으로 이동하면 thinking과 P2 대비 수치가 보인다.</p>
+      </div>
+
+      <div class="stack">
+        <div class="figure">
+          <div class="tabs" role="tablist" id="fpTabs" aria-label="라운드"></div>
+          <p class="fig-note" id="fpMeta"></p>
+          <div class="legend" id="fpLegend"></div>
+          <div class="chart" id="fpChart" role="tabpanel"></div>
+          <details class="tv"><summary>표로 보기</summary><div class="tbl-wrap"><table class="t" id="fpTable"></table></div></details>
+        </div>
+
+        <div class="figure">
+          <div class="fig-title">
+            <h3>문제별로 보면: n09는 24개 문제 모두에서 베이스라인보다 적었다</h3>
+            <span class="fig-note">R3 2단계, 새 문제 24개, 조건 × 문제당 1회 실행</span>
+          </div>
+          <div class="legend">
+            <span class="sw"><span class="pill" style="--c:var(--v-base);padding:0;background:none"></span>베이스라인 (빈 원)</span>
+            <span class="sw"><span class="pill v-ctrl" style="padding:0;background:none"></span>P2 간결 한 줄</span>
+            <span class="sw"><span class="pill v-best" style="padding:0;background:none"></span>n09 P2 + H05</span>
+          </div>
+          <div class="chart" id="instChart"></div>
+          <p class="fig-note">P2는 24개 중 4개 문제에서 베이스라인보다 많았다(rules s6, s7, s8, s11). n09는 24개 모두 적었고, 21개 문제에서 P2보다도 적었다.</p>
+        </div>
+
+        <div class="figure">
+          <div class="fig-title">
+            <h3>품질: 2단계에서 측정한 차원 모두 하락 없음, r21만 예외</h3>
+            <span class="fig-note">새 문제 24개 · 허용 폭 δ = 0.05 · 단측 95% 하한</span>
+          </div>
+          <div class="tbl-wrap" style="margin-top:0">
+            <table class="t" id="qualTable">
+              <thead><tr><th>조건</th><th class="num">Q1 정확도 하락</th><th class="num">Q3 거짓 성공</th><th class="num">Q5 변경 최소성</th><th class="num">Q4 보고 충분성 차이 (하한)</th><th>품질 판정</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <p class="fig-note">Q4는 rules·sales 생성기에서만 채점했다(tariff는 정답 대조가 어려워 제외). r21의 Q4 하락은 24개 중 1개 보고가 고친 내용을 전혀 담지 않은 데서 나왔다. 정확도(Q1)로는 잡히지 않는 실패였다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 유의미한 가설 -->
+    <section class="sec" id="sig">
+      <div class="sec-head">
+        <span class="eyebrow">유의미한 가설</span>
+        <h2>2단계를 통과해 P2보다 나았던 것은 H05 계열뿐이다</h2>
+        <p>새 문제 24개에서 P2보다 확실히 더 줄이면서 품질을 유지한 조건은 셋이다. 셋 다 H05(만족화·재검증 금지)를 포함한다.</p>
+      </div>
+
+      <div class="stack">
+        <div class="cards">
+          <article class="card lead">
+            <div class="top"><span class="id">n09_p2_h05</span><span class="pill v-best">P2보다 우수 · 최종 권장</span></div>
+            <h4>P2 + H05: 간결 + 첫 해법 채택 + 검증 1회</h4>
+            <div class="big"><span><span class="n">−40%</span> <span class="u">출력</span></span><span><span class="n">−51%</span> <span class="u">thinking</span></span><span><span class="n">−17%</span> <span class="u">P2 대비</span></span></div>
+            <p>95% CI −45 ~ −34%. 1단계(−28%)보다 2단계에서 효과가 더 컸다. 24개 문제 모두 베이스라인보다 적었고, 품질 하락과 거짓 성공은 0건이었다.</p>
+          </article>
+          <article class="card">
+            <div class="top"><span class="id">h05_satisfice</span><span class="pill v-best">P2보다 우수</span></div>
+            <h4>H05 만족화 + 재검증 금지 (단독)</h4>
+            <div class="big"><span><span class="n">−34%</span> <span class="u">출력</span></span><span><span class="n">−36%</span> <span class="u">thinking</span></span><span><span class="n">−9%</span> <span class="u">P2 대비</span></span></div>
+            <p>단일 가설 중 P2를 넘은 유일한 것이다. R2에서도 thinking을 가장 많이 줄였다(−40%). Simon의 satisficing과 메모이제이션에서 가져왔다.</p>
+            <div class="q">- 조건을 만족하는 첫 해법을 채택한다. 여러 대안을 비교하지 않는다.
+- 같은 결론을 다시 검산하지 않는다. 방금 쓰거나 고친 파일을 다시 열어 확인하지 않는다.
+- 테스트나 검증 실행은 모든 수정을 마친 뒤 한 번만 한다. 실패했을 때만 다시 고친다.</div>
+          </article>
+          <article class="card">
+            <div class="top"><span class="id">r20_p2_h05_n01</span><span class="pill v-best">P2보다 우수</span></div>
+            <h4>P2 + H05 + 과잉 사고 억제</h4>
+            <div class="big"><span><span class="n">−35%</span> <span class="u">출력</span></span><span><span class="n">−45%</span> <span class="u">thinking</span></span><span><span class="n">−11%</span> <span class="u">P2 대비</span></span></div>
+            <p>n09에 n01을 더했지만 n09보다 덜 줄었다. 규칙을 더 쌓는다고 효과가 더해지지는 않는다.</p>
+          </article>
+          <article class="card">
+            <div class="top"><span class="id">p2_concise</span><span class="pill v-ctrl">대조군</span></div>
+            <h4>P2 "간결하게 답하고, 불필요한 출력을 줄인다."</h4>
+            <div class="big"><span><span class="n">−27%</span> <span class="u">출력</span></span><span><span class="n">−38%</span> <span class="u">thinking</span></span></div>
+            <p>대조군으로 넣은 한 줄이 R2~R4 내내 −24 ~ −27%로 안정적이었다. 문구를 줄이거나(r08 −24%), 영어로 쓰거나(r09 −24%), 강조해도(r11 −27%) 결과가 같았다. 가설 대부분이 이 선을 넘지 못했다.</p>
+          </article>
+        </div>
+
+        <div class="figure">
+          <h3>분해 조건으로 밝혀진 것</h3>
+          <div class="facts">
+            <div class="fact">
+              <h4>H10의 효과는 hook이 아니라 문구에서 나왔다</h4>
+              <p>누적 토큰을 보여 주는 hook은 효과가 없었다. "출력 토큰은 비용이다" 한 줄이 전체 효과를 냈다.</p>
+              <div class="cmp"><div><span>H10 전체</span><span>−26%</span></div><div><span>H10a hook만</span><span>−3%</span></div><div><span>H10b 문구만</span><span>−26%</span></div></div>
+            </div>
+            <div class="fact">
+              <h4>H05는 두 요소가 모두 기여한다</h4>
+              <p>"첫 해법 채택"이 thinking을 더 줄이고, "재확인 금지"는 도구 호출을 줄인다. 합치면 더 크다.</p>
+              <div class="cmp"><div><span>r15 첫 해법만 (R4)</span><span>−24%</span></div><div><span>r14 재확인 금지만 (R4)</span><span>−16%</span></div><div><span>H05 합친 것 (2단계)</span><span>−34%</span></div></div>
+            </div>
+            <div class="fact">
+              <h4>thinking은 양은 줄일 수 있고 형식은 정할 수 없다</h4>
+              <p>추론 형식을 지정하면 API가 <code>reasoning_extraction</code>으로 거부한다. "필요한 만큼만"처럼 양을 말하는 지시는 허용된다.</p>
+              <div class="cmp"><div><span>H06 5단어 초안 (R1)</span><span>거부 21/21</span></div><div><span>H06b 보이는 풀이만 (R2)</span><span>거부 4/28</span></div><div><span>r16 필요한 만큼만 (R4)</span><span>−13%, 거부 0</span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="figure">
+          <div class="fig-title">
+            <h3>1단계 → 2단계: 새 문제로 다시 쟀을 때</h3>
+            <span class="fig-note">빈 원 = 1단계(문제 12개), 채운 원 = 2단계(새 문제 24개)</span>
+          </div>
+          <div class="chart" id="dbChart"></div>
+          <p class="fig-note">H05 계열(n09, r20, H05)은 새 문제에서 효과가 커졌다. r11 강조형은 1단계에서 P2보다 6% 앞섰지만 2단계에서는 차이가 0%가 됐다. 1단계의 작은 우위는 문제 12개의 우연일 수 있다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 결론 -->
+    <section class="sec" id="concl">
+      <div class="sec-head">
+        <span class="eyebrow">도출한 결론</span>
+        <h2>"덜 하게" 만드는 지시가 효과가 있었다. 출력 형태를 바꾸는 지시는 효과가 없었다</h2>
+      </div>
+      <ol class="concl">
+        <li><div><h4>일반적인 간결 지시 한 줄이 출력 토큰을 약 25% 줄인다</h4><p>P2는 모든 라운드에서 −24 ~ −27%였고 품질 변화가 없었다. 문구 길이, 언어, 강조 정도에 둔감하다. 가설 대부분은 이 선을 넘지 못했으므로, 앞으로 새 개입은 베이스라인이 아니라 P2와 비교해야 한다.</p></div></li>
+        <li><div><h4>P2에 만족화·재검증 금지를 더하면 −40%까지 간다</h4><p>n09는 P2보다 17% 더 줄였고 thinking을 절반으로 줄였다. 새 문제 24개에서 정확도, 거짓 성공, 변경 최소성, 보고 충분성 모두 하락이 없었다.</p></div></li>
+        <li><div><h4>비용의 핵심은 턴 수다</h4><p>턴마다 thinking과 해설이 붙는다. 델타 인코딩(H01)과 스크립트 파일화(H02)는 인자를 줄였지만 턴을 30~40% 늘려 출력이 오히려 늘었다. cp 후 Edit, sed 위임, 짧은 명령, 표 형식, 한 번에 쓰기도 모두 효과가 없었다. 도구 사용 방식을 강제하는 개입은 다섯 번 시도해 모두 실패했다.</p></div></li>
+        <li><div><h4>thinking은 간접적으로만 줄일 수 있다</h4><p>형식을 지정하면 API가 거부한다. 대신 "첫 해법을 채택하라", "출력은 비용이다"처럼 일의 양을 줄이는 지시가 thinking을 36~51% 줄였다.</p></div></li>
+        <li><div><h4>보고 형식만 바꾸는 가설은 효과가 작다</h4><p>전보체, SOAP, 예측 오류만 보고, 참조형 보고는 −5 ~ +5%였다. 응답 텍스트는 원래 출력의 5% 정도다. 강조형 문구(r21)는 보고를 빈약하게 만들 위험이 있었다.</p></div></li>
+        <li><div><h4>위약, 분해, 2단계 검증이 실제로 결론을 바꿨다</h4><p>위약이 없던 R1에서는 5개를 "채택"했지만 R2에서 모두 다시 판정했다. 분해 조건이 없었다면 H10을 "hook의 효과"로 잘못 기록했을 것이다. 2단계 검증에서 r11의 우위가 사라졌고 r21의 보고 문제가 드러났다.</p></div></li>
+      </ol>
+    </section>
+
+    <!-- 아쉬운 점 -->
+    <section class="sec" id="limits">
+      <div class="sec-head">
+        <span class="eyebrow">아쉬운 점</span>
+        <h2>"품질 하락 없음"이 증명한 범위는 좁다</h2>
+        <p>측정한 범위 안에서는 하락이 없었다. 하지만 측정 장치가 하락을 잡아낼 여지 자체가 작았다.</p>
+      </div>
+      <div class="lims">
+        <div class="lim"><h4>정확도 천장 효과</h4><p>난이도 보정 파일럿까지 포함해 모든 조건의 정확도가 만점이었다. 24개 중 0개 하락이면 하락 확률의 95% 상한은 약 12.5%다(rule of three). "하락 없음"이 아니라 "12.5% 이상 하락하지는 않음"까지만 말할 수 있다.</p><span class="fix">→ 2차: 베이스라인 점수 0.5~0.8 태스크</span></div>
+        <div class="lim"><h4>명세가 분명한 태스크만 썼다</h4><p>세 생성기 모두 정답 해석이 하나다. "첫 해법 채택"이 가장 위험해지는 상황, 즉 요구사항을 해석해야 하는 일은 재지 않았다.</p><span class="fix">→ 2차 트랙 A</span></div>
+        <div class="lim"><h4>실사용보다 작은 태스크</h4><p>실행당 출력은 2천~8천 토큰이었다. 실사용 로그는 파일 전체 쓰기가 보이는 출력의 60%였는데, 그런 규모에서는 결과가 다를 수 있다.</p><span class="fix">→ 2차 트랙 B, C</span></div>
+        <div class="lim"><h4>모델 하나, effort 하나</h4><p>규칙상 Opus 5.5 high만 썼다. 다른 모델이나 effort에서 같은 지시가 같은 효과를 내는지는 모른다.</p><span class="fix">→ 규칙 변경 후 별도 라운드</span></div>
+        <div class="lim"><h4>R3·R4에는 위약(P1)이 없었다</h4><p>"모든 라운드에 대조군 두 개"라는 규칙과 달리 R3·R4는 베이스라인과 P2만 넣었다. R2에서 P1이 +6%였고 P2 대비로 판정했으므로 결론은 같지만, 규칙 위반으로 기록해 둔다.</p><span class="fix">→ 2차: 모든 단계에 P1 복귀</span></div>
+        <div class="lim"><h4>Q4 채점기를 검수하지 않았다</h4><p>quality.md에 계획한 사람 검수 30개(Cohen's κ ≥ 0.7)는 기록이 없다. tariff 생성기는 Q4 질문이 없어 빠졌고, rules 생성기에는 marginal + gt 조합의 정답 버그가 있다(모든 조건에 똑같이 적용).</p><span class="fix">→ 2차 0단계에서 보완</span></div>
+        <div class="lim"><h4>문제당 1회 실행</h4><p>R3·R4는 조건 × 문제당 한 번씩만 실행했다. 문제 수로 보완했지만 같은 문제 안의 변동은 보지 못했다. 1단계 12개는 우위가 사라질 만큼 작았다(r11).</p><span class="fix">→ 2단계 검증은 유지</span></div>
+        <div class="lim"><h4>출력이 준 만큼 비용이 줄지는 않는다</h4><p>R2의 P2는 출력 −25%, 총비용 −13%였다. 입력과 캐시 비용은 그대로이기 때문이다. 절감액을 말할 때는 총비용 기준으로 따로 보고해야 한다.</p><span class="fix">→ 2차: 총비용을 보조 판정에 포함</span></div>
+      </div>
+    </section>
+
+    <!-- 2차 실험 계획 -->
+    <section class="sec" id="next">
+      <div class="sec-head">
+        <span class="eyebrow">2차 실험 계획</span>
+        <h2>유의미한 가설을 1차가 재지 못한 조건에서 다시 확인한다</h2>
+        <p>1차의 결론은 "명세가 분명하고 작은 태스크"에서 얻은 것이다. 2차는 n09와 H05 계열이 그 밖에서도 품질을 해치지 않는지 확인한다. 핵심 질문은 하나다. <b>첫 해법을 채택하라는 지시가 해석이 필요한 일에서 품질을 떨어뜨리는가?</b> 아래 내용은 제안이며 비용은 추정이다.</p>
+      </div>
+
+      <div class="stack">
+        <div class="figure">
+          <h3>가져가는 조건</h3>
+          <div class="tbl-wrap" style="margin-top:0">
+            <table class="t">
+              <thead><tr><th>조건</th><th>역할</th><th>1차 결과 (2단계)</th><th>2차에서 확인할 것</th></tr></thead>
+              <tbody>
+                <tr><td class="idc">n09_p2_h05</td><td><span class="pill v-best">주 후보</span></td><td class="nowrap">−40%, 품질 하락 0/24</td><td>모호한 명세와 큰 태스크에서도 비열등한가</td></tr>
+                <tr><td class="idc">h05_satisfice</td><td><span class="pill v-best">보조 후보</span></td><td class="nowrap">−34%</td><td>P2 없이도 같은 위험이 있는가</td></tr>
+                <tr><td class="idc">r15_satisfice_only</td><td><span class="pill v-same">분해</span></td><td class="nowrap">−24% (R4 1단계)</td><td>품질 하락이 생긴다면 "첫 해법 채택" 때문인가</td></tr>
+                <tr><td class="idc">r14_memo_only</td><td><span class="pill v-weak">분해</span></td><td class="nowrap">−16% (R4 1단계)</td><td>"재확인 금지" 때문인가</td></tr>
+                <tr><td class="idc">p2_concise</td><td><span class="pill v-ctrl">대조군</span></td><td class="nowrap">−27%</td><td>비교 기준</td></tr>
+                <tr><td class="idc">p1_placebo</td><td><span class="pill v-ctrl">대조군</span></td><td class="nowrap">+6% (R2)</td><td>위약 효과 확인 (R3·R4에서 빠졌던 것 복귀)</td></tr>
+                <tr><td class="idc">baseline</td><td><span class="pill v-untested">기준</span></td><td class="nowrap">—</td><td>같은 날 함께 실행</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="fig-note">r20은 n09보다 나은 점이 없어 뺐고, r21은 보고 품질 문제로 뺐다.</p>
+        </div>
+
+        <div class="figure">
+          <h3>세 가지 트랙</h3>
+          <div class="stack" style="gap:1rem">
+            <div class="q-block">
+              <header>
+                <div class="tr"><span class="tag">트랙 A</span><span class="prio">먼저 · 주 실험</span></div>
+                <h4>명세가 모호한 태스크</h4>
+                <p>"첫 해법 채택"이 해석이 필요한 일에서 품질을 해치는지 확인한다. 1차의 가장 큰 공백이다.</p>
+              </header>
+              <div class="q-body">
+                <div>
+                  <span class="k">태스크: 새 생성기 G4</span>
+                  <ul>
+                    <li>기능 명세에 해석 지점 k개를 심는다.</li>
+                    <li>절반은 저장소 안에 단서가 있다(기존 코드 관례, 테스트, 문서). 찾아보면 정답 해석이 하나로 정해진다.</li>
+                    <li>나머지 절반은 단서가 없다. 합리적으로 가정하고 보고에 밝혀야 한다.</li>
+                    <li>파일럿으로 베이스라인 점수가 0.5~0.8이 되는 k를 고른다.</li>
+                  </ul>
+                </div>
+                <div>
+                  <span class="k">품질 지표</span>
+                  <ul>
+                    <li>Q1: 단서가 있는 지점을 맞게 해석했는가 (숨은 테스트)</li>
+                    <li>Q4 가정 공개: 보고만 읽고 "무엇을 가정했나"에 답한 정답률</li>
+                    <li>Q3 거짓 성공, Q5 변경 최소성 (기존과 같음)</li>
+                    <li>보조: 단서 파일을 열어 봤는가 (로그에서 자동 집계)</li>
+                  </ul>
+                </div>
+                <div>
+                  <span class="k">규모</span>
+                  <div class="cond-chips"><span class="cc">baseline</span><span class="cc">p1</span><span class="cc">p2</span><span class="cc">h05</span><span class="cc">n09</span><span class="cc">r15</span><span class="cc">r14</span></div>
+                  <ul>
+                    <li>1단계: 7조건 × 문제 12개 = 84회</li>
+                    <li>2단계: 대조군 3 + 통과 조건 × 새 문제 24개 (약 120회)</li>
+                    <li>추정 $45~70, 5시간 한도 1단계 약 9%p</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="q-block">
+              <header>
+                <div class="tr"><span class="tag">트랙 B</span><span class="prio">A 다음</span></div>
+                <h4>큰 저장소 태스크</h4>
+                <p>실사용처럼 파일 전체 쓰기가 출력 대부분을 차지하는 상황에서도 −40%가 유지되는지 확인한다.</p>
+              </header>
+              <div class="q-body">
+                <div>
+                  <span class="k">태스크</span>
+                  <ul>
+                    <li>수천 줄 규모, 파일 여러 개를 고쳐야 하는 기능 추가와 리팩터 생성기</li>
+                    <li>정답은 숨은 테스트와 동작 일치로 채점</li>
+                  </ul>
+                </div>
+                <div>
+                  <span class="k">측정</span>
+                  <ul>
+                    <li>출력 토큰과 함께 Write·heredoc 문자 수 비중</li>
+                    <li>총비용(입력·캐시 포함)과 턴 수를 함께 보고</li>
+                    <li>H01·H02 같은 도구 쪽 개입이 큰 파일에서만 이득인지 다시 볼 근거 수집</li>
+                  </ul>
+                </div>
+                <div>
+                  <span class="k">규모</span>
+                  <div class="cond-chips"><span class="cc">baseline</span><span class="cc">p1</span><span class="cc">p2</span><span class="cc">n09</span></div>
+                  <ul>
+                    <li>파일럿 5회로 회당 비용을 먼저 잰다</li>
+                    <li>그 뒤 1단계 12문제, 2단계 24문제 규모를 정한다</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="q-block">
+              <header>
+                <div class="tr"><span class="tag">트랙 C</span><span class="prio">A·B와 병행 가능</span></div>
+                <h4>실사용 관찰 1주</h4>
+                <p>실제 작업에 n09를 적용한다. 작업 내용이 매번 달라 조건 비교로는 쓸 수 없으므로 보조 증거로만 쓴다.</p>
+              </header>
+              <div class="q-body">
+                <div>
+                  <span class="k">설계</span>
+                  <ul>
+                    <li>n09를 켠 날과 끈 날을 무작위로 섞는다. 요일과 작업 종류의 영향을 줄이기 위해서다.</li>
+                  </ul>
+                </div>
+                <div>
+                  <span class="k">지표</span>
+                  <ul>
+                    <li>세션당 출력 토큰 (<code>message.id</code> 기준 중복 제거)</li>
+                    <li>턴 수, 사용자가 다시 고쳐 달라고 요청한 비율(재작업 대리 지표)</li>
+                  </ul>
+                </div>
+                <div>
+                  <span class="k">비용</span>
+                  <ul>
+                    <li>추가 실험 비용 없음. 로그 분석만 한다.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="figure">
+            <h3>진행 순서</h3>
+            <ol class="steps">
+              <li><span class="sn">0</span><div><h4>준비</h4><ul class="dash"><li>rules 생성기에서 marginal + gt 조합 제외</li><li>tariff용 Q4 질문 추가, Q4 사람 검수 30개 (κ ≥ 0.7)</li><li>G4 생성기 구현과 난이도 보정 파일럿 (베이스라인 × 난이도 3 × 5 seed)</li><li>판정 기준을 <code>analyze_gen.py</code>에 고정</li></ul></div></li>
+              <li><span class="sn">1</span><div><h4>트랙 A 1단계</h4><p>7조건 × 12문제. 순서는 <code>--seed</code>로 섞는다.</p></div></li>
+              <li><span class="sn">2</span><div><h4>트랙 A 2단계</h4><p>통과 조건만 새 문제 24개로 다시 잰다.</p></div></li>
+              <li><span class="sn">3</span><div><h4>트랙 B</h4><p>파일럿으로 비용을 잰 뒤 1·2단계를 진행한다.</p></div></li>
+              <li><span class="sn">4</span><div><h4>트랙 C 정리와 권장 설정 갱신</h4><p>A·B 결과와 실사용 로그를 합쳐 CLAUDE.md의 권장 설정을 유지할지 고칠지 정한다.</p></div></li>
+            </ol>
+          </div>
+          <div class="figure">
+            <h3>판정 기준 (실행 전 고정)</h3>
+            <div class="panel" style="padding:0.4rem 1.1rem">
+              <div class="criteria">
+                <div class="crit"><span class="k">출력 감소</span><span>베이스라인 대비 −10% 이상, CI 상한 &lt; 0%</span></div>
+                <div class="crit"><span class="k">위약 대비</span><span>P1 대비 CI 상한 &lt; 0%</span></div>
+                <div class="crit"><span class="k">품질</span><span>종합 점수 차이의 단측 95% 하한 &gt; −0.05</span></div>
+                <div class="crit"><span class="k">거짓 성공</span><span>베이스라인보다 +2%p 이상이면 다른 결과와 관계없이 탈락</span></div>
+                <div class="crit"><span class="k">가정 공개 (신규)</span><span>Q4 가정 공개율 차이의 하한 &gt; −0.10 (제안값, 실행 전 확정)</span></div>
+                <div class="crit"><span class="k">채택</span><span>1단계 선별 후 2단계를 통과해야 채택</span></div>
+              </div>
+            </div>
+            <h3 style="margin-top:1rem">결과에 따른 다음 행동</h3>
+            <div class="decide">
+              <div class="dec"><span class="if">A·B 모두 비열등, 감소 유지</span><span class="arr">→</span><span class="then">n09 권장 유지, 트랙 C로 실사용 확인</span></div>
+              <div class="dec"><span class="if">A에서 Q1이나 가정 공개가 하락</span><span class="arr">→</span><span class="then">r15·r14로 원인 요소를 찾고, 그 요소에 "모호하면 가정을 보고에 밝힌다"를 붙인 변형을 다음 라운드에서 검증</span></div>
+              <div class="dec"><span class="if">B에서 감소폭이 −20%보다 작음</span><span class="arr">→</span><span class="then">파일 쓰기 비중을 분석하고, 큰 파일 한정으로 도구 쪽 개입을 다시 검토</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <span class="k">이번 범위에서 뺀 것</span>
+          <p class="small" style="margin-top:0.35rem">다른 모델·effort 교차 검증은 "모든 실험은 Opus 5.5 high" 규칙과 충돌한다. 규칙을 바꾸기로 결정한 뒤 별도 라운드로 진행한다. 비용 추정은 R3·R4의 회당 평균 $0.22~0.25를 기준으로 했고, 모호한 태스크가 더 길어질 것을 고려해 상한을 1.5배로 잡았다.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="foot">
+    <div class="wrap">
+      출처: <code>CLAUDE.md</code>, <code>hypotheses.md</code>, <code>quality.md</code>, <code>results/summary.md</code>, <code>results/summary_runs_r2.md</code>, <code>summary_runs_r3.md</code>, <code>summary_runs_r4.md</code>, <code>summary_runs_r5.md</code>, <code>summary_runs_r46.md</code>. 변화율은 문제별 비율의 기하평균, 괄호는 95% 신뢰구간이다.
+    </div>
+  </footer>
+</main>
+
+<div class="tip" id="tip" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+  var MINUS = "−";
+  function pct(v) { if (v === null || v === undefined) return "—"; if (v === 0) return "0%"; return (v < 0 ? MINUS + Math.abs(v) : "+" + v) + "%"; }
+  function num(v) { return (v < 0 ? MINUS + Math.abs(v) : "+" + v); }
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+  var VL = { best: "P2보다 우수", same: "P2 수준", weak: "약한 감소", none: "효과 없음", bad: "역효과", qual: "품질 문제", ctrl: "대조군", untested: "미실험" };
+
+  /* ---------- 사전 관찰: 출력 구성 ---------- */
+  var comp = [
+    { k: "Bash heredoc 파일 쓰기 (cat > file)", v: 98, c: "c-tool" },
+    { k: "Bash heredoc 일회성 스크립트 (python -)", v: 45, c: "c-tool" },
+    { k: "Write", v: 38, c: "c-tool" },
+    { k: "기타 Bash (짧은 명령 등)", v: 30, c: "c-tool" },
+    { k: "응답 텍스트", v: 11, c: "c-text" },
+    { k: "기타 도구", v: 9, c: "c-tool" }
+  ];
+  var compTotal = comp.reduce(function (a, b) { return a + b.v; }, 0);
+  var compEl = document.getElementById("compBars");
+  comp.forEach(function (d) {
+    var r = el("div", "bar-row " + d.c);
+    r.appendChild(el("span", "lab", esc(d.k)));
+    var t = el("div", "bar-track"); var b = el("div", "bar"); b.style.width = (d.v / 98 * 100) + "%"; t.appendChild(b); r.appendChild(t);
+    r.appendChild(el("span", "val", d.v + "만 자 · " + (d.v / compTotal * 100).toFixed(0) + "%"));
+    compEl.appendChild(r);
+  });
+
+  /* ---------- 툴팁 ---------- */
+  var tip = document.getElementById("tip");
+  function showTip(html, x, y) {
+    tip.innerHTML = html; tip.hidden = false;
+    var w = tip.offsetWidth, h = tip.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
+    var left = x + 14, top = y + 14;
+    if (left + w > vw - 8) left = Math.max(8, x - w - 14);
+    if (top + h > vh - 8) top = Math.max(8, y - h - 14);
+    tip.style.left = left + "px"; tip.style.top = top + "px";
+  }
+  function hideTip() { tip.hidden = true; }
+  function bindTip(row, htmlFn) {
+    row.addEventListener("pointermove", function (e) { showTip(htmlFn(), e.clientX, e.clientY); });
+    row.addEventListener("pointerleave", hideTip);
+    row.addEventListener("focus", function () { var r = row.getBoundingClientRect(); showTip(htmlFn(), r.left + r.width * 0.45, r.bottom - 6); });
+    row.addEventListener("blur", hideTip);
+  }
+  window.addEventListener("scroll", hideTip, { passive: true });
+
+  /* ---------- 공통 축 ---------- */
+  function xpos(v, d) { return (v - d[0]) / (d[1] - d[0]) * 100; }
+  function addGrid(track, d, ticks, opts) {
+    opts = opts || {};
+    if (opts.band) { var bd = el("div", "bandz"); var a = xpos(opts.band[0], d), b = xpos(opts.band[1], d); bd.style.left = a + "%"; bd.style.width = (b - a) + "%"; track.appendChild(bd); }
+    ticks.forEach(function (t) { var g = el("div", "gl" + (t === 0 && opts.zero ? " zero" : "")); g.style.left = xpos(t, d) + "%"; track.appendChild(g); });
+    if (opts.p2 !== null && opts.p2 !== undefined) { var p = el("div", "gl p2"); p.style.left = xpos(opts.p2, d) + "%"; track.appendChild(p); }
+  }
+  function axisRow(cls, d, ticks, fmt) {
+    var r = el("div", cls + " fp-axis");
+    r.appendChild(el("div", "fp-label"));
+    var t = el("div", "fp-track");
+    ticks.forEach(function (v, i) { var s = el("span", "tick" + (i === 0 ? " first" : i === ticks.length - 1 ? " last" : ""), fmt(v)); s.style.left = xpos(v, d) + "%"; t.appendChild(s); });
+    r.appendChild(t);
+    r.appendChild(el("div", "fp-value")); if (cls === "fp-row") r.appendChild(el("div", "fp-pill"));
+    return r;
+  }
+
+  /* ---------- 포레스트 플롯 데이터 ---------- */
+  // [id, 이름, 판정, 추정, 하한, 상한, thinking, P2 대비, 비고, 판정 라벨(선택)]
+  var ROUNDS = {
+    val: {
+      tab: "2단계 검증", sub: "새 24문제",
+      meta: "R3·R4 2단계 · 새 문제 24개(seed 5~12) · 같은 문제끼리 짝 비교 · 240회 · $53.26",
+      p2: -27,
+      rows: [
+        ["r21", "강조형 P2 + H05", "qual", -41, -48, -32, -49, -19, "Q4 하한 −0.179: 24개 중 1개 보고가 고친 내용을 전혀 담지 않음", "품질 판정 불가"],
+        ["n09", "P2 + H05", "best", -40, -45, -34, -51, -17, "품질 하락 0/24, 거짓 성공 0, Q4 차이 0"],
+        ["r20", "P2 + H05 + n01", "best", -35, -40, -29, -45, -11, "n01을 더해도 n09보다 나아지지 않음"],
+        ["h05", "만족화·재검증 금지", "best", -34, -40, -27, -36, -9, "Q4 +0.005"],
+        ["r11", "강조형 P2", "same", -27, -34, -20, -41, 0, "1단계의 P2 대비 −6% 우위가 사라짐"],
+        ["p2", "간결 한 줄", "ctrl", -27, -34, -19, -38, null, "대조군"],
+        ["n10", "P2 + H10b", "same", -26, -31, -19, -37, 2, "Q4 −0.006"],
+        ["r08", "\"간결하게.\"", "same", -24, -29, -19, -29, 5, "Q4 −0.009"],
+        ["n01", "과잉 사고 억제", "weak", -21, -28, -13, -38, 8, "P2보다 못함", "P2보다 못함"]
+      ]
+    },
+    r1: {
+      tab: "R1", sub: "1차",
+      meta: "R1 · 11조건 × 고정 태스크 7개 × 3회 + H06b · 252회 · $36.93 · 위약 대조군 없음 (R2에서 재판정)",
+      p2: null,
+      rows: [
+        ["h10", "바이오피드백 hook + 문구", "weak", -25, -29, -21, -48, null, "R1 당시 최고 효과. R2 분해 결과 효과는 문구에서 나옴", "위약 대조 없음"],
+        ["h04", "요청 외 산출물 금지", "weak", -18, -23, -14, -23, null, "기능 추가 태스크 −44%", "위약 대조 없음"],
+        ["h05", "만족화·재검증 금지", "weak", -18, -22, -13, -19, null, "품질 하락 없음", "위약 대조 없음"],
+        ["h06b", "보이는 풀이 초안식", "qual", -18, -22, -13, -12, null, "수학에서 API 거부 3/21", "API 거부"],
+        ["h07", "토큰 예산 명시", "weak", -17, -21, -12, -25, null, "", "위약 대조 없음"],
+        ["h08", "전보체", "weak", -12, -17, -8, 3, null, "응답 텍스트만 줄고 thinking은 그대로", "위약 대조 없음"],
+        ["h03", "배치 실행", "none", -2, -8, 3, -5, null, "턴 −11%"],
+        ["h09", "코드 스위칭 (영어)", "none", 2, -3, 7, 4, null, "thinking이 이미 영어일 가능성"],
+        ["h02", "스크립트 파일화", "bad", 9, 3, 15, 2, null, "턴 +33%"],
+        ["h01", "델타 인코딩 hook", "bad", 13, 8, 19, 20, null, "턴 +41%. 작은 파일에서는 Edit 여러 번이 heredoc 한 번보다 비쌈"],
+        ["h06", "Chain of Draft (thinking)", "qual", null, null, null, null, null, "21회 모두 API 거부 (reasoning_extraction)", "측정 불가"]
+      ]
+    },
+    r2: {
+      tab: "R2", sub: "2차",
+      meta: "R2 · 15조건 × 고정 태스크 7개 × 4회 · 420회 · $73.93 · 위약(P1)과 간결(P2) 대조군 추가",
+      p2: -25,
+      rows: [
+        ["h10", "바이오피드백 전체", "same", -26, -30, -21, -42, 0, "비용 −15%, 턴 −13%"],
+        ["h10b", "문구만 \"출력 토큰은 비용\"", "same", -26, -30, -21, -36, -1, "hook 없이 같은 효과"],
+        ["h05", "만족화·재검증 금지", "same", -26, -29, -22, -40, -1, "thinking 감소가 가장 큼"],
+        ["p2", "간결 한 줄", "ctrl", -25, -29, -21, -25, null, "비용 −13%, 턴 −10%"],
+        ["h07", "토큰 예산", "weak", -21, -25, -16, -32, 6, "P2보다 못함", "P2보다 못함"],
+        ["h08", "전보체", "weak", -18, -22, -13, -17, 10, "P2보다 못함", "P2보다 못함"],
+        ["h04", "요청 외 산출물 금지", "weak", -16, -21, -10, -10, 13, "P2보다 못함", "P2보다 못함"],
+        ["h06b", "보이는 풀이 초안식", "qual", -15, -21, -10, -18, 13, "API 거부 4/28, 코딩 태스크에서도 발생", "API 거부"],
+        ["h03", "배치 실행", "none", -5, -11, 1, -12, 27, "턴 −12%"],
+        ["h10a", "hook만 (토큰 숫자 표시)", "none", -3, -8, 2, -3, 30, "hook 자체는 효과 없음"],
+        ["h09", "코드 스위칭 (영어)", "none", 3, -2, 9, -6, 38, ""],
+        ["p1", "위약 (무관한 배경)", "ctrl", 6, 0, 13, 8, 42, "아무 지시나 넣으면 줄어드는 효과는 없음"],
+        ["h02", "스크립트 파일화", "bad", 9, 4, 15, 8, 45, "턴 +32%"],
+        ["h01", "델타 인코딩", "bad", 13, 7, 19, 22, 51, "턴 +41%. 큰 파일 태스크에서도 이득 없음"]
+      ]
+    },
+    r3: {
+      tab: "R3 1단계", sub: "12문제",
+      meta: "R3 1단계 · 17조건 × 생성기 문제 12개 · 204회 · $48.61 · 짝 비교, 비열등성 검정 시작",
+      p2: -25,
+      rows: [
+        ["n09", "P2 + H05", "same", -28, -40, -12, -49, -4, "2단계 후보", "후보"],
+        ["h05", "만족화·재검증 금지", "same", -26, -34, -17, -32, -1, "2단계 후보", "후보"],
+        ["p2", "간결 한 줄", "ctrl", -25, -32, -18, -25, null, ""],
+        ["n01", "과잉 사고 억제", "same", -24, -31, -15, -41, 2, "2단계 후보", "후보"],
+        ["n10", "P2 + H10b", "same", -23, -33, -9, -36, 3, "경계, 2단계 포함", "후보 (경계)"],
+        ["h07", "토큰 예산", "weak", -22, -32, -9, -20, 4, "CI 상한이 −10%를 넘지 못함", "기준 미달"],
+        ["n03", "답변 100단어 제한", "weak", -20, -29, -9, -26, 7, "CI 상한이 −10%를 넘지 못함", "기준 미달"],
+        ["h10b", "문구만", "weak", -18, -27, -9, -36, 9, "CI 상한이 −10%를 넘지 못함", "기준 미달"],
+        ["h04", "요청 외 산출물 금지", "weak", -16, -27, -4, -14, 12, "CI 상한이 −10%를 넘지 못함", "기준 미달"],
+        ["n02", "계획 한 번", "none", -5, -15, 7, -24, 27, ""],
+        ["h08", "전보체", "none", -4, -14, 10, -8, 28, "R2의 −18%가 재현되지 않음"],
+        ["n05", "예측 오류만 보고", "none", -4, -9, 2, 2, 28, ""],
+        ["n04", "SOAP 보고", "none", -1, -10, 13, 17, 32, "PARTIAL 보고 1건"],
+        ["n07", "Edit 앵커 최소화", "none", 4, -9, 21, 5, 39, ""],
+        ["n06", "참조형 보고", "none", 5, -3, 14, 6, 40, ""],
+        ["n08", "생성기 출력 (MDL)", "none", 8, -1, 20, 12, 44, ""]
+      ]
+    },
+    r4: {
+      tab: "R4 1단계", sub: "12문제",
+      meta: "R4 1단계 · 22조건 × 문제 12개 (R3과 같은 문제) · 264회 · $66.78",
+      p2: -24,
+      rows: [
+        ["r11", "강조형 P2", "same", -28, -35, -20, -34, -6, "2단계에서 우위 사라짐"],
+        ["r20", "P2 + H05 + n01", "same", -26, -36, -13, -34, -2, "2단계 후보"],
+        ["r08", "\"간결하게.\"", "same", -26, -34, -19, -28, -2, "문구 길이에 둔감"],
+        ["p2", "간결 한 줄", "ctrl", -24, -31, -18, -24, null, ""],
+        ["r09", "영어 P2", "same", -24, -35, -11, -25, 1, "지시 언어에 둔감"],
+        ["r15", "첫 해법 채택만", "same", -24, -31, -15, -39, 1, "H05 분해. thinking −39%"],
+        ["r10", "P2를 시스템 프롬프트에", "same", -21, -31, -13, -11, 4, "위치: CLAUDE.md보다 약간 약함"],
+        ["r12", "P2 + 좋은 예·나쁜 예", "weak", -17, -22, -12, -27, 9, "예시를 붙이면 덜 줄어듦", "P2보다 못함"],
+        ["r14", "재확인 금지만", "weak", -16, -22, -10, -22, 11, "H05 분해"],
+        ["r16", "필요한 만큼만 생각", "weak", -13, -19, -8, -24, 14, "양 지시는 거부되지 않음 (거부 0)"],
+        ["r18", "시니어 페르소나", "weak", -12, -18, -6, -4, 16, ""],
+        ["r05", "P2를 output style로", "weak", -11, -19, -1, -5, 18, "위치 중 가장 약함"],
+        ["r13", "작업 후 요약 금지", "weak", -11, -19, -4, -23, 18, ""],
+        ["r03", "짧은 명령", "none", 1, -12, 14, 22, 33, "도구 사용 방식 지시"],
+        ["r02", "sed·formatter 위임", "none", 1, -11, 15, 10, 33, "도구 사용 방식 지시"],
+        ["r17", "파일은 한 번에 완성", "none", 3, -6, 12, 14, 36, "도구 사용 방식 지시"],
+        ["r04", "표 형식 (TOON)", "none", 4, -5, 16, 8, 37, ""],
+        ["r06", "응답당 상한 4,000", "none", 5, -4, 18, 8, 39, "응답을 나눌 뿐"],
+        ["r19", "사용자는 전문가", "none", 6, -3, 17, -5, 40, ""],
+        ["r07", "서브에이전트 위임", "none", 10, -2, 22, 25, 45, "서브에이전트 출력도 합산"],
+        ["r01", "cp 후 Edit", "none", 10, -2, 24, -7, 45, "도구 사용 방식 지시"]
+      ]
+    }
+  };
+  var TAB_ORDER = ["r1", "r2", "r3", "r4", "val"];
+  var FP_D = [-50, 25], FP_TICKS = [-50, -40, -30, -20, -10, 0, 10, 20];
+
+  function rowTip(r, round) {
+    var h = "<b>" + esc(r[0]) + "</b> " + esc(r[1]);
+    if (r[3] !== null) h += '<div class="r"><span>출력 토큰</span><span>' + pct(r[3]) + "</span></div>" + '<div class="r"><span>95% CI</span><span>' + num(r[4]) + " ~ " + num(r[5]) + "%</span></div>";
+    if (r[6] !== null) h += '<div class="r"><span>thinking</span><span>' + pct(r[6]) + "</span></div>";
+    if (r[7] !== null && r[7] !== undefined) h += '<div class="r"><span>P2 대비</span><span>' + pct(r[7]) + "</span></div>";
+    if (r[8]) h += '<div class="n">' + esc(r[8]) + "</div>";
+    return h;
+  }
+
+  function renderFP(key) {
+    var R = ROUNDS[key], chart = document.getElementById("fpChart");
+    chart.innerHTML = "";
+    document.getElementById("fpMeta").textContent = R.meta;
+    // 범례
+    var lg = document.getElementById("fpLegend"); lg.innerHTML = "";
+    var seen = {};
+    R.rows.forEach(function (r) { seen[r[2]] = true; });
+    ["best", "same", "weak", "none", "bad", "qual", "ctrl"].forEach(function (k) { if (seen[k]) lg.appendChild(el("span", "sw", '<span class="pill v-' + k + '" style="padding:0;background:none"></span>' + VL[k])); });
+    lg.appendChild(el("span", "sw", '<span class="band-sw"></span>채택 하한 미달 (0 ~ −10%)'));
+    if (R.p2 !== null) lg.appendChild(el("span", "sw", '<span class="p2-sw"></span>P2 위치'));
+    // 머리 행 (P2 라벨)
+    var head = el("div", "fp-row fp-head");
+    head.appendChild(el("div", "fp-label")); var ht = el("div", "fp-track");
+    if (R.p2 !== null) { var lab = el("span", "toplab", "P2 " + pct(R.p2)); lab.style.left = xpos(R.p2, FP_D) + "%"; ht.appendChild(lab); }
+    var zl = el("span", "toplab", "베이스라인"); zl.style.left = xpos(0, FP_D) + "%"; zl.style.color = "var(--muted)"; ht.appendChild(zl);
+    head.appendChild(ht); head.appendChild(el("div", "fp-value", '<span class="ci">추정 (95% CI)</span>')); head.appendChild(el("div", "fp-pill"));
+    chart.appendChild(head);
+    R.rows.forEach(function (r) {
+      var row = el("div", "fp-row data"); row.tabIndex = 0;
+      row.setAttribute("aria-label", r[0] + " " + r[1] + ", 출력 " + pct(r[3]) + ", " + (r[9] || VL[r[2]]));
+      row.appendChild(el("div", "fp-label", '<span class="id">' + esc(r[0]) + '</span><span class="nm">' + esc(r[1]) + "</span>"));
+      var t = el("div", "fp-track");
+      addGrid(t, FP_D, FP_TICKS, { band: [-10, 0], zero: true, p2: R.p2 });
+      if (r[3] === null) { t.appendChild(el("div", "na", "측정 불가 · " + esc(r[8]))); }
+      else {
+        var w = el("div", "whisk v-" + r[2]); var a = xpos(Math.max(r[4], FP_D[0]), FP_D), b = xpos(Math.min(r[5], FP_D[1]), FP_D);
+        w.style.left = a + "%"; w.style.width = (b - a) + "%"; t.appendChild(w);
+        var dt = el("div", "dot v-" + r[2]); dt.style.left = xpos(r[3], FP_D) + "%"; t.appendChild(dt);
+      }
+      row.appendChild(t);
+      row.appendChild(el("div", "fp-value", r[3] === null ? '<span class="ci">—</span>' : pct(r[3]) + ' <span class="ci">(' + num(r[4]) + " ~ " + num(r[5]) + ")</span>"));
+      var pc = el("div", "fp-pill"); pc.appendChild(el("span", "pill v-" + r[2], esc(r[9] || VL[r[2]]))); row.appendChild(pc);
+      bindTip(row, function () { return rowTip(r, R); });
+      chart.appendChild(row);
+    });
+    chart.appendChild(axisRow("fp-row", FP_D, FP_TICKS, function (v) { return pct(v); }));
+    chart.appendChild(el("div", "axis-cap", "베이스라인 대비 출력 토큰 변화. 왼쪽일수록 많이 줄었다."));
+    // 표
+    var tb = document.getElementById("fpTable");
+    var html = '<thead><tr><th>조건</th><th>이름</th><th class="num">출력 토큰</th><th class="num">95% CI</th><th class="num">thinking</th><th class="num">P2 대비</th><th>판정</th><th>비고</th></tr></thead><tbody>';
+    R.rows.forEach(function (r) {
+      html += '<tr><td class="idc">' + esc(r[0]) + "</td><td>" + esc(r[1]) + '</td><td class="num">' + pct(r[3]) + '</td><td class="num">' + (r[4] === null ? "—" : num(r[4]) + " ~ " + num(r[5]) + "%") + '</td><td class="num">' + pct(r[6]) + '</td><td class="num">' + (r[7] === null || r[7] === undefined ? "—" : pct(r[7])) + '</td><td><span class="pill v-' + r[2] + '">' + esc(r[9] || VL[r[2]]) + "</span></td><td>" + esc(r[8] || "") + "</td></tr>";
+    });
+    tb.innerHTML = html + "</tbody>";
+  }
+
+  var tabsEl = document.getElementById("fpTabs");
+  var saved = null; try { saved = localStorage.getItem("td-fp-tab"); } catch (e) {}
+  var current = ROUNDS[saved] ? saved : "val";
+  TAB_ORDER.forEach(function (k) {
+    var b = el("button", "tab", esc(ROUNDS[k].tab) + '<span class="sub">' + esc(ROUNDS[k].sub) + "</span>");
+    b.type = "button"; b.setAttribute("role", "tab"); b.id = "tab-" + k; b.dataset.k = k;
+    b.setAttribute("aria-selected", k === current ? "true" : "false");
+    b.addEventListener("click", function () { select(k); });
+    b.addEventListener("keydown", function (e) {
+      var i = TAB_ORDER.indexOf(k);
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); var n = TAB_ORDER[(i + (e.key === "ArrowRight" ? 1 : TAB_ORDER.length - 1)) % TAB_ORDER.length]; select(n); document.getElementById("tab-" + n).focus(); }
+    });
+    tabsEl.appendChild(b);
+  });
+  function select(k) {
+    current = k;
+    Array.prototype.forEach.call(tabsEl.children, function (b) { b.setAttribute("aria-selected", b.dataset.k === k ? "true" : "false"); });
+    document.getElementById("fpChart").setAttribute("aria-labelledby", "tab-" + k);
+    try { localStorage.setItem("td-fp-tab", k); } catch (e) {}
+    renderFP(k);
+  }
+  select(current);
+
+  /* ---------- 문제별 출력 (R3 2단계) ---------- */
+  var INST = [
+    ["규칙 수정 (rules)", [["s5", 3698, 2974, 2389], ["s6", 3699, 3749, 3540], ["s7", 4085, 4754, 2845], ["s8", 3072, 4253, 2114], ["s9", 6434, 2925, 2312], ["s10", 3553, 2550, 2897], ["s11", 3486, 3491, 2912], ["s12", 3873, 2553, 2113]]],
+    ["매출 분석 (sales)", [["s5", 4759, 3451, 3019], ["s6", 4863, 3618, 2747], ["s7", 5133, 3522, 3750], ["s8", 4610, 3027, 2629], ["s9", 4615, 2909, 3116], ["s10", 4004, 3396, 2549], ["s11", 5667, 3281, 2801], ["s12", 4663, 3107, 2671]]],
+    ["배송비 명세 구현 (tariff)", [["s5", 3872, 2805, 2421], ["s6", 4885, 3239, 2528], ["s7", 4590, 2745, 2264], ["s8", 4610, 2550, 2363], ["s9", 3674, 3040, 2073], ["s10", 5154, 3233, 2184], ["s11", 4601, 2838, 2757], ["s12", 4741, 3106, 2906]]]
+  ];
+  var IN_D = [1500, 7000], IN_T = [2000, 3000, 4000, 5000, 6000, 7000];
+  function k(v) { return v.toLocaleString("en-US"); }
+  var ic = document.getElementById("instChart");
+  INST.forEach(function (g) {
+    ic.appendChild(el("div", "in-group", esc(g[0])));
+    g[1].forEach(function (d) {
+      var row = el("div", "in-row data"); row.tabIndex = 0;
+      row.setAttribute("aria-label", g[0] + " " + d[0] + ": 베이스라인 " + k(d[1]) + ", P2 " + k(d[2]) + ", n09 " + k(d[3]) + " 토큰");
+      row.appendChild(el("span", "lab", d[0]));
+      var t = el("div", "fp-track"); addGrid(t, IN_D, IN_T, {});
+      var lo = Math.min(d[1], d[3]), hi = Math.max(d[1], d[3]);
+      var cn = el("div", "conn"); cn.style.left = xpos(lo, IN_D) + "%"; cn.style.width = (xpos(hi, IN_D) - xpos(lo, IN_D)) + "%"; t.appendChild(cn);
+      var b = el("div", "dot hollow"); b.style.setProperty("--c", "var(--v-base)"); b.style.left = xpos(d[1], IN_D) + "%"; t.appendChild(b);
+      var p = el("div", "dot v-ctrl"); p.style.left = xpos(d[2], IN_D) + "%"; t.appendChild(p);
+      var n = el("div", "dot v-best"); n.style.left = xpos(d[3], IN_D) + "%"; t.appendChild(n);
+      row.appendChild(t);
+      bindTip(row, function () {
+        return "<b>" + esc(g[0].split(" (")[1].replace(")", "")) + " " + d[0] + "</b>" +
+          '<div class="r"><span>베이스라인</span><span>' + k(d[1]) + "</span></div>" +
+          '<div class="r"><span>P2</span><span>' + k(d[2]) + " (" + pct(Math.round((d[2] / d[1] - 1) * 100)) + ")</span></div>" +
+          '<div class="r"><span>n09</span><span>' + k(d[3]) + " (" + pct(Math.round((d[3] / d[1] - 1) * 100)) + ")</span></div>";
+      });
+      ic.appendChild(row);
+    });
+  });
+  var iax = el("div", "in-row fp-axis"); iax.appendChild(el("span", "lab"));
+  var itr = el("div", "fp-track");
+  IN_T.forEach(function (v, i) { var s = el("span", "tick" + (i === IN_T.length - 1 ? " last" : ""), k(v)); s.style.left = xpos(v, IN_D) + "%"; itr.appendChild(s); });
+  iax.appendChild(itr); ic.appendChild(iax);
+  ic.appendChild(el("div", "axis-cap", "실행 1회의 출력 토큰. 축은 1,500에서 시작한다."));
+
+  /* ---------- 품질 표 ---------- */
+  var QUAL = [
+    ["r21", "강조형 P2 + H05", "−0.060 (−0.179)", false, "판정 불가", "qual"],
+    ["n09", "P2 + H05", "0.000 (0.000)", true, "유지", "best"],
+    ["r20", "P2 + H05 + n01", "+0.003 (0.000)", true, "유지", "best"],
+    ["h05", "만족화·재검증 금지", "+0.005 (0.000)", true, "유지", "best"],
+    ["r11", "강조형 P2", "0.000 (−0.005)", true, "유지", "same"],
+    ["p2", "간결 한 줄", "+0.003 (0.000)", true, "유지", "ctrl"],
+    ["n10", "P2 + H10b", "−0.006 (−0.019)", true, "유지", "same"],
+    ["r08", "\"간결하게.\"", "−0.009 (−0.021)", true, "유지", "same"],
+    ["n01", "과잉 사고 억제", "−0.009 (−0.021)", true, "유지", "weak"]
+  ];
+  var qb = document.querySelector("#qualTable tbody");
+  QUAL.forEach(function (q) {
+    var tr = el("tr");
+    tr.innerHTML = '<td><span class="pill v-' + q[5] + '" style="background:none;padding-left:0"><span class="mono" style="font-weight:600;color:var(--ink)">' + esc(q[0]) + "</span></span> <span class=\"muted\">" + esc(q[1]) + "</span></td>" +
+      '<td class="num">0 / 24</td><td class="num">0 / 24</td><td class="num">1.000</td>' +
+      '<td class="num ' + (q[3] ? "" : "bad") + '">' + q[2] + "</td>" +
+      "<td>" + (q[3] ? '<span class="good">✓ ' + q[4] + "</span>" : '<span class="bad">✕ ' + q[4] + " (하한 &lt; −0.05)</span>") + "</td>";
+    qb.appendChild(tr);
+  });
+
+  /* ---------- 1단계 → 2단계 덤벨 ---------- */
+  var DB = [
+    ["n09", "P2 + H05", "best", -28, -40],
+    ["r20", "P2 + H05 + n01", "best", -26, -35],
+    ["h05", "만족화·재검증 금지", "best", -26, -34],
+    ["r11", "강조형 P2", "same", -28, -27],
+    ["p2", "간결 한 줄 (R3 1단계 기준)", "ctrl", -25, -27],
+    ["n10", "P2 + H10b", "same", -23, -26],
+    ["r08", "\"간결하게.\"", "same", -26, -24],
+    ["n01", "과잉 사고 억제", "weak", -24, -21]
+  ];
+  var DB_D = [-45, -15], DB_T = [-45, -40, -35, -30, -25, -20, -15];
+  var dc = document.getElementById("dbChart");
+  var dh = el("div", "db-row fp-head"); dh.appendChild(el("div", "fp-label")); var dht = el("div", "fp-track");
+  var p2l = el("span", "toplab", "P2 2단계 " + pct(-27)); p2l.style.left = xpos(-27, DB_D) + "%"; dht.appendChild(p2l);
+  dh.appendChild(dht); dh.appendChild(el("div", "fp-value", '<span class="ci">1단계 → 2단계</span>')); dc.appendChild(dh);
+  DB.forEach(function (d) {
+    var row = el("div", "db-row data"); row.tabIndex = 0;
+    row.setAttribute("aria-label", d[0] + " " + d[1] + ": 1단계 " + pct(d[3]) + ", 2단계 " + pct(d[4]));
+    row.appendChild(el("div", "fp-label", '<span class="id">' + esc(d[0]) + '</span><span class="nm">' + esc(d[1]) + "</span>"));
+    var t = el("div", "fp-track"); addGrid(t, DB_D, DB_T, { p2: -27 });
+    var lo = Math.min(d[3], d[4]), hi = Math.max(d[3], d[4]);
+    var cn = el("div", "conn"); cn.style.left = xpos(lo, DB_D) + "%"; cn.style.width = (xpos(hi, DB_D) - xpos(lo, DB_D)) + "%"; t.appendChild(cn);
+    var a = el("div", "dot hollow v-" + d[2]); a.style.left = xpos(d[3], DB_D) + "%"; t.appendChild(a);
+    var b = el("div", "dot v-" + d[2]); b.style.left = xpos(d[4], DB_D) + "%"; t.appendChild(b);
+    row.appendChild(t);
+    var diff = d[4] - d[3];
+    row.appendChild(el("div", "fp-value", pct(d[3]) + ' → <b>' + pct(d[4]) + '</b> <span class="ci">(' + (diff === 0 ? "0" : num(diff)) + "p)</span>"));
+    bindTip(row, function () { return "<b>" + esc(d[0]) + "</b> " + esc(d[1]) + '<div class="r"><span>1단계 (12문제)</span><span>' + pct(d[3]) + '</span></div><div class="r"><span>2단계 (새 24문제)</span><span>' + pct(d[4]) + "</span></div>"; });
+    dc.appendChild(row);
+  });
+  dc.appendChild(axisRow("db-row", DB_D, DB_T, function (v) { return pct(v); }));
+  dc.appendChild(el("div", "axis-cap", "베이스라인 대비 출력 토큰 변화. r11·r20·r08은 R4 1단계, 나머지는 R3 1단계 값이다."));
+
+  /* ---------- 가설 목록 ---------- */
+  var CAT = { tool: "도구 호출", think: "thinking", text: "응답 텍스트", cross: "횡단", derived: "파생·조합" };
+  var HYP = [
+    ["tool", "1", "델타 인코딩", "rsync/VCDIFF, Aider edit formats. 기존 파일 재작성을 hook으로 막고 Edit를 쓰게 한다", "H01", "+13% (R2), 턴 +41%", "bad"],
+    ["tool", "2", "heredoc 파일 쓰기 금지", "채널 선택. 파일은 Write/Edit로만 쓴다", "H01에 포함", "+13% (H01)", "bad"],
+    ["tool", "3", "스크립트 사전·재사용", "LZ78 사전 코딩, 절차 기억. 긴 인라인 스크립트는 파일로 저장해 재사용", "H02", "+9% (R2), 턴 +32%", "bad"],
+    ["tool", "4", "후방 참조 (cp 후 Edit)", "LZ77, 문헌정보학의 인용. 비슷한 파일은 복사한 뒤 차이만 고친다", "r01", "+10% (R4)", "none"],
+    ["tool", "5", "Edit 앵커 최소화", "최소 고유 접두어. old_string을 고유한 최소 1~3줄로", "n07", "+4% (R3)", "none"],
+    ["tool", "6", "생성기 출력", "MDL, Kolmogorov 복잡도. 반복 데이터는 루프나 parametrize로", "n08", "+8% (R3)", "none"],
+    ["tool", "7", "결정론적 도구 위임", "예측 부호화. 기계적 변경은 sed·formatter로", "r02", "+1% (R4)", "none"],
+    ["tool", "8", "배치 실행", "RLE, CodeAct, Programmatic Tool Calling. 같은 작업은 루프 하나로", "H03", "−5% (R2), 턴 −12%", "none"],
+    ["tool", "9", "메모이제이션 (재확인 금지)", "캐싱. 방금 쓴 파일 재확인 금지, 테스트는 마지막 1회", "H05 일부, r14", "−16% (r14, R4)", "weak"],
+    ["tool", "10", "짧은 별칭", "Huffman 코딩. 자주 쓰는 긴 명령을 짧은 이름으로", "—", "픽스처에 Makefile이 필요해 제외", "untested"],
+    ["tool", "11", "짧은 명령 표기", "Zipf 최소 노력 원리. 상대 경로, 한 줄 명령, 주석 금지", "r03", "+1% (R4)", "none"],
+    ["tool", "12", "디코더측 매크로 확장", "비대칭 코덱. 모델은 @tpl:name만 쓰고 hook이 확장", "—", "구현 비용이 커서 제외", "untested"],
+    ["tool", "13", "심볼 단위 편집 MCP", "Serena. 함수 이름으로 지정해 편집", "—", "LSP 설정이 필요해 제외", "untested"],
+    ["tool", "14", "Fast-apply MCP", "Morph. 변경분만 출력하고 작은 모델이 병합", "—", "외부 API라 제외", "untested"],
+    ["tool", "15", "요청 외 산출물 금지", "Grice 양의 격률. 요청 없는 주석, README, 추가 테스트 금지", "H04", "−16% (R2), P2 대비 +13%", "weak"],
+    ["think", "16", "Chain of Draft", "Xu et al. 2025, 희소 부호화. 추론 단계당 5단어 초안", "H06, H06b", "H06 거부 21/21, H06b −15% 거부 4/28", "qual"],
+    ["think", "17", "Sketch-of-Thought", "Aytes et al. 2025, Miller 청킹. 기호·약어로 추론", "—", "thinking 형식 지정이라 거부 예상. r16으로 경계만 확인", "untested"],
+    ["think", "18", "토큰 예산 명시", "TALE, 뇌의 대사 예산. 필요한 출력 예산을 추정하고 그 안에서 끝낸다", "H07", "−21% (R2), P2 대비 +6%", "weak"],
+    ["think", "19", "단어 수 제한", "CCoT, Constrained-CoT. \"N단어 이내\"", "n03", "−20% (R3 1단계), 기준 미달", "weak"],
+    ["think", "20", "과잉 사고 억제", "\"Do NOT Think That Much\". 쉬운 일은 재검토 없이, 한 경로를 끝까지", "n01", "−21% (2단계), P2 대비 +8%", "weak"],
+    ["think", "21", "만족화", "Simon의 satisficing. 조건을 만족하는 첫 해를 채택", "H05, r15", "−34% (2단계), P2 대비 −9%", "best"],
+    ["think", "22", "전체 계획 후 지연 재계획", "arXiv 2605.08477. 처음에 계획하고 예외 때만 재계획", "n02", "−5% (R3)", "none"],
+    ["text", "23", "개조식, 명사형 종결", "국어 행정문서 관행. \"~함/~임\", 조사·경어 생략", "H08에 포함", "H08 참고", "weak"],
+    ["text", "24", "전보체", "전보 요금제, caveman. 인사·군말·헤징 제거", "H08", "−18% (R2), R3에서는 −4%", "weak"],
+    ["text", "25", "내레이션·복창 금지", "ICAO 표준 교신, brevity code. \"이제 ~하겠습니다\" 금지", "H08에 포함", "H08 참고", "weak"],
+    ["text", "26", "고정 보고 템플릿", "SOAP 노트, 역피라미드. 결과·변경·검증·미해결 6줄", "n04", "−1% (R3)", "none"],
+    ["text", "27", "예측 오류만 보고", "예측 부호화(Rao & Ballard). 예상과 다른 것만 서술", "n05", "−4% (R3)", "none"],
+    ["text", "28", "참조형 보고", "content addressing. 코드 대신 파일:줄로 가리킴", "n06", "+5% (R3)", "none"],
+    ["text", "29", "스키마 압축 출력", "TOON. 목록형 결과는 헤더 1회와 행으로", "r04", "+4% (R4)", "none"],
+    ["text", "30", "내장 Concise 스타일", "output style로 적용", "r05", "−11% (R4), CLAUDE.md보다 약함", "weak"],
+    ["cross", "31", "코드 스위칭", "사회언어학, 토크나이저 언어세. 추론·중간 보고는 영어로", "H09", "+3% (R2)", "none"],
+    ["cross", "32", "바이오피드백", "신경 바이오피드백. hook이 누적 출력 토큰을 알려준다", "H10, H10a, H10b", "전체 −26%, hook만 −3%, 문구만 −26%", "same"],
+    ["cross", "33", "출력 상한 설정", "하드 캡. 응답당 4,000 토큰", "r06", "+5% (R4)", "none"],
+    ["cross", "34", "서브에이전트 위임", "분업. 탐색은 서브에이전트에 맡긴다", "r07", "+10% (R4)", "none"],
+    ["cross", "35", "추론 effort 조절", "effort를 low나 medium으로", "—", "모델·effort 고정 규칙과 충돌해 제외", "untested"],
+    ["derived", "P1", "위약", "대조군. 무관한 프로젝트 배경 3줄", "p1_placebo", "+6% (R2)", "ctrl"],
+    ["derived", "P2", "간결 한 줄", "대조군. \"간결하게 답하고, 불필요한 출력을 줄인다.\"", "p2_concise", "−27% (2단계)", "ctrl"],
+    ["derived", "n09", "P2 + H05", "2차 결과에서 조합", "n09_p2_h05", "−40% (2단계), P2 대비 −17%", "best"],
+    ["derived", "r20", "P2 + H05 + n01", "R3 후보 조합", "r20_p2_h05_n01", "−35% (2단계), P2 대비 −11%", "best"],
+    ["derived", "r21", "강조형 P2 + H05", "R4 결과에서 조합", "r21_strong_h05", "−41% (2단계), Q4 하한 −0.179", "qual"],
+    ["derived", "n10", "P2 + H10b", "2차 결과에서 조합", "n10_p2_h10b", "−26% (2단계)", "same"],
+    ["derived", "r08", "\"간결하게.\"", "문구 길이", "r08_p2_short", "−24% (2단계)", "same"],
+    ["derived", "r09", "영어 P2", "지시 언어", "r09_p2_english", "−24% (R4)", "same"],
+    ["derived", "r10", "P2를 시스템 프롬프트에", "지시 위치 (--append-system-prompt)", "r10_p2_sysprompt", "−21% (R4)", "same"],
+    ["derived", "r11", "강조형 P2", "지시 강도 (\"반드시\", \"절대\")", "r11_p2_strong", "−27% (2단계), P2 대비 0%", "same"],
+    ["derived", "r12", "P2 + 좋은 예·나쁜 예", "few-shot", "r12_p2_examples", "−17% (R4), P2보다 못함", "weak"],
+    ["derived", "r13", "작업 후 요약 금지", "보고 단계 절감", "r13_no_summary", "−11% (R4)", "weak"],
+    ["derived", "r15", "첫 해법 채택만", "H05 분해 (만족화)", "r15_satisfice_only", "−24% (R4), thinking −39%", "same"],
+    ["derived", "r16", "필요한 만큼만 생각", "thinking 지시가 거부되는 경계 확인", "r16_think_less", "−13% (R4), 거부 0", "weak"],
+    ["derived", "r17", "파일은 한 번에 완성", "재작성 감소", "r17_write_once", "+3% (R4)", "none"],
+    ["derived", "r18", "말수 적은 시니어 엔지니어", "페르소나", "r18_persona_senior", "−12% (R4)", "weak"],
+    ["derived", "r19", "사용자는 전문가", "청자 모델 (Grice 격률을 청자 쪽에서)", "r19_user_expert", "+6% (R4)", "none"]
+  ];
+  var hb = document.querySelector("#hypTable tbody");
+  var chipsEl = document.getElementById("hypChips");
+  var hypFilter = "all";
+  function renderHyp() {
+    hb.innerHTML = "";
+    var lastCat = null;
+    HYP.forEach(function (h) {
+      if (hypFilter !== "all" && h[0] !== hypFilter) return;
+      if (hypFilter === "all" && h[0] !== lastCat) {
+        var g = el("tr", "grp"); g.innerHTML = '<td colspan="6">' + CAT[h[0]] + (h[0] === "derived" ? " (대조군, 문구·위치 변형, 조합)" : "") + "</td>"; hb.appendChild(g); lastCat = h[0];
+      }
+      var tr = el("tr");
+      tr.innerHTML = '<td class="idc">' + esc(h[1]) + "</td><td>" + esc(h[2]) + '</td><td class="src">' + esc(h[3]) + '</td><td class="nowrap mono" style="font-size:0.78rem">' + esc(h[4]) + "</td><td>" + esc(h[5]) + '</td><td><span class="pill v-' + h[6] + '">' + VL[h[6]] + "</span></td>";
+      hb.appendChild(tr);
+    });
+  }
+  var counts = { all: HYP.length };
+  HYP.forEach(function (h) { counts[h[0]] = (counts[h[0]] || 0) + 1; });
+  [["all", "전체"], ["tool", CAT.tool], ["think", CAT.think], ["text", CAT.text], ["cross", CAT.cross], ["derived", CAT.derived]].forEach(function (c) {
+    var b = el("button", "chip", esc(c[1]) + '<span class="c">' + counts[c[0]] + "</span>");
+    b.type = "button"; b.setAttribute("aria-pressed", c[0] === hypFilter ? "true" : "false");
+    b.addEventListener("click", function () {
+      hypFilter = c[0];
+      Array.prototype.forEach.call(chipsEl.children, function (x) { x.setAttribute("aria-pressed", "false"); });
+      b.setAttribute("aria-pressed", "true"); renderHyp();
+    });
+    chipsEl.appendChild(b);
+  });
+  renderHyp();
+
+  /* ---------- 복사 버튼 ---------- */
+  var copyBtn = document.getElementById("copyRule");
+  copyBtn.addEventListener("click", function () {
+    var txt = document.getElementById("ruleText").textContent;
+    function selectFallback() { var r = document.createRange(); r.selectNodeContents(document.getElementById("ruleText")); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); copyBtn.textContent = "선택됨. ⌘C로 복사"; }
+    try {
+      navigator.clipboard.writeText(txt).then(function () { copyBtn.textContent = "복사됨"; setTimeout(function () { copyBtn.textContent = "복사"; }, 1600); }, selectFallback);
+    } catch (e) { selectFallback(); }
+  });
+
+  /* ---------- 내비 현재 위치 ---------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll(".nav a.link"));
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (ents) {
+      ents.forEach(function (en) {
+        if (en.isIntersecting) { links.forEach(function (a) { a.classList.toggle("on", a.getAttribute("href") === "#" + en.target.id); }); }
+      });
+    }, { rootMargin: "-30% 0px -60% 0px" });
+    document.querySelectorAll("section.sec").forEach(function (s) { io.observe(s); });
+  }
+})();
+</script>

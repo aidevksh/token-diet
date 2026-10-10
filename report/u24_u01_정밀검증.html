@@ -1,0 +1,692 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>u24·u01 정밀 검증</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: 한 열 보고서(최대 68rem) + 상단 고정 섹션 내비. 차트는 HTML 그리드 행으로 그려 화면 폭에 맞춰 재배치한다. 모눈종이 같은 옅은 세로 격자가 실험 노트 느낌을 준다. */
+:root {
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --surface-2: #eef1f6;
+  --ink: #0e1626;
+  --ink-2: #465163;
+  --muted: #6f7b8f;
+  --line: #dde3eb;
+  --line-strong: #b5bfcc;
+  --accent: #1c5cab;
+  --accent-soft: #e4eefb;
+  --band: rgba(14, 22, 38, 0.045);
+  --v-best: #104281;
+  --v-same: #2a78d6;
+  --v-weak: #86b6ef;
+  --v-none: #a3acb9;
+  --v-bad: #e34948;
+  --v-qual: #eb6834;
+  --v-ctrl: #0e1626;
+  --v-base: #8a94a3;
+  --good-ink: #006300;
+  --bad-ink: #b42323;
+  --font-sans: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --step--1: 0.8125rem;
+  --step-0: 0.9375rem;
+  --step-1: 1.125rem;
+  --step-2: 1.5rem;
+  --step-3: 2.125rem;
+  --step-4: 3rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e131b; --surface: #151c26; --surface-2: #1c2531; --ink: #e8edf4; --ink-2: #b2bccb; --muted: #8692a4;
+    --line: #253041; --line-strong: #3b4859; --accent: #86b6ef; --accent-soft: #1a2a40; --band: rgba(232, 237, 244, 0.05);
+    --v-best: #cde2fb; --v-same: #3987e5; --v-weak: #1c5cab; --v-none: #5d6878; --v-bad: #e66767; --v-qual: #d95926;
+    --v-ctrl: #e8edf4; --v-base: #7d8798; --good-ink: #3fbf3f; --bad-ink: #f08a8a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e131b; --surface: #151c26; --surface-2: #1c2531; --ink: #e8edf4; --ink-2: #b2bccb; --muted: #8692a4;
+  --line: #253041; --line-strong: #3b4859; --accent: #86b6ef; --accent-soft: #1a2a40; --band: rgba(232, 237, 244, 0.05);
+  --v-best: #cde2fb; --v-same: #3987e5; --v-weak: #1c5cab; --v-none: #5d6878; --v-bad: #e66767; --v-qual: #d95926;
+  --v-ctrl: #e8edf4; --v-base: #7d8798; --good-ink: #3fbf3f; --bad-ink: #f08a8a;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 4rem; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-sans); font-size: var(--step-0); line-height: 1.7;
+  word-break: keep-all; overflow-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
+}
+table { font: inherit; color: inherit; border-collapse: collapse; }
+h1, h2, h3, h4 { text-wrap: balance; line-height: 1.3; margin: 0; letter-spacing: -0.01em; }
+p { margin: 0; }
+code, .mono { font-family: var(--font-mono); font-size: 0.92em; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+.wrap { max-width: 68rem; margin: 0 auto; padding-inline: 1.25rem; }
+@media (max-width: 480px) { .wrap { padding-inline: 1rem; } }
+
+/* 상단 내비 */
+.nav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(1.2) blur(8px); -webkit-backdrop-filter: saturate(1.2) blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.nav .wrap { display: flex; align-items: center; gap: 1.25rem; min-height: 3.25rem; }
+.nav .brand { font-family: var(--font-mono); font-weight: 600; font-size: var(--step--1); white-space: nowrap; color: var(--ink); text-decoration: none; }
+.nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 0.25rem; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+.nav ul::-webkit-scrollbar { display: none; }
+.nav a.link { display: block; padding: 0.3rem 0.6rem; border-radius: 6px; color: var(--ink-2); text-decoration: none; font-size: var(--step--1); white-space: nowrap; }
+.nav a.link:hover { background: var(--surface-2); color: var(--ink); }
+.nav a.link.on { color: var(--accent); background: var(--accent-soft); }
+
+/* 히어로 */
+.hero { padding-block: 3.5rem 2.5rem; display: grid; gap: 2rem; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.hero h1 { font-size: var(--step-4); font-weight: 700; letter-spacing: -0.03em; }
+.hero h1 .ko { display: block; font-size: var(--step-2); font-weight: 500; letter-spacing: -0.01em; color: var(--ink-2); margin-top: 0.5rem; }
+.hero .lede { font-size: var(--step-1); color: var(--ink-2); max-width: 44rem; }
+.hero .lede strong { color: var(--ink); }
+.meta-line { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; font-family: var(--font-mono); font-size: var(--step--1); color: var(--muted); }
+
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.kpi { padding: 1.1rem 1.25rem; display: grid; gap: 0.2rem; align-content: start; }
+.kpi + .kpi { border-left: 1px solid var(--line); }
+.kpi .label { font-size: var(--step--1); color: var(--ink-2); }
+.kpi .value { font-size: 2.25rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; }
+.kpi .value.accent { color: var(--accent); }
+.kpi .sub { font-size: 0.78rem; color: var(--muted); }
+@media (max-width: 760px) {
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpi:nth-child(3) { border-left: 0; }
+  .kpi:nth-child(n+3) { border-top: 1px solid var(--line); }
+}
+
+.rule-box { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.rule-box header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.6rem 1rem; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.rule-box header .t { font-family: var(--font-mono); font-size: var(--step--1); color: var(--ink-2); }
+.rule-box pre { margin: 0; padding: 1rem 1.1rem; font-family: var(--font-mono); font-size: 0.9rem; line-height: 1.8; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; color: var(--ink); }
+.btn { font: inherit; font-size: var(--step--1); color: var(--ink); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 6px; padding: 0.25rem 0.7rem; cursor: pointer; }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* 섹션 공통 */
+section.sec { padding-block: 3.5rem; border-top: 1px solid var(--line); }
+.sec-head { display: grid; gap: 0.6rem; margin-bottom: 2rem; max-width: 46rem; }
+.sec-head h2 { font-size: var(--step-3); font-weight: 700; letter-spacing: -0.02em; }
+.sec-head p { color: var(--ink-2); }
+h3 { font-size: var(--step-1); font-weight: 600; margin-bottom: 0.75rem; }
+.prose { max-width: 44rem; display: grid; gap: 0.9rem; }
+.muted { color: var(--muted); }
+.small { font-size: var(--step--1); }
+.stack { display: grid; gap: 2.5rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 820px) { .grid-2, .grid-3 { grid-template-columns: minmax(0, 1fr); } }
+.panel { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 1.25rem; min-width: 0; }
+.panel h4 { font-size: var(--step-0); font-weight: 600; margin-bottom: 0.4rem; }
+.panel .k { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); letter-spacing: 0.04em; }
+.figure { display: grid; gap: 0.9rem; min-width: 0; }
+.fig-title { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.25rem 1rem; }
+.fig-title h3 { margin: 0; }
+.fig-note { font-size: var(--step--1); color: var(--muted); }
+
+ul.clean { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+ul.dash { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.35rem; }
+ul.dash li::marker { color: var(--muted); }
+
+/* 판정 표시 */
+.v-best { --c: var(--v-best); } .v-same { --c: var(--v-same); } .v-weak { --c: var(--v-weak); }
+.v-none { --c: var(--v-none); } .v-bad { --c: var(--v-bad); } .v-qual { --c: var(--v-qual); }
+.v-ctrl { --c: var(--v-ctrl); } .v-untested { --c: var(--muted); }
+.pill { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; line-height: 1.5; padding: 0.1rem 0.55rem 0.1rem 0.45rem; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
+.pill::before { content: ""; flex: none; width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--c); }
+.pill.v-ctrl::before { border-radius: 1px; background: transparent; border: 1.5px solid var(--c); transform: rotate(45deg); width: 0.48rem; height: 0.48rem; }
+.pill.v-untested::before { background: transparent; border: 1.5px solid var(--muted); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; font-size: var(--step--1); color: var(--ink-2); }
+.legend .sw { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legend .line-sw { display: inline-block; width: 1.1rem; height: 0; border-top: 1px solid var(--line-strong); }
+.legend .band-sw { display: inline-block; width: 1.1rem; height: 0.8rem; background: var(--band); border: 1px solid var(--line); }
+.legend .p2-sw { display: inline-block; width: 0; height: 0.9rem; border-left: 1.5px solid var(--accent); }
+
+/* 탭 */
+.tabs { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.tab { font: inherit; font-size: var(--step--1); padding: 0.35rem 0.8rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer; }
+.tab:hover { border-color: var(--line-strong); color: var(--ink); }
+.tab[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.tab .sub { font-family: var(--font-mono); font-size: 0.7rem; opacity: 0.75; margin-left: 0.3rem; }
+
+/* 포레스트 플롯(행 그리드) */
+.chart { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 0.75rem 0.75rem 0.5rem; min-width: 0; }
+.fp-row {
+  display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr) 8.5rem 7rem;
+  grid-template-areas: "label track value pill"; align-items: center; column-gap: 0.75rem;
+  min-height: 2rem; border-radius: 6px; padding-inline: 0.4rem;
+}
+.fp-row.data { cursor: default; }
+.fp-row.data:hover, .fp-row.data:focus-visible { background: var(--surface-2); }
+.fp-row.data:focus-visible { outline-offset: -2px; }
+.fp-label { grid-area: label; min-width: 0; display: flex; align-items: baseline; gap: 0.5rem; line-height: 1.35; }
+.fp-label .id { font-family: var(--font-mono); font-weight: 600; font-size: 0.8rem; white-space: nowrap; }
+.fp-label .nm { font-size: var(--step--1); color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.fp-track { grid-area: track; position: relative; height: 2rem; min-width: 0; }
+.fp-value { grid-area: value; font-family: var(--font-mono); font-size: 0.78rem; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; color: var(--ink); }
+.fp-value .ci { color: var(--muted); }
+.fp-pill { grid-area: pill; justify-self: start; }
+.fp-head .fp-track, .fp-axis .fp-track { height: 1.4rem; }
+.gl { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px solid var(--line); }
+.gl.zero { border-left-color: var(--line-strong); }
+.gl.p2 { border-left: 1.5px solid var(--accent); opacity: 0.55; }
+.bandz { position: absolute; top: 0; bottom: 0; background: var(--band); }
+.whisk { position: absolute; top: 50%; height: 2px; margin-top: -1px; background: var(--c); border-radius: 1px; }
+.dot { position: absolute; top: 50%; width: 11px; height: 11px; border-radius: 50%; transform: translate(-50%, -50%); background: var(--c); box-shadow: 0 0 0 2px var(--surface); }
+.dot.v-ctrl { width: 9px; height: 9px; border-radius: 1px; background: var(--surface); border: 2px solid var(--c); transform: translate(-50%, -50%) rotate(45deg); box-shadow: none; }
+.dot.hollow { background: var(--surface); border: 2px solid var(--c); box-shadow: none; width: 10px; height: 10px; }
+.na { position: absolute; inset: 0; display: flex; align-items: center; font-size: var(--step--1); color: var(--muted); padding-left: 0.5rem; }
+.tick { position: absolute; top: 0.15rem; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tick.first { transform: none; } .tick.last { transform: translateX(-100%); }
+.toplab { position: absolute; bottom: 0.1rem; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent); white-space: nowrap; }
+.axis-cap { font-size: 0.75rem; color: var(--muted); padding: 0.25rem 0.4rem 0; }
+@media (max-width: 680px) {
+  .fp-row { grid-template-columns: minmax(0, 1fr) 7.6rem; grid-template-areas: "label pill" "track value"; row-gap: 0; padding-block: 0.25rem; }
+  .fp-head, .fp-axis { padding-block: 0; }
+  .fp-head .fp-label, .fp-axis .fp-label, .fp-head .fp-pill, .fp-axis .fp-pill { display: none; }
+  .fp-head, .fp-axis { grid-template-areas: "track value"; }
+  .fp-pill { justify-self: end; }
+  .fp-track { height: 1.6rem; }
+}
+
+/* 덤벨, 문제별 차트 */
+.db-row { display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr) 9rem; grid-template-areas: "label track value"; align-items: center; column-gap: 0.75rem; min-height: 2rem; padding-inline: 0.4rem; border-radius: 6px; }
+.db-row.data:hover, .db-row.data:focus-visible { background: var(--surface-2); }
+.db-row .fp-value { grid-area: value; }
+.conn { position: absolute; top: 50%; height: 2px; margin-top: -1px; background: var(--line-strong); }
+@media (max-width: 680px) {
+  .db-row { grid-template-columns: minmax(0, 1fr) 7.6rem; grid-template-areas: "label value" "track track"; padding-block: 0.25rem; }
+  .db-row.fp-head, .db-row.fp-axis { grid-template-areas: "track track"; }
+  .db-row.fp-head .fp-label, .db-row.fp-axis .fp-label, .db-row.fp-head .fp-value, .db-row.fp-axis .fp-value { display: none; }
+}
+.in-row { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); align-items: center; column-gap: 0.75rem; min-height: 1.45rem; padding-inline: 0.4rem; border-radius: 4px; }
+.in-row.data:hover, .in-row.data:focus-visible { background: var(--surface-2); }
+.in-row .fp-track { height: 1.45rem; }
+.in-row .lab { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-2); white-space: nowrap; }
+.in-group { font-size: 0.75rem; font-weight: 600; color: var(--ink-2); padding: 0.6rem 0.4rem 0.15rem; }
+.in-row .dot { width: 9px; height: 9px; }
+.in-row .dot.v-ctrl { width: 8px; height: 8px; }
+
+/* 툴팁 */
+.tip { position: fixed; z-index: 50; pointer-events: none; max-width: 18rem; background: var(--ink); color: var(--bg); border-radius: 8px; padding: 0.55rem 0.75rem; font-size: 0.78rem; line-height: 1.55; box-shadow: 0 6px 24px rgba(0,0,0,0.18); }
+.tip b { font-family: var(--font-mono); }
+.tip .r { display: flex; justify-content: space-between; gap: 1rem; font-variant-numeric: tabular-nums; }
+.tip .r span:last-child { font-family: var(--font-mono); }
+.tip .n { margin-top: 0.3rem; opacity: 0.85; }
+
+/* 표 */
+details.tv { font-size: var(--step--1); }
+details.tv summary { cursor: pointer; color: var(--ink-2); width: fit-content; }
+details.tv summary:hover { color: var(--accent); }
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); margin-top: 0.6rem; }
+table.t { width: 100%; font-size: var(--step--1); }
+table.t th, table.t td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.t thead th { font-weight: 600; color: var(--ink-2); background: var(--surface-2); white-space: nowrap; position: sticky; top: 0; }
+table.t tbody tr:last-child td { border-bottom: 0; }
+table.t td.num, table.t th.num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.t td.idc { font-family: var(--font-mono); font-weight: 600; white-space: nowrap; }
+table.t td.src { color: var(--muted); }
+table.t td.nowrap { white-space: nowrap; }
+.good { color: var(--good-ink); } .bad { color: var(--bad-ink); }
+
+/* 막대 목록 (출력 구성) */
+.bars { display: grid; gap: 0.55rem; }
+.bar-row { display: grid; grid-template-columns: minmax(0, 13rem) minmax(0, 1fr) 7.5rem; align-items: center; gap: 0.75rem; }
+.bar-row .lab { font-size: var(--step--1); color: var(--ink-2); line-height: 1.35; }
+.bar-track { height: 14px; position: relative; }
+.bar { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 4px 4px 0; background: var(--c); }
+.bar-row .val { font-family: var(--font-mono); font-size: 0.78rem; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.c-tool { --c: var(--v-same); } .c-text { --c: var(--v-qual); }
+@media (max-width: 560px) { .bar-row { grid-template-columns: minmax(0, 1fr) 6.5rem; } .bar-row .bar-track { grid-column: 1 / -1; grid-row: 2; } }
+
+/* 과정 */
+.flow { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.flow li { list-style: none; padding: 1rem 0.9rem 1.1rem; display: grid; gap: 0.35rem; align-content: start; position: relative; min-width: 0; }
+.flow li + li { border-left: 1px solid var(--line); }
+.flow .n { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); font-weight: 600; }
+.flow h4 { font-size: var(--step-0); font-weight: 600; }
+.flow p { font-size: 0.8rem; color: var(--ink-2); line-height: 1.55; }
+.flow code { font-size: 0.74rem; overflow-wrap: anywhere; }
+@media (max-width: 980px) { .flow { grid-template-columns: repeat(3, minmax(0, 1fr)); } .flow li:nth-child(4) { border-left: 0; } .flow li:nth-child(n+4) { border-top: 1px solid var(--line); } }
+@media (max-width: 560px) { .flow { grid-template-columns: minmax(0, 1fr); } .flow li + li { border-left: 0; border-top: 1px solid var(--line); } }
+
+.rounds { display: grid; gap: 0; border-left: 2px solid var(--line); margin-left: 0.4rem; }
+.round { position: relative; padding: 0 0 1.75rem 1.5rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 15rem); gap: 0.5rem 2rem; }
+.round:last-child { padding-bottom: 0; }
+.round::before { content: ""; position: absolute; left: -7px; top: 0.35rem; width: 12px; height: 12px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); }
+.round h4 { font-size: var(--step-1); font-weight: 600; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.6rem; }
+.round h4 .tag { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); font-weight: 500; }
+.round .body { display: grid; gap: 0.5rem; min-width: 0; }
+.round .body p { color: var(--ink-2); font-size: var(--step--1); }
+.round .find { font-size: var(--step--1); padding: 0.5rem 0.75rem; background: var(--surface-2); border-radius: 6px; }
+.round .find b { font-weight: 600; }
+.round .nums { display: grid; gap: 0.5rem; align-content: start; font-size: var(--step--1); }
+.mini { display: grid; grid-template-columns: 3.5rem minmax(0, 1fr) 4.5rem; align-items: center; gap: 0.5rem; }
+.mini .k { color: var(--muted); font-size: 0.75rem; }
+.mini .bt { height: 8px; position: relative; background: var(--surface-2); border-radius: 4px; }
+.mini .bf { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 4px; }
+.mini .v { font-family: var(--font-mono); font-size: 0.75rem; text-align: right; font-variant-numeric: tabular-nums; }
+@media (max-width: 700px) { .round { grid-template-columns: minmax(0, 1fr); } }
+
+/* 필터 칩 */
+.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.chip { font: inherit; font-size: var(--step--1); padding: 0.25rem 0.75rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer; }
+.chip:hover { border-color: var(--line-strong); }
+.chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.chip .c { font-family: var(--font-mono); font-size: 0.7rem; margin-left: 0.25rem; opacity: 0.8; }
+table.hyp td:nth-child(2) { min-width: 9rem; }
+table.hyp td:nth-child(3) { min-width: 12rem; }
+table.hyp td:nth-child(5) { min-width: 11rem; }
+tr.grp td { background: var(--surface-2); font-weight: 600; font-size: 0.78rem; color: var(--ink-2); padding-block: 0.35rem; }
+
+/* 유의미한 가설 카드 */
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 760px) { .cards { grid-template-columns: minmax(0, 1fr); } }
+.card { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 1.2rem 1.25rem; display: grid; gap: 0.7rem; align-content: start; min-width: 0; }
+.card.lead { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.card .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; }
+.card .top .id { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+.card h4 { font-size: var(--step-1); font-weight: 600; }
+.card .big { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; align-items: baseline; }
+.card .big .n { font-size: 1.9rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
+.card .big .u { font-size: var(--step--1); color: var(--muted); }
+.card .q { font-family: var(--font-mono); font-size: 0.8rem; background: var(--surface-2); border-radius: 6px; padding: 0.55rem 0.7rem; line-height: 1.65; color: var(--ink); white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; }
+.card p { font-size: var(--step--1); color: var(--ink-2); }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 820px) { .facts { grid-template-columns: minmax(0, 1fr); } }
+.fact { border-top: 2px solid var(--ink); padding-top: 0.75rem; display: grid; gap: 0.4rem; align-content: start; }
+.fact h4 { font-size: var(--step-0); font-weight: 600; }
+.fact p { font-size: var(--step--1); color: var(--ink-2); }
+.fact .cmp { display: grid; gap: 0.3rem; margin-top: 0.25rem; }
+.fact .cmp div { display: flex; justify-content: space-between; gap: 0.75rem; font-size: var(--step--1); border-bottom: 1px dotted var(--line); padding-bottom: 0.2rem; }
+.fact .cmp span:last-child { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* 결론, 한계 */
+ol.concl { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: c; }
+ol.concl li { counter-increment: c; display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); gap: 0.25rem 1rem; padding-block: 1.1rem; border-bottom: 1px solid var(--line); }
+ol.concl li:first-child { padding-top: 0; }
+ol.concl li::before { content: counter(c, decimal-leading-zero); font-family: var(--font-mono); font-size: var(--step--1); color: var(--accent); font-weight: 600; padding-top: 0.15rem; }
+ol.concl h4 { font-size: var(--step-1); font-weight: 600; margin-bottom: 0.3rem; }
+ol.concl p { color: var(--ink-2); max-width: 46rem; }
+.lims { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.lim { padding: 1.1rem 1.25rem; display: grid; gap: 0.35rem; align-content: start; border-bottom: 1px solid var(--line); min-width: 0; }
+.lim:nth-child(odd) { border-right: 1px solid var(--line); }
+.lim:nth-last-child(-n+2) { border-bottom: 0; }
+.lim h4 { font-size: var(--step-0); font-weight: 600; }
+.lim p { font-size: var(--step--1); color: var(--ink-2); }
+.lim .fix { font-size: 0.78rem; color: var(--accent); }
+@media (max-width: 760px) { .lims { grid-template-columns: minmax(0, 1fr); } .lim:nth-child(odd) { border-right: 0; } .lim:nth-last-child(2) { border-bottom: 1px solid var(--line); } }
+
+/* 2차 실험 계획 */
+.q-block { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.q-block > header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--line); display: grid; gap: 0.35rem; }
+.q-block > header .tr { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.q-block > header .tag { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; color: var(--accent); }
+.q-block > header .prio { font-size: 0.72rem; padding: 0.05rem 0.5rem; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--ink-2); }
+.q-block > header h4 { font-size: var(--step-1); font-weight: 600; }
+.q-block > header p { color: var(--ink-2); font-size: var(--step--1); }
+.q-body { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.q-body > div { padding: 1rem 1.25rem; min-width: 0; display: grid; gap: 0.4rem; align-content: start; }
+.q-body > div + div { border-left: 1px solid var(--line); }
+.q-body .k { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.04em; }
+.q-body ul { margin: 0; padding-left: 1rem; display: grid; gap: 0.3rem; font-size: var(--step--1); color: var(--ink-2); }
+@media (max-width: 860px) { .q-body { grid-template-columns: minmax(0, 1fr); } .q-body > div + div { border-left: 0; border-top: 1px solid var(--line); } }
+.cond-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.cc { font-family: var(--font-mono); font-size: 0.72rem; padding: 0.1rem 0.45rem; border-radius: 4px; background: var(--surface-2); color: var(--ink); white-space: nowrap; }
+.cc.new { background: var(--accent-soft); color: var(--accent); }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.steps li { display: grid; grid-template-columns: 2.25rem minmax(0, 1fr); gap: 1rem; padding-block: 0.9rem; border-bottom: 1px solid var(--line); }
+.steps li:last-child { border-bottom: 0; }
+.steps .sn { width: 1.9rem; height: 1.9rem; border-radius: 50%; border: 1.5px solid var(--accent); color: var(--accent); display: grid; place-items: center; font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600; }
+.steps h4 { font-size: var(--step-0); font-weight: 600; }
+.steps p, .steps ul { font-size: var(--step--1); color: var(--ink-2); }
+.criteria { display: grid; gap: 0; }
+.crit { display: grid; grid-template-columns: 8rem minmax(0, 1fr); gap: 1rem; padding: 0.6rem 0; border-bottom: 1px solid var(--line); font-size: var(--step--1); }
+.crit:last-child { border-bottom: 0; }
+.crit .k { color: var(--muted); }
+@media (max-width: 520px) { .crit { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; } }
+.decide { display: grid; gap: 0.6rem; }
+.dec { display: grid; grid-template-columns: minmax(0, 1fr) 1.5rem minmax(0, 1.2fr); gap: 0.75rem; align-items: center; padding: 0.75rem 1rem; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: var(--step--1); }
+.dec .if { color: var(--ink); }
+.dec .arr { color: var(--muted); text-align: center; font-family: var(--font-mono); }
+.dec .then { color: var(--ink-2); }
+@media (max-width: 640px) { .dec { grid-template-columns: minmax(0, 1fr); gap: 0.25rem; } .dec .arr { text-align: left; } }
+
+footer.foot { padding-block: 2.5rem 3.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: var(--step--1); }
+footer.foot code { font-size: 0.78rem; }
+</style>
+<style>
+:root { --neg: 42, 120, 214; --pos: 227, 73, 72; --cell-ink: var(--ink); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --neg: 57, 135, 229; --pos: 230, 103, 103; } }
+:root[data-theme="dark"] { --neg: 57, 135, 229; --pos: 230, 103, 103; }
+.hm { width: 100%; border-collapse: separate; border-spacing: 2px; font-size: var(--step--1); }
+.hm th { font-weight: 500; color: var(--ink-2); padding: 0.35rem 0.4rem; text-align: center; vertical-align: bottom; line-height: 1.3; }
+.hm th.dom { font-size: 0.72rem; color: var(--muted); border-bottom: 1px solid var(--line); }
+.hm th.rowh { text-align: left; white-space: nowrap; vertical-align: middle; }
+.hm th.rowh .id { font-family: var(--font-mono); font-weight: 600; color: var(--ink); margin-right: 0.4rem; }
+.hm td { text-align: center; padding: 0.5rem 0.3rem; border-radius: 4px; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 0.78rem; color: var(--ink); background: var(--surface-2); min-width: 4.2rem; position: relative; cursor: default; }
+.hm td.win { box-shadow: inset 0 0 0 2px var(--ink); font-weight: 600; }
+.hm td .ci { display: block; font-size: 0.66rem; color: var(--ink-2); font-weight: 400; }
+.hm td .warn { position: absolute; top: 2px; right: 4px; font-size: 0.7rem; color: var(--bad-ink); font-family: var(--font-sans); }
+.hm td.all { border-left: 2px solid var(--line-strong); }
+.hm-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.2rem; font-size: var(--step--1); color: var(--ink-2); }
+.hm-legend .ramp { display: inline-flex; gap: 2px; vertical-align: middle; }
+.hm-legend .ramp span { width: 1.4rem; height: 0.8rem; border-radius: 2px; }
+.hm-legend .box { display: inline-block; width: 1.1rem; height: 0.8rem; border-radius: 2px; box-shadow: inset 0 0 0 2px var(--ink); vertical-align: middle; margin-right: 0.3rem; }
+.cond-def { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 0.75rem; }
+.cond-def .panel h4 { display: flex; gap: 0.5rem; align-items: baseline; }
+.cond-def .panel h4 .mono { font-size: 0.8rem; color: var(--accent); }
+</style>
+
+<nav class="nav" aria-label="섹션">
+  <div class="wrap">
+    <a class="brand" href="#top">token-diet · 정밀 검증</a>
+    <ul>
+      <li><a class="link" href="#design">설계</a></li>
+      <li><a class="link" href="#overall">전체 결과</a></li>
+      <li><a class="link" href="#family">유형별 결과</a></li>
+      <li><a class="link" href="#decomp">분해</a></li>
+      <li><a class="link" href="#quality">품질</a></li>
+      <li><a class="link" href="#concl">결론</a></li>
+      <li><a class="link" href="#limits">한계</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="top">
+<div class="wrap">
+
+<header class="hero">
+  <div class="eyebrow">Token Diet · u24·u01 정밀 검증 · 2026-10-10</div>
+  <h1>하나로 다 되는 설정은 없었다. 일의 종류에 따라 골라 써야 한다
+    <span class="ko">조건 8개 × 태스크 56개, 576회. u24는 가장 많이 줄였지만 거짓 성공으로 탈락했다. 값 정보를 뺀 사전 맥락(u01n)만 모든 유형에서 안전했다.</span>
+  </h1>
+  <p class="lede">2차 실험에서 통과한 조합 u24와, 그 주된 동력으로 보인 사전 맥락 u01을 더 많고 다양한 태스크로 다시 쟀다. 전체로 보면 <strong>u24가 n09보다 18% 더 줄였지만, 명세 구현 문제에서 거짓 성공 2건이 나와 사전 규칙대로 탈락</strong>했다. 대신 효과는 일의 종류에 따라 뚜렷하게 갈렸다. 코드 수정에서는 사전 맥락 없이도 −24%가 나왔고, 수학·퍼즐·리팩터에서는 어떤 가설도 n09를 확실히 넘지 못했다.</p>
+  <div class="meta-line"><span>claude-opus-5-5 · effort high · CLI 2.1.296</span><span>576회 · 정가 $112.16 (Q4 채점 $8.68 별도)</span><span>5시간 한도 안에서 중단 없이 완료</span></div>
+  <div class="kpis" role="list">
+    <div class="kpi" role="listitem"><span class="label">모든 유형에서 안전한 설정</span><span class="value accent">−11%</span><span class="sub">u01n, n09 대비 · CI −15 ~ −7% · 품질 경고 0</span></div>
+    <div class="kpi" role="listitem"><span class="label">코드 수정 영역</span><span class="value">−24%</span><span class="sub">u24m, n09 대비 · 태스크 18개 · 품질 경고 0</span></div>
+    <div class="kpi" role="listitem"><span class="label">가장 많이 줄인 설정</span><span class="value">−18%</span><span class="sub">u24 전체 · 거짓 성공 2건으로 탈락</span></div>
+    <div class="kpi" role="listitem"><span class="label">n09보다 나은 가설이 없던 영역</span><span class="value">3</span><span class="sub">수학(도구 없음), 퍼즐, 리팩터</span></div>
+  </div>
+</header>
+
+
+<section class="sec" id="design">
+  <div class="sec-head">
+    <span class="eyebrow">설계</span>
+    <h2>조건 8개 × 태스크 56개, 유형별 판정을 미리 정했다</h2>
+    <p>2차 실험에서 통과한 u24와, 그 주된 동력으로 보인 u01을 검증했다. 처음 실험에서 쓴 수학·퍼즐·코드 수정·기능 구현·리팩터·데이터 분석 태스크를 다시 넣었다. 그래서 전체 효과와 함께 "어떤 유형의 일에서 효과가 있는가"를 볼 수 있다.</p>
+  </div>
+  <div class="stack">
+    <div class="cond-def">
+      <div class="panel"><span class="k">검증 대상</span><h4><span class="mono">u24</span>조합</h4><p class="small muted">n09 + 사전 맥락(u01) + 탐색 정지·명세 신뢰(u05) + 짧은 경로(u16) + Concise 스타일(u11)</p></div>
+      <div class="panel"><span class="k">검증 대상</span><h4><span class="mono">u01</span>사전 맥락 적재</h4><p class="small muted">n09 + 실행 전에 만든 파일 목록·작은 파일 전문·DB 스키마·표본 행·고유값 목록</p></div>
+      <div class="panel"><span class="k">분해</span><h4><span class="mono">u24m</span>u24에서 사전 맥락 뺌</h4><p class="small muted">u05 + u16 + u11만. 사전 맥락을 뺀 나머지 요소가 얼마나 기여하는지 본다.</p></div>
+      <div class="panel"><span class="k">분해</span><h4><span class="mono">u01n</span>u01에서 값 정보 뺌</h4><p class="small muted">DB 표본 행과 고유값 목록을 빼고 구조만 준다. 출력 절감과 "함정을 미리 보여 주는" 정보 효과를 나눈다.</p></div>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <span class="k">태스크 56개</span>
+        <ul class="dash small" style="margin-top:0.4rem">
+          <li>생성기 새 문제 48개(seed 13~28): 규칙 수정·매출 분석·배송비 명세 구현 각 16개, 각 1회</li>
+          <li>고정 태스크 8개, 각 3회: 수학 2개(도구 금지), 발표 배치 퍼즐, 버그 수정, 큰 파일 규칙 수정, 기능 추가, 리팩터, 데이터 분석</li>
+          <li>대조군 4개(베이스라인, P1, P2, n09)를 같은 날 함께 실행. 합계 576회</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <span class="k">판정 (실행 전 고정)</span>
+        <ul class="dash small" style="margin-top:0.4rem">
+          <li>전체: n09 대비 출력 토큰 CI 상한 &lt; 0, 품질 비열등(δ=0.05, Q4 포함), 거짓 성공이 베이스라인보다 많지 않음</li>
+          <li>유형별: 그 유형의 n09 대비 CI 상한 &lt; 0이고 품질 경고(점수 1 미만이 n09보다 많음, 거짓 성공 증가, API 거부)가 없으면 "그 유형에서 우수"</li>
+          <li>CI는 태스크와 반복을 함께 재표집하는 2단계 부트스트랩</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="overall">
+  <div class="sec-head"><span class="eyebrow">전체 결과</span>
+  <h2>전체로는 u01n과 u24m이 통과했고, u24는 탈락했다</h2>
+  <p>태스크 56개를 모두 묶은 결과다. 판정은 Q4를 포함한 사전 등록 기준(<code>analyze_gen.py</code>)을 따랐다.</p>
+  <ul class="dash small" style="max-width:46rem">
+    <li><b>u24:</b> 출력이 가장 많이 줄었다. 하지만 거짓 성공이 2건으로 베이스라인(1건)보다 많아 거부권 규칙에 걸렸다.</li>
+    <li><b>u01 원안:</b> −6%(CI −11 ~ −0%)로 겨우 통과했다. 값 정보를 뺀 u01n(−11%)보다 덜 줄였다.</li>
+  </ul>
+</div>
+  <div class="stack">
+    <div class="chart" id="fpAll"></div>
+    <details class="tv"><summary>표로 보기</summary><div class="tbl-wrap"><table class="t" id="allTable"></table></div></details>
+  </div>
+</section>
+
+<section class="sec" id="family">
+  <div class="sec-head"><span class="eyebrow">유형별 결과</span>
+  <h2>코드 수정과 데이터 분석에서는 크게 줄고, 수학·퍼즐·리팩터에서는 차이가 없다</h2>
+  <p>열은 태스크 유형, 행은 조건이다. 굵은 테두리는 사전 등록한 유형별 기준을 통과한 칸이다. 기준은 n09 대비 CI 상한이 0보다 작고 품질 경고가 없는 것이다.</p>
+  <ul class="dash small" style="max-width:46rem">
+    <li><b>코드 수정(규칙 수정, 큰 파일):</b> 탐색 정지·Concise·짧은 경로 조합(u24m)만으로 −18 ~ −25%였다.</li>
+    <li><b>데이터 분석:</b> 사전 맥락 원안(u01)을 뺀 모든 가설이 −10 ~ −20%였다.</li>
+    <li><b>도구 없이 푸는 수학, 퍼즐, 리팩터:</b> 대부분 구분되지 않았다. 사전 맥락 원안(u01)은 퍼즐 +33%, 버그 수정 +29%, 리팩터 +22%로 오히려 늘었다.</li>
+  </ul>
+</div>
+  <div class="stack">
+    <div class="figure">
+      <div class="hm-legend">
+        <span>n09 대비 출력 토큰</span>
+        <span class="ramp"><span style="background:rgba(var(--neg),0.75)"></span><span style="background:rgba(var(--neg),0.4)"></span><span style="background:var(--surface-2)"></span><span style="background:rgba(var(--pos),0.4)"></span><span style="background:rgba(var(--pos),0.75)"></span></span>
+        <span>−30% ← 0 → +30%</span>
+        <span><span class="box"></span>그 유형에서 n09보다 우수 (CI 상한 &lt; 0, 품질 경고 없음)</span>
+        <span><span class="bad">!</span> 품질 경고</span>
+      </div>
+      <div class="tbl-wrap" style="margin-top:0.6rem;padding:0.5rem"><table class="hm" id="heat"></table></div>
+      <p class="fig-note">칸 아래 작은 숫자는 95% CI다. 생성기 유형은 문제 16개, 고정 태스크는 1개 × 3회라 CI가 넓다. 칸에 마우스를 올리면 베이스라인 대비 수치와 품질이 보인다.</p>
+    </div>
+    
+    <div class="figure">
+      <div class="fig-title"><h3>영역별 권장 설정 (MoE식 라우팅)</h3><span class="fig-note">품질 경고 없이 n09보다 확실히 줄인 설정 가운데 효과가 가장 큰 것</span></div>
+      <div class="tbl-wrap" style="margin-top:0">
+        <table class="t">
+          <thead><tr><th>영역</th><th>근거 태스크</th><th>권장 설정</th><th class="num">n09 대비 (95% CI)</th><th>피할 것</th></tr></thead>
+          <tbody>
+            <tr><td><b>코드 수정</b><br><span class="muted small">버그·규칙·큰 파일</span></td><td>생성기 16 + 고정 2 (18개)</td><td><span class="pill v-best">u24m</span> 탐색 정지 + Concise + 짧은 경로</td><td class="num"><b>−24%</b> (−30 ~ −16)</td><td class="small">u24는 −27%이지만 규칙 수정 1건에서 변경 최소성 하락</td></tr>
+            <tr><td><b>데이터 분석</b><br><span class="muted small">SQLite 집계</span></td><td>생성기 16 + 고정 1 (17개)</td><td><span class="pill v-best">u24</span> 조합</td><td class="num"><b>−14%</b> (−19 ~ −9)</td><td class="small">없음. u24m −11%, u01n −10%도 통과</td></tr>
+            <tr><td><b>명세 구현</b><br><span class="muted small">배송비·기능 추가</span></td><td>생성기 16 + 고정 1 (17개)</td><td><span class="pill v-best">u01n</span> 사전 맥락 (구조만)</td><td class="num"><b>−11%</b> (−16 ~ −5)</td><td class="small">u24·u24m: 거짓 성공 (탐색 정지·명세 신뢰 규칙)</td></tr>
+            <tr><td><b>수학 (도구 없음)</b></td><td>고정 2 × 3회</td><td><span class="pill v-ctrl">n09 유지</span></td><td class="num">—</td><td class="small">u24: 격자 경로 3회 중 1회 오답</td></tr>
+            <tr><td><b>퍼즐 · 리팩터</b></td><td>고정 1 × 3회씩</td><td><span class="pill v-ctrl">n09 유지</span></td><td class="num">—</td><td class="small">u01: +22 ~ +33%. 근거 태스크가 1개라 결론 보류</td></tr>
+            <tr><td><b>설정 하나만 쓴다면</b></td><td>전체 56개</td><td><span class="pill v-best">u01n</span></td><td class="num"><b>−11%</b> (−14 ~ −7)</td><td class="small">모든 유형에서 품질 경고 0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<section class="sec" id="decomp">
+  <div class="sec-head">
+    <span class="eyebrow">분해</span>
+    <h2>값 정보는 필요 없었고, 조합의 힘은 영역마다 다른 요소에서 나왔다</h2>
+  </div>
+  <div class="facts">
+    <div class="fact">
+      <h4>사전 맥락은 구조만 줄 때 더 낫다</h4>
+      <p>DB 표본 행과 고유값 목록을 뺀 u01n이 원안 u01보다 더 줄였고 품질도 같았다. 값 정보 때문에 출력이 준 것이 아니므로, 2차 실험에서 우려한 "함정을 미리 보여 준 효과"는 아니었다.</p>
+      <div class="cmp"><div><span>u01 (값 정보 포함)</span><span>−6%</span></div><div><span>u01n (구조만)</span><span>−11%</span></div><div><span>u01 퍼즐·리팩터·버그 수정</span><span>+22 ~ +33%</span></div></div>
+    </div>
+    <div class="fact">
+      <h4>코드 수정에서는 사전 맥락이 아니라 탐색 정지가 일했다</h4>
+      <p>코드 수정 영역에서 사전 맥락을 뺀 u24m이 −24%로 u24(−27%)와 거의 같았다. 사전 맥락의 몫은 작고, 탐색 정지·Concise·짧은 경로가 효과의 대부분을 냈다.</p>
+      <div class="cmp"><div><span>u24 코드 수정</span><span>−27%</span></div><div><span>u24m 코드 수정</span><span>−24%</span></div><div><span>u01n 코드 수정</span><span>−15%</span></div></div>
+    </div>
+    <div class="fact">
+      <h4>명세 구현에서는 반대로 사전 맥락이 일했다</h4>
+      <p>배송비 명세 구현에서 u24m은 +7%(구분 안 됨)였고 거짓 성공이 나왔다. 사전 맥락이 있는 u01n·u24는 −11%였다. "명세를 그대로 믿고 확인하지 않는다"는 규칙은 명세 해석이 필요한 일에서 위험했다.</p>
+      <div class="cmp"><div><span>u24m 명세 구현</span><span>+7%, 거짓 성공 1</span></div><div><span>u01n 명세 구현</span><span>−11%, 경고 0</span></div><div><span>u24 명세 구현</span><span>−11%, 거짓 성공 2</span></div></div>
+    </div>
+  </div>
+</section>
+
+
+<section class="sec" id="quality">
+  <div class="sec-head"><span class="eyebrow">품질</span>
+  <h2>품질 문제는 명세 구현과 도구 없는 수학에 몰렸다</h2>
+  <p>아래는 점수가 1 미만이었거나 거짓 성공이 나온 실행이 있는 유형만 모은 표다. 배송비 명세 구현의 s17은 어려운 문제다. 베이스라인과 위약도 무작위 주문 400건 중 1건을 틀리고 DONE으로 보고했다. 그래서 거짓 성공의 기준선이 1건이다.</p>
+</div>
+  <div class="tbl-wrap" style="margin-top:0"><table class="t" id="qualTable"></table></div>
+  
+  <div class="grid-2" style="margin-top:1rem">
+    <div class="note-box"><b>u24의 거짓 성공 2건</b><span>둘 다 배송비 명세 구현(s15, s17)에서 400건 중 1건을 틀린 경우다. u24m도 s15에서 같은 실수를 했다. 공통 요소는 탐색 정지와 명세 신뢰 규칙(u05)이다.</span></div>
+    <div class="note-box"><b>u24의 수학 오답 1건</b><span>도구 없이 푸는 격자 경로 문제에서 3회 중 1회 6561(정답 4374)을 답했다. 도구가 없으니 사전 맥락과 경로 단축은 의미가 없고, 남는 차이는 탐색 정지 규칙과 Concise 스타일이다. 반복이 3회뿐이라 우연일 수 있지만, 수학에는 n09를 유지하는 쪽이 안전하다.</span></div>
+  </div>
+
+</section>
+
+
+<section class="sec" id="concl">
+  <div class="sec-head"><span class="eyebrow">결론</span><h2>출력 절감 설정은 일의 종류별로 고르는 편이 낫다</h2></div>
+  <ol class="concl">
+    <li><div><h4>u24는 단일 권장 설정으로 채택하지 않는다</h4><p>전체 −18%로 가장 많이 줄였지만 거짓 성공 거부권에 걸렸다. 품질 문제는 명세 구현과 수학에 몰렸고, 코드 수정과 데이터 분석에서는 문제가 없었다.</p></div></li>
+    <li><div><h4>하나만 쓴다면 u01n이다</h4><p>n09 + 실행 전 작업 폴더의 구조 요약(파일 목록, 작은 파일 전문, DB 스키마). n09 대비 −11%, 베이스라인 대비 −41%였고, 11개 유형 모두에서 품질 경고가 없었다. 값 정보까지 넣은 원안 u01보다 낫다.</p></div></li>
+    <li><div><h4>코드 수정에는 탐색 정지 계열이 가장 강하다</h4><p>u24m(탐색 정지 + Concise + 짧은 경로)이 코드 수정 18개 태스크에서 −24%, 품질 경고 0이었다. 2차 실험의 "탐색 턴을 없애는 것이 핵심"이라는 해석은 코드 수정에서 가장 잘 맞는다.</p></div></li>
+    <li><div><h4>명세 해석이 필요한 일에서는 "명세를 믿고 확인하지 않는다"가 위험하다</h4><p>거짓 성공이 모두 배송비 명세 구현에서 나왔다. 1차 보고서에서 제안한 "모호한 명세" 트랙이 필요하다는 근거가 하나 더 생겼다.</p></div></li>
+    <li><div><h4>도구가 적은 일에서는 n09가 이미 충분하다</h4><p>도구 없는 수학, 퍼즐, 리팩터에서는 어떤 가설도 n09를 확실히 넘지 못했다. 사전 맥락 원안은 오히려 출력을 늘렸다. 줄일 탐색 턴이 없는 일에는 이 계열의 가설이 쓸모가 없다.</p></div></li>
+  </ol>
+  <div class="rule-box" style="margin-top:1.5rem">
+    <header><span class="t">영역별 라우팅 예시 (실사용 적용안)</span></header>
+    <pre>공통        n09 세 줄 + u01n(구조만 사전 맥락: SessionStart hook으로 파일 목록·스키마 주입)
+코드 수정    + 탐색 정지 규칙, outputStyle: Concise, 짧은 경로       (u24m 요소)
+데이터 분석  + 탐색 정지·명세 신뢰 규칙                             (u24 요소)
+명세 구현    공통만. 명세 신뢰 규칙은 넣지 않는다
+수학·퍼즐    n09만</pre>
+  </div>
+</section>
+
+
+<section class="sec" id="limits">
+  <div class="sec-head"><span class="eyebrow">한계</span><h2>유형별 결론의 근거 크기는 유형마다 다르다</h2></div>
+  <div class="lims">
+    <div class="lim"><h4>고정 태스크는 1개 × 3회</h4><p>수학, 퍼즐, 리팩터, 버그 수정, 큰 파일, 기능 추가, 고정 데이터 분석은 태스크가 하나씩이다. 이 칸들의 판정은 그 태스크 하나에 대한 것이고, 유형 전체로 일반화하기 어렵다.</p><span class="fix">→ 유형별 생성기를 늘린다</span></div>
+    <div class="lim"><h4>유형별 판정은 여러 번 비교한 결과다</h4><p>조건 4개 × 유형 11개를 비교했으므로 우연히 통과하는 칸이 나올 수 있다. 생성기 유형(문제 16개)의 결과가 가장 믿을 만하다.</p><span class="fix">→ 라우팅안을 새 문제로 한 번 더 확인</span></div>
+    <div class="lim"><h4>라우팅을 직접 실험하지는 않았다</h4><p>영역별 권장 설정을 실제로 바꿔 끼우는 라우터는 만들지 않았다. 일의 종류를 어떻게 판별할지가 실사용의 숙제다.</p><span class="fix">→ 프로젝트별 CLAUDE.md로 나누는 방식부터</span></div>
+    <div class="lim"><h4>정확도 천장은 여전하다</h4><p>대부분의 실행이 만점이라, 이번에 잡힌 품질 문제는 400건 중 1건 수준의 미세한 실수다. 더 어려운 일에서는 위험이 커질 수 있다.</p><span class="fix">→ 베이스라인 점수 0.5~0.8 태스크</span></div>
+  </div>
+</section>
+
+</div>
+<footer class="foot"><div class="wrap">출처: <code>results/runs_r9.jsonl</code>, <code>q4_r9.jsonl</code>, <code>summary_runs_r9.md</code>(전체 판정), <code>family_runs_r9.md</code>(유형별 판정, <code>scripts/analyze_family.py</code>). 판정 기준은 실행 전에 CLAUDE.md "6차 실험"에 등록했다. 변화율은 태스크별 기하평균 비율, 괄호는 95% CI다.</div></footer>
+</main>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+var DATA = {"family": [{"kind": "family", "group": "feature_cfgpath", "cond": "baseline", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 6.33, "vs_base": null, "vs_ref": [58, 40, 90], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "feature_cfgpath", "cond": "p1_placebo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 8.0, "vs_base": [10, 2, 18], "vs_ref": [73, 52, 108], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "feature_cfgpath", "cond": "p2_concise", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 6.33, "vs_base": [-21, -31, -13], "vs_ref": [24, 6, 50], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "feature_cfgpath", "cond": "n09_p2_h05", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.0, "vs_base": [-37, -47, -29], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "family", "group": "feature_cfgpath", "cond": "u01_ctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 4.33, "vs_base": [-29, -40, -21], "vs_ref": [11, -6, 34], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "feature_cfgpath", "cond": "u01n_noval", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 4.0, "vs_base": [-36, -42, -31], "vs_ref": [0, -13, 21], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "feature_cfgpath", "cond": "u24_combo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.33, "vs_base": [-49, -57, -40], "vs_ref": [-20, -35, -2], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "family", "group": "feature_cfgpath", "cond": "u24m_noctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.67, "vs_base": [-39, -48, -32], "vs_ref": [-3, -18, 16], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "tariff", "cond": "baseline", "n_tasks": 16, "n_runs": 16, "score": 0.9998, "fails": 1, "fs": 1, "refused": 0, "turns": 5.94, "vs_base": null, "vs_ref": [91, 77, 109], "q_warn": true, "verdict": "대조군"}, {"kind": "family", "group": "tariff", "cond": "p1_placebo", "n_tasks": 16, "n_runs": 16, "score": 0.9998, "fails": 1, "fs": 1, "refused": 0, "turns": 6.5, "vs_base": [-1, -7, 5], "vs_ref": [90, 78, 102], "q_warn": true, "verdict": "대조군"}, {"kind": "family", "group": "tariff", "cond": "p2_concise", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.88, "vs_base": [-31, -35, -26], "vs_ref": [32, 22, 44], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "tariff", "cond": "n09_p2_h05", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 4.5, "vs_base": [-48, -52, -44], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "family", "group": "tariff", "cond": "u01_ctx", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.0, "vs_base": [-52, -55, -49], "vs_ref": [-8, -14, -2], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "family", "group": "tariff", "cond": "u01n_noval", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.0, "vs_base": [-54, -57, -51], "vs_ref": [-11, -17, -6], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "family", "group": "tariff", "cond": "u24_combo", "n_tasks": 16, "n_runs": 16, "score": 0.9997, "fails": 2, "fs": 2, "refused": 0, "turns": 3.06, "vs_base": [-54, -57, -50], "vs_ref": [-11, -18, -5], "q_warn": true, "verdict": "감소했지만 품질 경고"}, {"kind": "family", "group": "tariff", "cond": "u24m_noctx", "n_tasks": 16, "n_runs": 16, "score": 0.9998, "fails": 1, "fs": 1, "refused": 0, "turns": 4.5, "vs_base": [-44, -48, -39], "vs_ref": [7, -4, 21], "q_warn": true, "verdict": "구분 안 됨 (품질 경고)"}, {"kind": "family", "group": "data_sales", "cond": "baseline", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.33, "vs_base": null, "vs_ref": [49, 42, 56], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "data_sales", "cond": "p1_placebo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.0, "vs_base": [12, 8, 16], "vs_ref": [66, 60, 74], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "data_sales", "cond": "p2_concise", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.33, "vs_base": [-21, -23, -19], "vs_ref": [18, 14, 23], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "data_sales", "cond": "n09_p2_h05", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 4.67, "vs_base": [-33, -36, -30], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "family", "group": "data_sales", "cond": "u01_ctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 2.33, "vs_base": [-43, -52, -36], "vs_ref": [-15, -28, -4], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "family", "group": "data_sales", "cond": "u01n_noval", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.67, "vs_base": [-35, -38, -32], "vs_ref": [-3, -7, 1], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "data_sales", "cond": "u24_combo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 2.0, "vs_base": [-46, -51, -39], "vs_ref": [-20, -27, -10], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "family", "group": "data_sales", "cond": "u24m_noctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.0, "vs_base": [-41, -46, -36], "vs_ref": [-12, -20, -5], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "family", "group": "sales", "cond": "baseline", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.94, "vs_base": null, "vs_ref": [63, 54, 71], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "sales", "cond": "p1_placebo", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 6.25, "vs_base": [6, -1, 15], "vs_ref": [73, 64, 82], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "sales", "cond": "p2_concise", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 4.94, "vs_base": [-26, -31, -21], "vs_ref": [20, 12, 30], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "sales", "cond": "n09_p2_h05", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 4.44, "vs_base": [-39, -42, -35], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "family", "group": "sales", "cond": "u01_ctx", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 2.5, "vs_base": [-39, -46, -31], "vs_ref": [-1, -11, 11], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "sales", "cond": "u01n_noval", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.06, "vs_base": [-45, -47, -42], "vs_ref": [-10, -16, -5], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "family", "group": "sales", "cond": "u24_combo", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 2.0, "vs_base": [-47, -51, -43], "vs_ref": [-14, -19, -9], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "family", "group": "sales", "cond": "u24m_noctx", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.0, "vs_base": [-45, -48, -43], "vs_ref": [-11, -14, -7], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "family", "group": "refactor_report", "cond": "baseline", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.67, "vs_base": null, "vs_ref": [38, 15, 68], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "refactor_report", "cond": "p1_placebo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 7.0, "vs_base": [2, -16, 20], "vs_ref": [42, 25, 61], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "refactor_report", "cond": "p2_concise", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.0, "vs_base": [-27, -40, -12], "vs_ref": [1, -13, 19], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "refactor_report", "cond": "n09_p2_h05", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.67, "vs_base": [-28, -40, -13], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "family", "group": "refactor_report", "cond": "u01_ctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 8.0, "vs_base": [-12, -28, 6], "vs_ref": [22, 5, 42], "q_warn": false, "verdict": "n09보다 못함"}, {"kind": "family", "group": "refactor_report", "cond": "u01n_noval", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 8.0, "vs_base": [-27, -39, -16], "vs_ref": [2, -10, 13], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "refactor_report", "cond": "u24_combo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 8.0, "vs_base": [-32, -44, -23], "vs_ref": [-6, -17, 3], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "refactor_report", "cond": "u24m_noctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 9.0, "vs_base": [-28, -41, -17], "vs_ref": [-1, -12, 11], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "math_div44", "cond": "baseline", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": null, "vs_ref": [14, 9, 19], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "math_div44", "cond": "p1_placebo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-1, -8, 5], "vs_ref": [13, 5, 20], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "math_div44", "cond": "p2_concise", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-22, -26, -18], "vs_ref": [-11, -15, -7], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "math_div44", "cond": "n09_p2_h05", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-12, -16, -8], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "family", "group": "math_div44", "cond": "u01_ctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-16, -25, -8], "vs_ref": [-5, -14, 4], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "math_div44", "cond": "u01n_noval", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-10, -16, -4], "vs_ref": [3, -4, 9], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "math_div44", "cond": "u24_combo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-14, -22, -5], "vs_ref": [-2, -11, 9], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "math_div44", "cond": "u24m_noctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-12, -20, -6], "vs_ref": [0, -8, 8], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "math_paths", "cond": "baseline", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": null, "vs_ref": [13, 9, 19], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "math_paths", "cond": "p1_placebo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-11, -14, -9], "vs_ref": [0, -3, 5], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "math_paths", "cond": "p2_concise", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-18, -26, -12], "vs_ref": [-7, -16, 1], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "math_paths", "cond": "n09_p2_h05", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-12, -16, -8], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "family", "group": "math_paths", "cond": "u01_ctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-21, -26, -15], "vs_ref": [-10, -16, -4], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "family", "group": "math_paths", "cond": "u01n_noval", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-19, -29, -10], "vs_ref": [-8, -19, 2], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "math_paths", "cond": "u24_combo", "n_tasks": 1, "n_runs": 3, "score": 0.6667, "fails": 1, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-31, -45, -16], "vs_ref": [-22, -38, -5], "q_warn": true, "verdict": "감소했지만 품질 경고"}, {"kind": "family", "group": "math_paths", "cond": "u24m_noctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-24, -34, -16], "vs_ref": [-14, -26, -4], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "family", "group": "puzzle_schedule", "cond": "baseline", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.0, "vs_base": null, "vs_ref": [39, 7, 80], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "puzzle_schedule", "cond": "p1_placebo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.33, "vs_base": [9, -1, 20], "vs_ref": [52, 17, 97], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "puzzle_schedule", "cond": "p2_concise", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.0, "vs_base": [-30, -35, -25], "vs_ref": [-3, -25, 25], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "puzzle_schedule", "cond": "n09_p2_h05", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.0, "vs_base": [-28, -45, -8], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "family", "group": "puzzle_schedule", "cond": "u01_ctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 2.0, "vs_base": [-4, -12, 4], "vs_ref": [33, 4, 72], "q_warn": false, "verdict": "n09보다 못함"}, {"kind": "family", "group": "puzzle_schedule", "cond": "u01n_noval", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 2.33, "vs_base": [-10, -26, 11], "vs_ref": [26, -8, 74], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "puzzle_schedule", "cond": "u24_combo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 2.0, "vs_base": [-34, -39, -31], "vs_ref": [-9, -30, 19], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "puzzle_schedule", "cond": "u24m_noctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.0, "vs_base": [-45, -52, -39], "vs_ref": [-24, -41, -1], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "family", "group": "bigfile_rules", "cond": "baseline", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 10.0, "vs_base": null, "vs_ref": [51, 45, 56], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "bigfile_rules", "cond": "p1_placebo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 10.0, "vs_base": [-4, -10, 4], "vs_ref": [45, 38, 57], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "bigfile_rules", "cond": "p2_concise", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 8.0, "vs_base": [-29, -38, -19], "vs_ref": [7, -6, 23], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "bigfile_rules", "cond": "n09_p2_h05", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 9.0, "vs_base": [-34, -36, -31], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "family", "group": "bigfile_rules", "cond": "u01_ctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 4.33, "vs_base": [-43, -58, -27], "vs_ref": [-14, -37, 11], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "bigfile_rules", "cond": "u01n_noval", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 6.0, "vs_base": [-36, -50, -25], "vs_ref": [-3, -26, 12], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "bigfile_rules", "cond": "u24_combo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 2.0, "vs_base": [-52, -57, -47], "vs_ref": [-28, -35, -19], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "family", "group": "bigfile_rules", "cond": "u24m_noctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 6.33, "vs_base": [-46, -57, -37], "vs_ref": [-18, -36, -4], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "family", "group": "bugfix_ledger", "cond": "baseline", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 6.33, "vs_base": null, "vs_ref": [66, 37, 107], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "bugfix_ledger", "cond": "p1_placebo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.33, "vs_base": [-6, -15, 9], "vs_ref": [55, 36, 93], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "bugfix_ledger", "cond": "p2_concise", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 4.33, "vs_base": [-37, -44, -27], "vs_ref": [4, -10, 30], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "bugfix_ledger", "cond": "n09_p2_h05", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.67, "vs_base": [-40, -51, -27], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "family", "group": "bugfix_ledger", "cond": "u01_ctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 6.67, "vs_base": [-22, -37, -5], "vs_ref": [29, 1, 63], "q_warn": false, "verdict": "n09보다 못함"}, {"kind": "family", "group": "bugfix_ledger", "cond": "u01n_noval", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 6.0, "vs_base": [-32, -53, -10], "vs_ref": [13, -20, 54], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "bugfix_ledger", "cond": "u24_combo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 2.0, "vs_base": [-48, -54, -40], "vs_ref": [-15, -26, 6], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "bugfix_ledger", "cond": "u24m_noctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 4.0, "vs_base": [-47, -53, -38], "vs_ref": [-13, -25, 9], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "family", "group": "rules", "cond": "baseline", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 6.5, "vs_base": null, "vs_ref": [17, 7, 28], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "rules", "cond": "p1_placebo", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.81, "vs_base": [-3, -11, 5], "vs_ref": [13, -2, 29], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "rules", "cond": "p2_concise", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.94, "vs_base": [-10, -20, 0], "vs_ref": [5, -10, 23], "q_warn": false, "verdict": "대조군"}, {"kind": "family", "group": "rules", "cond": "n09_p2_h05", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 7.19, "vs_base": [-15, -22, -6], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "family", "group": "rules", "cond": "u01_ctx", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.81, "vs_base": [-27, -35, -17], "vs_ref": [-14, -25, -1], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "family", "group": "rules", "cond": "u01n_noval", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 2.56, "vs_base": [-29, -34, -23], "vs_ref": [-17, -24, -9], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "family", "group": "rules", "cond": "u24_combo", "n_tasks": 16, "n_runs": 16, "score": 0.9983, "fails": 1, "fs": 0, "refused": 0, "turns": 2.06, "vs_base": [-39, -43, -34], "vs_ref": [-28, -37, -19], "q_warn": true, "verdict": "감소했지만 품질 경고"}, {"kind": "family", "group": "rules", "cond": "u24m_noctx", "n_tasks": 16, "n_runs": 16, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.12, "vs_base": [-36, -41, -29], "vs_ref": [-25, -32, -16], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "domain", "group": "기능 구현", "cond": "baseline", "n_tasks": 17, "n_runs": 19, "score": 0.9999, "fails": 1, "fs": 1, "refused": 0, "turns": 6.0, "vs_base": null, "vs_ref": [89, 75, 105], "q_warn": true, "verdict": "대조군"}, {"kind": "domain", "group": "기능 구현", "cond": "p1_placebo", "n_tasks": 17, "n_runs": 19, "score": 0.9999, "fails": 1, "fs": 1, "refused": 0, "turns": 6.74, "vs_base": [0, -6, 5], "vs_ref": [89, 78, 100], "q_warn": true, "verdict": "대조군"}, {"kind": "domain", "group": "기능 구현", "cond": "p2_concise", "n_tasks": 17, "n_runs": 19, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.95, "vs_base": [-30, -35, -26], "vs_ref": [31, 21, 42], "q_warn": false, "verdict": "대조군"}, {"kind": "domain", "group": "기능 구현", "cond": "n09_p2_h05", "n_tasks": 17, "n_runs": 19, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 4.58, "vs_base": [-47, -51, -43], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "domain", "group": "기능 구현", "cond": "u01_ctx", "n_tasks": 17, "n_runs": 19, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.21, "vs_base": [-51, -54, -47], "vs_ref": [-7, -13, 0], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "domain", "group": "기능 구현", "cond": "u01n_noval", "n_tasks": 17, "n_runs": 19, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.16, "vs_base": [-53, -56, -49], "vs_ref": [-11, -16, -5], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "domain", "group": "기능 구현", "cond": "u24_combo", "n_tasks": 17, "n_runs": 19, "score": 0.9997, "fails": 2, "fs": 2, "refused": 0, "turns": 3.11, "vs_base": [-53, -56, -50], "vs_ref": [-12, -18, -5], "q_warn": true, "verdict": "감소했지만 품질 경고"}, {"kind": "domain", "group": "기능 구현", "cond": "u24m_noctx", "n_tasks": 17, "n_runs": 19, "score": 0.9999, "fails": 1, "fs": 1, "refused": 0, "turns": 4.68, "vs_base": [-44, -48, -39], "vs_ref": [6, -4, 19], "q_warn": true, "verdict": "구분 안 됨 (품질 경고)"}, {"kind": "domain", "group": "데이터 분석", "cond": "baseline", "n_tasks": 17, "n_runs": 19, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.84, "vs_base": null, "vs_ref": [62, 53, 70], "q_warn": false, "verdict": "대조군"}, {"kind": "domain", "group": "데이터 분석", "cond": "p1_placebo", "n_tasks": 17, "n_runs": 19, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 6.05, "vs_base": [7, -1, 15], "vs_ref": [72, 65, 81], "q_warn": false, "verdict": "대조군"}, {"kind": "domain", "group": "데이터 분석", "cond": "p2_concise", "n_tasks": 17, "n_runs": 19, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.0, "vs_base": [-26, -30, -21], "vs_ref": [20, 12, 29], "q_warn": false, "verdict": "대조군"}, {"kind": "domain", "group": "데이터 분석", "cond": "n09_p2_h05", "n_tasks": 17, "n_runs": 19, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 4.47, "vs_base": [-38, -41, -35], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "domain", "group": "데이터 분석", "cond": "u01_ctx", "n_tasks": 17, "n_runs": 19, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 2.47, "vs_base": [-39, -46, -31], "vs_ref": [-2, -11, 10], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "domain", "group": "데이터 분석", "cond": "u01n_noval", "n_tasks": 17, "n_runs": 19, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.16, "vs_base": [-44, -47, -41], "vs_ref": [-10, -15, -5], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "domain", "group": "데이터 분석", "cond": "u24_combo", "n_tasks": 17, "n_runs": 19, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 2.0, "vs_base": [-47, -51, -43], "vs_ref": [-14, -19, -9], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "domain", "group": "데이터 분석", "cond": "u24m_noctx", "n_tasks": 17, "n_runs": 19, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.0, "vs_base": [-45, -47, -42], "vs_ref": [-11, -14, -7], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "domain", "group": "리팩터", "cond": "baseline", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.67, "vs_base": null, "vs_ref": [38, 15, 68], "q_warn": false, "verdict": "대조군"}, {"kind": "domain", "group": "리팩터", "cond": "p1_placebo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 7.0, "vs_base": [2, -16, 20], "vs_ref": [42, 25, 61], "q_warn": false, "verdict": "대조군"}, {"kind": "domain", "group": "리팩터", "cond": "p2_concise", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.0, "vs_base": [-27, -40, -12], "vs_ref": [1, -13, 19], "q_warn": false, "verdict": "대조군"}, {"kind": "domain", "group": "리팩터", "cond": "n09_p2_h05", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.67, "vs_base": [-28, -40, -13], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "domain", "group": "리팩터", "cond": "u01_ctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 8.0, "vs_base": [-12, -28, 6], "vs_ref": [22, 5, 42], "q_warn": false, "verdict": "n09보다 못함"}, {"kind": "domain", "group": "리팩터", "cond": "u01n_noval", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 8.0, "vs_base": [-27, -39, -16], "vs_ref": [2, -10, 13], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "domain", "group": "리팩터", "cond": "u24_combo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 8.0, "vs_base": [-32, -44, -23], "vs_ref": [-6, -17, 3], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "domain", "group": "리팩터", "cond": "u24m_noctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 9.0, "vs_base": [-28, -41, -17], "vs_ref": [-1, -12, 11], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "domain", "group": "수학 (도구 없음)", "cond": "baseline", "n_tasks": 2, "n_runs": 6, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": null, "vs_ref": [14, 10, 18], "q_warn": false, "verdict": "대조군"}, {"kind": "domain", "group": "수학 (도구 없음)", "cond": "p1_placebo", "n_tasks": 2, "n_runs": 6, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-6, -12, 2], "vs_ref": [6, -1, 16], "q_warn": false, "verdict": "대조군"}, {"kind": "domain", "group": "수학 (도구 없음)", "cond": "p2_concise", "n_tasks": 2, "n_runs": 6, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-20, -24, -15], "vs_ref": [-9, -14, -3], "q_warn": false, "verdict": "대조군"}, {"kind": "domain", "group": "수학 (도구 없음)", "cond": "n09_p2_h05", "n_tasks": 2, "n_runs": 6, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-12, -15, -9], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "domain", "group": "수학 (도구 없음)", "cond": "u01_ctx", "n_tasks": 2, "n_runs": 6, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-19, -24, -13], "vs_ref": [-8, -14, 0], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "domain", "group": "수학 (도구 없음)", "cond": "u01n_noval", "n_tasks": 2, "n_runs": 6, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-15, -23, -7], "vs_ref": [-3, -13, 6], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "domain", "group": "수학 (도구 없음)", "cond": "u24_combo", "n_tasks": 2, "n_runs": 6, "score": 0.8333, "fails": 1, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-23, -38, -10], "vs_ref": [-12, -29, 3], "q_warn": true, "verdict": "구분 안 됨 (품질 경고)"}, {"kind": "domain", "group": "수학 (도구 없음)", "cond": "u24m_noctx", "n_tasks": 2, "n_runs": 6, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 1.0, "vs_base": [-18, -29, -9], "vs_ref": [-7, -20, 4], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "domain", "group": "제약 퍼즐", "cond": "baseline", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.0, "vs_base": null, "vs_ref": [39, 7, 80], "q_warn": false, "verdict": "대조군"}, {"kind": "domain", "group": "제약 퍼즐", "cond": "p1_placebo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.33, "vs_base": [9, -1, 20], "vs_ref": [52, 17, 97], "q_warn": false, "verdict": "대조군"}, {"kind": "domain", "group": "제약 퍼즐", "cond": "p2_concise", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.0, "vs_base": [-30, -35, -25], "vs_ref": [-3, -25, 25], "q_warn": false, "verdict": "대조군"}, {"kind": "domain", "group": "제약 퍼즐", "cond": "n09_p2_h05", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.0, "vs_base": [-28, -45, -8], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "domain", "group": "제약 퍼즐", "cond": "u01_ctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 2.0, "vs_base": [-4, -12, 4], "vs_ref": [33, 4, 72], "q_warn": false, "verdict": "n09보다 못함"}, {"kind": "domain", "group": "제약 퍼즐", "cond": "u01n_noval", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 2.33, "vs_base": [-10, -26, 11], "vs_ref": [26, -8, 74], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "domain", "group": "제약 퍼즐", "cond": "u24_combo", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 2.0, "vs_base": [-34, -39, -31], "vs_ref": [-9, -30, 19], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "domain", "group": "제약 퍼즐", "cond": "u24m_noctx", "n_tasks": 1, "n_runs": 3, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.0, "vs_base": [-45, -52, -39], "vs_ref": [-24, -41, -1], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "domain", "group": "코드 수정", "cond": "baseline", "n_tasks": 18, "n_runs": 22, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 6.95, "vs_base": null, "vs_ref": [21, 10, 32], "q_warn": false, "verdict": "대조군"}, {"kind": "domain", "group": "코드 수정", "cond": "p1_placebo", "n_tasks": 18, "n_runs": 22, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 6.32, "vs_base": [-4, -10, 3], "vs_ref": [17, 3, 32], "q_warn": false, "verdict": "대조군"}, {"kind": "domain", "group": "코드 수정", "cond": "p2_concise", "n_tasks": 18, "n_runs": 22, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 6.0, "vs_base": [-13, -22, -4], "vs_ref": [5, -9, 20], "q_warn": false, "verdict": "대조군"}, {"kind": "domain", "group": "코드 수정", "cond": "n09_p2_h05", "n_tasks": 18, "n_runs": 22, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 6.95, "vs_base": [-17, -25, -9], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "domain", "group": "코드 수정", "cond": "u01_ctx", "n_tasks": 18, "n_runs": 22, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 4.27, "vs_base": [-27, -35, -18], "vs_ref": [-12, -23, 1], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "domain", "group": "코드 수정", "cond": "u01n_noval", "n_tasks": 18, "n_runs": 22, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.5, "vs_base": [-30, -34, -24], "vs_ref": [-15, -22, -6], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "domain", "group": "코드 수정", "cond": "u24_combo", "n_tasks": 18, "n_runs": 22, "score": 0.9988, "fails": 1, "fs": 0, "refused": 0, "turns": 2.05, "vs_base": [-40, -44, -36], "vs_ref": [-27, -35, -19], "q_warn": true, "verdict": "감소했지만 품질 경고"}, {"kind": "domain", "group": "코드 수정", "cond": "u24m_noctx", "n_tasks": 18, "n_runs": 22, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.14, "vs_base": [-37, -42, -31], "vs_ref": [-24, -30, -16], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "all", "group": "전체", "cond": "baseline", "n_tasks": 56, "n_runs": 72, "score": 1.0, "fails": 1, "fs": 1, "refused": 0, "turns": 5.69, "vs_base": null, "vs_ref": [52, 42, 62], "q_warn": true, "verdict": "대조군"}, {"kind": "all", "group": "전체", "cond": "p1_placebo", "n_tasks": 56, "n_runs": 72, "score": 1.0, "fails": 1, "fs": 1, "refused": 0, "turns": 5.82, "vs_base": [1, -3, 5], "vs_ref": [53, 42, 64], "q_warn": true, "verdict": "대조군"}, {"kind": "all", "group": "전체", "cond": "p2_concise", "n_tasks": 56, "n_runs": 72, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 5.14, "vs_base": [-23, -27, -20], "vs_ref": [16, 9, 23], "q_warn": false, "verdict": "대조군"}, {"kind": "all", "group": "전체", "cond": "n09_p2_h05", "n_tasks": 56, "n_runs": 72, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 4.96, "vs_base": [-34, -38, -30], "vs_ref": null, "q_warn": false, "verdict": "기준"}, {"kind": "all", "group": "전체", "cond": "u01_ctx", "n_tasks": 56, "n_runs": 72, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.31, "vs_base": [-38, -43, -33], "vs_ref": [-6, -12, 0], "q_warn": false, "verdict": "구분 안 됨"}, {"kind": "all", "group": "전체", "cond": "u01n_noval", "n_tasks": 56, "n_runs": 72, "score": 1.0, "fails": 0, "fs": 0, "refused": 0, "turns": 3.25, "vs_base": [-41, -45, -38], "vs_ref": [-11, -15, -7], "q_warn": false, "verdict": "n09보다 우수"}, {"kind": "all", "group": "전체", "cond": "u24_combo", "n_tasks": 56, "n_runs": 72, "score": 0.9857, "fails": 4, "fs": 2, "refused": 0, "turns": 2.47, "vs_base": [-46, -48, -43], "vs_ref": [-18, -22, -14], "q_warn": true, "verdict": "감소했지만 품질 경고"}, {"kind": "all", "group": "전체", "cond": "u24m_noctx", "n_tasks": 56, "n_runs": 72, "score": 1.0, "fails": 1, "fs": 1, "refused": 0, "turns": 4.18, "vs_base": [-41, -43, -38], "vs_ref": [-10, -15, -5], "q_warn": true, "verdict": "감소했지만 품질 경고"}], "names": {"baseline": "베이스라인", "p1_placebo": "위약 P1", "p2_concise": "간결 한 줄 P2", "n09_p2_h05": "n09 (1차 권장)", "u01_ctx": "사전 맥락 적재", "u01n_noval": "사전 맥락, 값 정보 뺌", "u24_combo": "조합 (u01+u05+u16+u11)", "u24m_noctx": "조합에서 사전 맥락 뺌"}, "short": {"baseline": "base", "p1_placebo": "P1", "p2_concise": "P2", "n09_p2_h05": "n09", "u01_ctx": "u01", "u01n_noval": "u01n", "u24_combo": "u24", "u24m_noctx": "u24m"}, "gname": {"rules": "규칙 수정 ×16", "sales": "매출 분석 ×16", "tariff": "명세 구현 ×16", "math_div44": "44의 배수", "math_paths": "격자 경로", "puzzle_schedule": "발표 배치", "bugfix_ledger": "버그 수정", "bigfile_rules": "큰 파일", "feature_cfgpath": "기능 추가", "refactor_report": "리팩터", "data_sales": "데이터 (고정)", "전체": "전체"}, "cols": [{"group": "feature_cfgpath", "dom": "기능 구현"}, {"group": "tariff", "dom": "기능 구현"}, {"group": "data_sales", "dom": "데이터 분석"}, {"group": "sales", "dom": "데이터 분석"}, {"group": "refactor_report", "dom": "리팩터"}, {"group": "math_div44", "dom": "수학 (도구 없음)"}, {"group": "math_paths", "dom": "수학 (도구 없음)"}, {"group": "puzzle_schedule", "dom": "제약 퍼즐"}, {"group": "bigfile_rules", "dom": "코드 수정"}, {"group": "bugfix_ledger", "dom": "코드 수정"}, {"group": "rules", "dom": "코드 수정"}], "overall": {"baseline": "기준", "p2_concise": "후보", "n09_p2_h05": "후보 (P2보다 우수)", "p1_placebo": "효과 불분명", "u01_ctx": "후보 (P2보다 우수), n09보다 우수", "u01n_noval": "후보 (P2보다 우수), n09보다 우수", "u24_combo": "탈락 (거짓 성공·거부)", "u24m_noctx": "후보 (P2보다 우수), n09보다 우수"}, "q4": {"p2_concise": [-0.006, -0.011], "n09_p2_h05": [-0.001, -0.008], "p1_placebo": [-0.006, -0.014], "u01_ctx": [0.017, 0.007], "u01n_noval": [0.005, -0.003], "u24_combo": [-0.003, -0.016], "u24m_noctx": [0.002, -0.01]}, "order": ["u24_combo", "u01_ctx", "u01n_noval", "u24m_noctx", "p2_concise", "p1_placebo", "baseline"], "heatRows": ["u24_combo", "u01_ctx", "u01n_noval", "u24m_noctx", "p2_concise"]};
+</script>
+<script>
+(function () {
+  "use strict";
+  var MINUS = "−";
+  function pct(v) { if (v === null || v === undefined) return "—"; if (v === 0) return "0%"; return (v < 0 ? MINUS + Math.abs(v) : "+" + v) + "%"; }
+  function num(v) { return v === null || v === undefined ? "—" : v < 0 ? MINUS + Math.abs(v) : v === 0 ? "0" : "+" + v; }
+  function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h !== undefined) e.innerHTML = h; return e; }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  var NAMES = DATA.names, FAM = DATA.family;
+  var tip = document.getElementById("tip");
+  function showTip(html, x, y) { tip.innerHTML = html; tip.hidden = false; var w = tip.offsetWidth, h = tip.offsetHeight, l = x + 14, t = y + 14; if (l + w > innerWidth - 8) l = Math.max(8, x - w - 14); if (t + h > innerHeight - 8) t = Math.max(8, y - h - 14); tip.style.left = l + "px"; tip.style.top = t + "px"; }
+  function bindTip(n, f) { n.addEventListener("pointermove", function (e) { showTip(f(), e.clientX, e.clientY); }); n.addEventListener("pointerleave", function () { tip.hidden = true; }); n.addEventListener("focus", function () { var r = n.getBoundingClientRect(); showTip(f(), r.left, r.bottom); }); n.addEventListener("blur", function () { tip.hidden = true; }); }
+  addEventListener("scroll", function () { tip.hidden = true; }, { passive: true });
+  function find(kind, group, cond) { for (var i = 0; i < FAM.length; i++) { var r = FAM[i]; if (r.kind === kind && r.group === group && r.cond === cond) return r; } return null; }
+  function vk(r) { var v = r.verdict || ""; if (v === "대조군" || v === "기준") return "ctrl"; if (v.indexOf("우수") >= 0) return "best"; if (v.indexOf("못함") >= 0) return "worse"; if (v.indexOf("품질") >= 0) return "qual"; return "none"; }
+  function rowTip(r) {
+    return "<b>" + esc(r.cond) + "</b> " + esc(NAMES[r.cond] || "") + " · " + esc(DATA.gname[r.group] || r.group) +
+      '<div class="r"><span>n09 대비</span><span>' + (r.vs_ref ? pct(r.vs_ref[0]) + " (" + num(r.vs_ref[1]) + " ~ " + num(r.vs_ref[2]) + ")" : "기준") + "</span></div>" +
+      '<div class="r"><span>베이스라인 대비</span><span>' + (r.vs_base ? pct(r.vs_base[0]) : "—") + "</span></div>" +
+      '<div class="r"><span>평균 점수</span><span>' + r.score + "</span></div>" +
+      '<div class="r"><span>점수 1 미만 / 거짓 성공</span><span>' + r.fails + " / " + r.fs + "</span></div>" +
+      '<div class="r"><span>평균 턴</span><span>' + r.turns + "</span></div>" + '<div class="n">' + esc(r.verdict) + "</div>";
+  }
+
+  /* 전체 포레스트 */
+  var D = [-35, 25], T = [-30, -20, -10, 0, 10, 20];
+  function xp(v) { return (Math.max(D[0], Math.min(D[1], v)) - D[0]) / (D[1] - D[0]) * 100; }
+  var fp = document.getElementById("fpAll");
+  var all = DATA.order.map(function (c) { return find("all", "전체", c); }).filter(function (r) { return r && r.vs_ref; });
+  var head = el("div", "fp-row fp-head"); head.appendChild(el("div", "fp-label")); var ht = el("div", "fp-track"); var tl = el("span", "toplab", "n09"); tl.style.left = xp(0) + "%"; ht.appendChild(tl); head.appendChild(ht); head.appendChild(el("div", "fp-value", '<span class="ci">n09 대비 (95% CI)</span>')); head.appendChild(el("div", "fp-pill")); fp.appendChild(head);
+  all.forEach(function (r) {
+    var k = vk(r), row = el("div", "fp-row data"); row.tabIndex = 0;
+    row.appendChild(el("div", "fp-label", '<span class="id">' + esc(DATA.short[r.cond] || r.cond) + '</span><span class="nm">' + esc(NAMES[r.cond]) + "</span>"));
+    var t = el("div", "fp-track"); T.forEach(function (x) { var g = el("div", "gl" + (x === 0 ? " p2" : "")); g.style.left = xp(x) + "%"; t.appendChild(g); });
+    var w = el("div", "whisk v-" + k); w.style.left = xp(r.vs_ref[1]) + "%"; w.style.width = (xp(r.vs_ref[2]) - xp(r.vs_ref[1])) + "%"; t.appendChild(w);
+    var d = el("div", "dot v-" + k); d.style.left = xp(r.vs_ref[0]) + "%"; t.appendChild(d);
+    if (r.vs_ref[0] > D[1]) { var c = el("span", "clip", "▶ " + pct(r.vs_ref[0])); c.style.right = "0"; t.appendChild(c); }
+    row.appendChild(t);
+    row.appendChild(el("div", "fp-value", pct(r.vs_ref[0]) + ' <span class="ci">(' + num(r.vs_ref[1]) + " ~ " + num(r.vs_ref[2]) + ")</span>"));
+    var pc = el("div", "fp-pill"); pc.appendChild(el("span", "pill v-" + k, esc(DATA.overall[r.cond] || r.verdict))); row.appendChild(pc);
+    bindTip(row, function () { return rowTip(r); }); fp.appendChild(row);
+  });
+  var ax = el("div", "fp-row fp-axis"); ax.appendChild(el("div", "fp-label")); var at = el("div", "fp-track");
+  T.forEach(function (x, i) { var s = el("span", "tick" + (i === 0 ? " first" : i === T.length - 1 ? " last" : ""), pct(x)); s.style.left = xp(x) + "%"; at.appendChild(s); });
+  ax.appendChild(at); ax.appendChild(el("div", "fp-value")); ax.appendChild(el("div", "fp-pill")); fp.appendChild(ax);
+  fp.appendChild(el("div", "axis-cap", "태스크 56개 전체. n09 대비 출력 토큰 변화, 왼쪽일수록 더 줄었다. 범위 밖은 ▶로 표시."));
+  var th = '<thead><tr><th>조건</th><th class="num">n09 대비</th><th class="num">베이스라인 대비</th><th class="num">평균 점수</th><th class="num">점수&lt;1</th><th class="num">거짓 성공</th><th class="num">평균 턴</th><th>전체 판정 (Q4 포함)</th></tr></thead><tbody>';
+  DATA.order.forEach(function (c) { var r = find("all", "전체", c); if (!r) return; th += '<tr><td><span class="mono" style="font-weight:600">' + esc(DATA.short[c] || c) + "</span> " + esc(NAMES[c]) + '</td><td class="num">' + (r.vs_ref ? pct(r.vs_ref[0]) + " (" + num(r.vs_ref[1]) + " ~ " + num(r.vs_ref[2]) + ")" : "기준") + '</td><td class="num">' + (r.vs_base ? pct(r.vs_base[0]) : "기준") + '</td><td class="num">' + r.score + '</td><td class="num">' + r.fails + '</td><td class="num">' + r.fs + '</td><td class="num">' + r.turns + "</td><td>" + esc(DATA.overall[c] || "") + "</td></tr>"; });
+  document.getElementById("allTable").innerHTML = th + "</tbody>";
+
+  /* 히트맵 */
+  var heat = document.getElementById("heat");
+  var cols = DATA.cols; // [{group, dom}]
+  var h1 = "<thead><tr><th></th>", h2 = '<tr><th class="rowh"></th>', lastDom = null, span = 0, doms = [];
+  cols.forEach(function (c) { if (c.dom !== lastDom) { doms.push([c.dom, 0]); lastDom = c.dom; } doms[doms.length - 1][1]++; });
+  doms.forEach(function (d) { h1 += '<th class="dom" colspan="' + d[1] + '">' + esc(d[0]) + "</th>"; });
+  h1 += '<th class="dom">전체</th></tr>';
+  cols.forEach(function (c) { h2 += "<th>" + esc(DATA.gname[c.group] || c.group) + "</th>"; });
+  h2 += "<th>56개</th></tr></thead>";
+  heat.innerHTML = h1 + h2;
+  var tb = el("tbody");
+  DATA.heatRows.forEach(function (cond) {
+    var tr = el("tr"); tr.appendChild(el("th", "rowh", '<span class="id">' + esc(DATA.short[cond]) + "</span>" + esc(NAMES[cond])));
+    cols.concat([{ group: "전체", kind: "all" }]).forEach(function (c) {
+      var r = find(c.kind || "family", c.group, cond), td = el("td"); td.tabIndex = 0;
+      if (c.kind === "all") td.classList.add("all");
+      if (!r || !r.vs_ref) { td.textContent = "—"; tr.appendChild(td); return; }
+      var v = r.vs_ref[0], a = Math.min(1, Math.abs(v) / 30) * 0.75;
+      td.style.background = v < 0 ? "rgba(var(--neg)," + a + ")" : "rgba(var(--pos)," + a + ")";
+      if (r.verdict === "n09보다 우수") td.classList.add("win");
+      td.innerHTML = pct(v) + '<span class="ci">' + num(r.vs_ref[1]) + " ~ " + num(r.vs_ref[2]) + "</span>" + (r.q_warn ? '<span class="warn" title="품질 경고">!</span>' : "");
+      td.setAttribute("aria-label", cond + " " + c.group + " n09 대비 " + pct(v) + ", " + r.verdict);
+      bindTip(td, function () { return rowTip(r); });
+      tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+  heat.appendChild(tb);
+
+  /* 품질 표 */
+  var qh = '<thead><tr><th>유형</th><th>조건</th><th class="num">평균 점수</th><th class="num">점수&lt;1 실행</th><th class="num">거짓 성공</th><th class="num">n09 점수&lt;1</th></tr></thead><tbody>';
+  FAM.forEach(function (r) {
+    if (r.kind !== "family" || !(r.fails || r.fs || r.refused)) return;
+    var ref = find("family", r.group, "n09_p2_h05");
+    qh += "<tr><td>" + esc(DATA.gname[r.group] || r.group) + '</td><td><span class="mono" style="font-weight:600">' + esc(DATA.short[r.cond] || r.cond) + '</span> <span class="muted">' + esc(NAMES[r.cond]) + '</span></td><td class="num">' + r.score + '</td><td class="num ' + (r.fails ? "bad" : "") + '">' + r.fails + "/" + r.n_runs + '</td><td class="num ' + (r.fs ? "bad" : "") + '">' + r.fs + '</td><td class="num">' + (ref ? ref.fails : "—") + "</td></tr>";
+  });
+  document.getElementById("qualTable").innerHTML = qh + "</tbody>";
+
+  var links = Array.prototype.slice.call(document.querySelectorAll(".nav a.link"));
+  if ("IntersectionObserver" in window) { var io = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) links.forEach(function (a) { a.classList.toggle("on", a.getAttribute("href") === "#" + en.target.id); }); }); }, { rootMargin: "-30% 0px -60% 0px" }); document.querySelectorAll("section.sec").forEach(function (s) { io.observe(s); }); }
+})();
+</script>

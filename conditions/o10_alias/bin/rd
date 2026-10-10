@@ -1,0 +1,2 @@
+#!/bin/sh
+exec awk -v a="${2:-1}" -v b="${3:-999999}" 'NR>=a && NR<=b {printf "%6d  %s\n", NR, $0}' "$1"

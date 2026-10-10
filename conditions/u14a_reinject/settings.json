@@ -1,0 +1,1 @@
+{"hooks": {"PostToolBatch": [{"hooks": [{"type": "command", "command": "/Users/seunghyeokkim/Desktop/token-diet/.venv/bin/python /Users/seunghyeokkim/Desktop/token-diet/conditions/u14a_reinject/hook.py"}]}]}}

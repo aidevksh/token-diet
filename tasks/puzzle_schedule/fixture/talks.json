@@ -1,0 +1,26 @@
+{
+  "slots": ["09:00", "10:00", "11:00", "13:00"],
+  "rooms": {"A": 120, "B": 60, "C": 30},
+  "talks": {
+    "T1": {"speaker": "kim",  "audience": 100},
+    "T2": {"speaker": "lee",  "audience": 55},
+    "T3": {"speaker": "park", "audience": 25},
+    "T4": {"speaker": "kim",  "audience": 50},
+    "T5": {"speaker": "choi", "audience": 110},
+    "T6": {"speaker": "lee",  "audience": 28},
+    "T7": {"speaker": "jung", "audience": 58},
+    "T8": {"speaker": "park", "audience": 90},
+    "T9": {"speaker": "han",  "audience": 30},
+    "T10": {"speaker": "choi", "audience": 45}
+  },
+  "constraints": [
+    "Each talk is scheduled exactly once, in one room and one slot; at most one talk per room per slot.",
+    "A room's capacity must be >= the talk's audience.",
+    "A speaker cannot give two talks in the same slot.",
+    "A speaker cannot give talks in two consecutive slots (10:00 and 11:00 are consecutive; 11:00 and 13:00 are consecutive).",
+    "Talks sharing an audience must not be in the same slot: (T1,T5), (T1,T8), (T5,T8), (T2,T7), (T3,T9), (T4,T10).",
+    "T5 must be strictly before T1. T4 must be strictly before T2. T9 must be strictly after T6.",
+    "Speaker 'jung' is only available at 13:00.",
+    "Room A is unavailable at 09:00."
+  ]
+}
