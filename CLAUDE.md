@@ -373,6 +373,8 @@ u01(사전 맥락 적재)을 논문으로 이어 가기 위한 실험부터 적�
   - u24에는 진짜 품질 신호 2건이 남는다(수학 격자 경로 3회 중 1회 오답, 규칙 수정 s24 변경 최소성 0.82).
   - 원래 판정은 기록 그대로 두고, 바뀐 판정은 민감도 분석으로만 적는다.
 - **논문 방향** (사용자, 2026-10-11): "출력 토큰 절감 + 정확도 유지". 준비 자료는 `paper/`에 둔다.
+- **진행**: E2(effort × 지시: Opus 5.5 effort low·medium·high × 베이스라인·P1·P2·n09·사전 맥락만 × 48문제 = 720회) 진행 중. `experiments/E2/`.
+  - 조건 폴더의 `effort` 파일(low/medium/high)은 `TD_EFFORT`보다 우선한다(`scripts/run.py`의 `effort_for()`). 한 묶음 안에서 effort를 섞기 위해서다.
 
 ## 최종 권장 설정 (2026-10-10 갱신)
 
@@ -425,5 +427,6 @@ experiments/         # 논문 트랙 실험 기록 (E1~): 사전 등록, 계획,
 scripts/drive.py     # 계획 파일대로 끝까지 실행 (한도 대기·Q4·분석)
 scripts/analyze_e1.py, analyze_e1b.py, analyze_family.py, analyze_u01.py  # E1·E1b 분석, 유형별 분석, u01 종합 분석
 scripts/reanalyze_a1.py  # A1 재분석 (배송비 명세 모호성 민감도)
+scripts/analyze_e2.py    # E2 분석 (effort × 지시)
 paper/               # 논문 준비 (관련 연구, 계획)
 ```

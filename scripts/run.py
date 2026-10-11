@@ -7,6 +7,7 @@ usage: python scripts/run.py --conds baseline,h01 --tasks all --reps 3 --par 4
 - docker (7차~ 논문 트랙): env/Dockerfile 이미지 안에서 실행한다. 에이전트는 /work만 보고, 호스트 경로·사용자 이름·정답 키는
   컨테이너에 들어가지 않는다. OAuth 토큰(TD_TOKEN_FILE)은 표준 입력 → 파이프로만 CLI에 넘긴다(환경 변수·파일에 남지 않음).
 모델과 effort (TD_MODEL, TD_EFFORT): 기본은 Opus 5.5 high. 논문 트랙에서만 실험 요인으로 바꾼다.
+조건 폴더의 effort 파일(low/medium/high/xhigh/max)은 TD_EFFORT보다 우선한다(E2).
 """
 import argparse, concurrent.futures as cf, glob, json, os, random, re, shutil, subprocess, sys, threading, time
 
@@ -17,6 +18,17 @@ CLI_VERSION = os.environ.get('TD_CLAUDE_VERSION', '2.1.296')  # CLI 버전 고�
 CLAUDE = os.path.expanduser(f'~/.vscode/extensions/anthropic.claude-code-{CLI_VERSION}-darwin-arm64/resources/native-binary/claude')
 MODEL = os.environ.get('TD_MODEL', 'claude-opus-5-5')  # 기본 규칙: Opus 5.5 high 고정. 논문 트랙에서만 바꾼다
 EFFORT = os.environ.get('TD_EFFORT', 'high')
+
+
+def effort_for(cdir):
+    """조건 폴더에 effort 파일이 있으면 그 값을 쓴다(E2: 한 묶음 안에서 effort 수준을 무작위로 섞는다). 없으면 TD_EFFORT."""
+    f = os.path.join(cdir, 'effort')
+    if not os.path.exists(f):
+        return EFFORT
+    e = open(f).read().strip()
+    if e not in ('low', 'medium', 'high', 'xhigh', 'max'):
+        raise ValueError(f'잘못된 effort 값: {e!r} ({f})')
+    return e
 EXEC = os.environ.get('TD_EXEC', 'host')
 IMAGE = os.environ.get('TD_IMAGE', f'token-diet:{CLI_VERSION}')
 TOKEN_FILE = os.path.expanduser(os.environ.get('TD_TOKEN_FILE', '~/.config/token-diet/oauth_token'))
@@ -104,7 +116,7 @@ def score_of(grade_out, passed):
 def cli_args(prompt, cdir, disallowed, allow, cfg_settings=None, sys_prompt_path=None):
     """claude CLI 인자 (실행 파일 제외). 호스트와 컨테이너가 같은 인자를 쓴다."""
     cfile = lambda n: os.path.join(cdir, n)
-    args = ['-p', prompt, '--model', MODEL, '--effort', EFFORT, '--output-format', 'stream-json', '--verbose',
+    args = ['-p', prompt, '--model', MODEL, '--effort', effort_for(cdir), '--output-format', 'stream-json', '--verbose',
             '--setting-sources', 'project,local', '--permission-mode', 'acceptEdits',
             '--allowedTools', ','.join(['Bash', 'Read', 'Write', 'Edit', 'Glob', 'Grep'] + allow), '--disallowedTools', disallowed]
     if os.path.exists(cfile('append_system_prompt.txt')):
@@ -195,7 +207,7 @@ def run_one(cond, task, rep):
     allow = open(cfile('allow.txt')).read().split() if os.path.exists(cfile('allow.txt')) else []
     disallowed = ','.join(x for x in BASE_DISALLOWED.split(',') + tcfg.get('disallowed', '').split(',') if x and x not in allow)
     cmd = [CLAUDE, '-p', open(os.path.join(tdir, 'prompt.md')).read(),
-           '--model', MODEL, '--effort', EFFORT, '--output-format', 'stream-json', '--verbose',
+           '--model', MODEL, '--effort', effort_for(cdir), '--output-format', 'stream-json', '--verbose',
            '--setting-sources', 'project,local', '--permission-mode', 'acceptEdits',
            '--allowedTools', ','.join(['Bash', 'Read', 'Write', 'Edit', 'Glob', 'Grep'] + allow), '--disallowedTools', disallowed]
     if os.path.exists(cfile('append_system_prompt.txt')):
@@ -247,7 +259,7 @@ def finish(cond, task, rep, tdir, events, work, t0, tbase):
     other = [m for m in mu if m != MODEL and not m.startswith('claude-haiku')]
     rec = {
         'cond': cond, 'task': task, 'rep': rep, 'session_id': res.get('session_id'), 'cli_version': CLI_VERSION, 'work': tilde(work),
-        'exec': EXEC, 'model': MODEL, 'effort': EFFORT,
+        'exec': EXEC, 'model': MODEL, 'effort': effort_for(os.path.join(ROOT, 'conditions', cond)),
         **({'image': IMAGE, 'transcripts': tilde(tbase), 'workdir': container_workdir(cond, task, rep),
             'scratchpad_text': os.path.exists(os.path.join(ROOT, 'conditions', cond, 'scratchpad'))} if EXEC == 'docker' else {}),
         'valid': not res.get('is_error') and not other and bool(main),
