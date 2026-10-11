@@ -50,18 +50,21 @@ def main():
             time.sleep(5)
         return False
 
-    say('== 시작', plan_path, '| 목표', plan['total'], '회 | 완료', done())
+    limit = float(os.environ.get('TD_USAGE_LIMIT', plan.get('usage_limit', 0.85)))  # 기본 85%. 사용자 지시가 있을 때만 올린다
+    say('== 시작', plan_path, '| 목표', plan['total'], '회 | 완료', done(), f'| 5시간 한도 기준 {limit:.2f}')
     stall = 0
     for it in range(30):
+        if done() >= plan['total']:
+            break
         if not docker_up():
             say('Docker를 켤 수 없어 멈춤'); break
         u5, reset, u7 = usage()
         say(f'반복 {it} | 완료 {done()}/{plan["total"]} | 5시간 {u5:.2f} | 주간 {u7:.2f}')
         if u7 >= 0.90:
             say('주간 한도 90% 이상이라 멈춤'); break
-        if u5 >= 0.85:
+        if u5 >= limit:
             wait = max(60, reset - time.time() + 90)
-            say(f'5시간 한도 85% 이상. {wait/60:.0f}분 기다림 (초기화 {time.strftime("%H:%M", time.localtime(reset))})')
+            say(f'5시간 한도 {limit:.0%} 이상. {wait/60:.0f}분 기다림 (초기화 {time.strftime("%H:%M", time.localtime(reset))})')
             time.sleep(wait)
             continue
         before = done()
