@@ -1,0 +1,14 @@
+{"round": "5차 2단계", "cond": "u01_ctx", "task": "tariff_L5_s10", "rep": 1, "how": "실행 기록 재생", "recorded": 0.9975, "strict": 0.9975, "lenient": 1.0, "applied": true, "claimed": true}
+{"round": "5차 2단계", "cond": "p2_concise", "task": "tariff_L5_s10", "rep": 1, "how": "실행 기록 재생", "recorded": 0.9975, "strict": 0.9975, "lenient": 1.0, "applied": true, "claimed": true}
+{"round": "6차", "cond": "p1_placebo", "task": "tariff_L5_s17", "rep": 1, "how": "실행 기록 재생", "recorded": 0.9975, "strict": 0.9975, "lenient": 1.0, "applied": true, "claimed": true}
+{"round": "6차", "cond": "u24_combo", "task": "tariff_L5_s15", "rep": 1, "how": "실행 기록 재생", "recorded": 0.9975, "strict": 0.9975, "lenient": 1.0, "applied": true, "claimed": true}
+{"round": "6차", "cond": "u24m_noctx", "task": "tariff_L5_s15", "rep": 1, "how": "실행 기록 재생", "recorded": 0.9975, "strict": 0.9975, "lenient": 1.0, "applied": true, "claimed": true}
+{"round": "6차", "cond": "baseline", "task": "tariff_L5_s17", "rep": 1, "how": "실행 기록 재생", "recorded": 0.9975, "strict": 0.9975, "lenient": 1.0, "applied": true, "claimed": true}
+{"round": "6차", "cond": "u24_combo", "task": "tariff_L5_s17", "rep": 1, "how": "실행 기록 재생", "recorded": 0.9975, "strict": 0.9975, "lenient": 1.0, "applied": true, "claimed": true}
+{"round": "E1", "cond": "e1_forbid", "task": "tariff_L5_s45", "rep": 1, "how": "작업 사본", "recorded": 0.9975, "strict": 0.9975, "lenient": 1.0, "applied": true, "claimed": true}
+{"round": "E1b", "cond": "u01n_noval", "task": "tariff_L5_s15", "rep": 1, "how": "작업 사본", "recorded": 0.9975, "strict": 0.9975, "lenient": 1.0, "applied": true, "claimed": true}
+{"round": "E1b", "cond": "p2_concise", "task": "tariff_L5_s17", "rep": 1, "how": "작업 사본", "recorded": 0.9975, "strict": 0.9975, "lenient": 1.0, "applied": true, "claimed": true}
+{"round": "E1b", "cond": "e1_content", "task": "tariff_L5_s15", "rep": 1, "how": "작업 사본", "recorded": 0.9975, "strict": 0.9975, "lenient": 1.0, "applied": true, "claimed": true}
+{"round": "E1b", "cond": "e1b_n09_L", "task": "tariff_L5_s17", "rep": 1, "how": "작업 사본", "recorded": 0.9975, "strict": 0.9975, "lenient": 1.0, "applied": true, "claimed": true}
+{"round": "E1b", "cond": "u01n_noval", "task": "tariff_L5_s17", "rep": 1, "how": "작업 사본", "recorded": 0.9975, "strict": 0.9975, "lenient": 1.0, "applied": true, "claimed": true}
+{"round": "E1b", "cond": "p1_placebo", "task": "tariff_L5_s17", "rep": 1, "how": "작업 사본", "recorded": 0.9975, "strict": 0.9975, "lenient": 1.0, "applied": true, "claimed": true}
