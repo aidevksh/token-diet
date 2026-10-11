@@ -7,8 +7,10 @@ usage: python experiments/E1b/explore.py  →  results/e1b/explore.md
 2. 지시 문장: E1b S에서 u01n 대 사전 맥락만(e1_content). E1의 C5(+6.5%)와 같은 비교다.
 3. 생성기별 메커니즘: n09와 u01n의 출력, thinking, 보이는 출력, 턴을 환경(S, L, P, LP, 호스트)별로 본다.
 4. 거짓 성공: 틀린 사례가 명세의 어느 해석에서 갈리는지 확인한다. 작업 사본(~/td-data/runs/e1b)이 있어야 한다.
+5. 이전 라운드의 거짓 성공(5차, 6차, E1): 같은 원인인지 확인한다. 호스트 라운드는 작업 사본이 지워져,
+   실행 기록(~/.claude/projects/*/<세션>.jsonl)의 Write·Edit를 순서대로 재생해 최종 파일을 다시 만든다.
 """
-import datetime as dt, importlib.util, json, math, os, random, statistics as st, sys
+import datetime as dt, glob, importlib.util, json, math, os, random, statistics as st, sys, types
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(ROOT, 'gen'))
@@ -60,6 +62,99 @@ def alt_fee(p, o):  # 회원 할인의 '할인액'을 내림하는 해석 (할�
     if d.month == 12 and d.day >= 20:
         total = total * p['peak'] // 100
     return -(-total // 10) * 10
+
+
+def replay(session_id):  # 실행 기록의 Write·Edit를 순서대로 재생해 shipping.py를 다시 만든다
+    fs = glob.glob(os.path.expanduser(f'~/.claude/projects/*/{session_id}.jsonl'))
+    if not fs:
+        return None
+    src, seen = None, set()
+    for line in open(fs[0]):
+        try:
+            m = json.loads(line).get('message')
+        except ValueError:
+            continue
+        if not (isinstance(m, dict) and m.get('role') == 'assistant' and isinstance(m.get('content'), list)):
+            continue
+        for b in m['content']:
+            if b.get('type') != 'tool_use' or b.get('id') in seen:
+                continue
+            seen.add(b.get('id'))
+            i = b.get('input', {})
+            if not str(i.get('file_path', '')).endswith('shipping.py'):
+                continue
+            if b['name'] == 'Write':
+                src = i['content']
+            elif b['name'] == 'Edit' and src is not None:
+                src = src.replace(i['old_string'], i['new_string'], -1 if i.get('replace_all') else 1)
+    return src
+
+
+def regrade(src_or_path, p, key, tariff):  # (점수, 틀린 사례 [(기대값, 제출값, 할인액 내림 해석의 값)])
+    mod = types.ModuleType('shipping')
+    if src_or_path.endswith('.py') and os.path.exists(src_or_path):
+        src_or_path = open(src_or_path).read()
+    exec(compile(src_or_path, 'shipping.py', 'exec'), mod.__dict__)
+    ok, bad = 0, []
+    for o in tariff.orders(p, 400, key['test_seed']):
+        try:
+            exp = tariff.fee_ref(p, o)
+        except ValueError:
+            exp = 'ValueError'
+        try:
+            got = mod.fee(dict(o))
+        except ValueError:
+            got = 'ValueError'
+        except Exception:
+            got = 'error'
+        ok += got == exp
+        if got != exp:
+            bad.append((exp, got, alt_fee(p, o) if exp != 'ValueError' else None))
+    return ok / 400, bad
+
+
+def prior_rounds(tariff):
+    L = ['', '## 5. 이전 라운드의 거짓 성공', '',
+         '| 라운드 | 조건 | 문제 | 기록된 점수 | 확인 방법 | 다시 낸 점수 | 틀린 사례 (기대값 → 제출값, 할인액 내림 해석의 값) |', '|---|---|---|---|---|---|---|']
+    rounds = [('5차 1단계', 'results/runs_r7.jsonl', 'tasks_gen'), ('5차 2단계', 'results/runs_r8.jsonl', 'tasks_gen2'),
+              ('6차', 'results/runs_r9.jsonl', 'tasks_gen3'), ('E1', 'results/e1/runs.jsonl', 'tasks_e1')]
+    for name, path, tdir in rounds:
+        for r in (json.loads(l) for l in open(os.path.join(ROOT, path))):
+            if 'error' in r or not (r.get('scores') or {}).get('false_success'):
+                continue
+            if not r['task'].startswith('tariff_'):
+                L.append(f"| {name} | {r['cond']} | {r['task']} | {r['score']} | 배송비 문제가 아님 | | |")
+                continue
+            key = json.load(open(os.path.join(ROOT, tdir, r['task'], 'key.json')))
+            work = os.path.join(os.path.expanduser(r['work']), 'shipping.py') if r.get('work') else ''
+            src, how = (work, '작업 사본') if work and os.path.exists(work) else (replay(r['session_id']), '실행 기록 재생')
+            if not src:
+                L.append(f"| {name} | {r['cond']} | {r['task']} | {r['score']} | 확인 불가 | | |")
+                continue
+            q1, bad = regrade(src, key['params'], key, tariff)
+            cases = ', '.join(f'{e} → {g} ({a})' for e, g, a in bad[:3]) + (' …' if len(bad) > 3 else '')
+            L.append(f"| {name} | {r['cond']} | {r['task']} | {r['score']} | {how} | {round(q1, 4)} | {cases} |")
+    L += ['', '같은 배송비 문제의 모든 실행(거짓 성공이 아닌 것 포함)에서 재생한 점수가 기록된 점수와 같은지:', '', '| 라운드 | 문제 | 실행 | 일치 |', '|---|---|---|---|']
+    for name, path, tdir in rounds[1:3]:
+        rs = [json.loads(l) for l in open(os.path.join(ROOT, path))]
+        fs_tasks = {r['task'] for r in rs if 'error' not in r and (r.get('scores') or {}).get('false_success') and r['task'].startswith('tariff_')}
+        for t in sorted(fs_tasks):
+            key = json.load(open(os.path.join(ROOT, tdir, t, 'key.json')))
+            runs = [r for r in rs if r['task'] == t and 'error' not in r]
+            same = sum(1 for r in runs if (s := replay(r['session_id'])) and round(regrade(s, key['params'], key, tariff)[0], 4) == r['score'])
+            L.append(f'| {name} | {t} | {len(runs)} | {same}/{len(runs)} |')
+    L += ['', '두 해석(할인 후 요금 내림 대 할인액 내림)의 답이 갈리는 시험 사례가 있는 배송비 L5 문제:', '', '| 문제 | 갈리는 사례 |', '|---|---|']
+    for d in sorted(glob.glob(os.path.join(ROOT, 'tasks_gen*', 'tariff_L5_s*'))) + sorted(glob.glob(os.path.join(ROOT, 'tasks_e1', 'tariff_L5_s*'))):
+        key = json.load(open(os.path.join(d, 'key.json')))
+        n = 0
+        for o in tariff.orders(key['params'], 400, key['test_seed']):
+            try:
+                n += tariff.fee_ref(key['params'], o) != alt_fee(key['params'], o)
+            except ValueError:
+                pass
+        if n:
+            L.append(f'| {os.path.relpath(d, ROOT)} | {n}/400 |')
+    return L
 
 
 def main():
@@ -132,6 +227,7 @@ def main():
                 pass
         if n:
             L.append(f'| {t} | {n}/400 |')
+    L += prior_rounds(tariff)
     open(os.path.join(ROOT, 'results/e1b/explore.md'), 'w').write('\n'.join(L) + '\n')
     print('\n'.join(L))
 
