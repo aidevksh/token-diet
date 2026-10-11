@@ -1,0 +1,519 @@
+{
+ "n_runs": 576,
+ "n_tasks": 72,
+ "conds": [
+  "baseline",
+  "e1_content",
+  "e1_forbid",
+  "e1_placebo_ctx",
+  "n09_p2_h05",
+  "p1_placebo",
+  "p2_concise",
+  "u01n_noval"
+ ],
+ "contrasts": [
+  {
+   "id": "C1",
+   "cond": "u01n_noval",
+   "ref": "n09_p2_h05",
+   "question": "사전 맥락(구조) + 지시 문장이 n09보다 줄이는가 (재현)",
+   "pct": -0.5,
+   "lo": -4.8,
+   "hi": 3.9,
+   "p": 0.791,
+   "n": 72,
+   "p_holm": 0.791
+  },
+  {
+   "id": "C2",
+   "cond": "e1_content",
+   "ref": "n09_p2_h05",
+   "question": "사전 맥락만으로 줄이는가",
+   "pct": -6.5,
+   "lo": -10.1,
+   "hi": -3.0,
+   "p": 0.0,
+   "n": 72,
+   "p_holm": 0.0
+  },
+  {
+   "id": "C3",
+   "cond": "e1_forbid",
+   "ref": "n09_p2_h05",
+   "question": "탐색 금지 지시만으로 줄이는가",
+   "pct": -4.4,
+   "lo": -8.3,
+   "hi": -0.4,
+   "p": 0.033,
+   "n": 72,
+   "p_holm": 0.099
+  },
+  {
+   "id": "C4",
+   "cond": "e1_placebo_ctx",
+   "ref": "n09_p2_h05",
+   "question": "같은 길이의 무관한 맥락만으로 줄이는가 (길이 효과)",
+   "pct": -3.4,
+   "lo": -7.5,
+   "hi": 0.7,
+   "p": 0.1065,
+   "n": 72,
+   "p_holm": 0.213
+  },
+  {
+   "id": "C5",
+   "cond": "u01n_noval",
+   "ref": "e1_content",
+   "question": "사전 맥락이 있을 때 지시 문장이 더 줄이는가",
+   "pct": 6.5,
+   "lo": 2.7,
+   "hi": 10.3,
+   "p": 0.0005,
+   "n": 72
+  },
+  {
+   "id": "C6",
+   "cond": "e1_content",
+   "ref": "e1_placebo_ctx",
+   "question": "같은 길이라면 관련 있는 내용이 더 줄이는가",
+   "pct": -3.2,
+   "lo": -6.5,
+   "hi": 0.1,
+   "p": 0.0545,
+   "n": 72
+  }
+ ],
+ "by_gen": [
+  {
+   "gen": "rules",
+   "cond": "baseline",
+   "pct": 61.1,
+   "lo": 44.0,
+   "hi": 80.4,
+   "p": 0.0,
+   "n": 24
+  },
+  {
+   "gen": "rules",
+   "cond": "e1_content",
+   "pct": -5.2,
+   "lo": -12.8,
+   "hi": 3.1,
+   "p": 0.2205,
+   "n": 24
+  },
+  {
+   "gen": "rules",
+   "cond": "e1_forbid",
+   "pct": -8.1,
+   "lo": -16.6,
+   "hi": 2.0,
+   "p": 0.1,
+   "n": 24
+  },
+  {
+   "gen": "rules",
+   "cond": "e1_placebo_ctx",
+   "pct": -7.1,
+   "lo": -15.8,
+   "hi": 2.8,
+   "p": 0.1555,
+   "n": 24
+  },
+  {
+   "gen": "rules",
+   "cond": "p1_placebo",
+   "pct": 58.5,
+   "lo": 48.8,
+   "hi": 68.6,
+   "p": 0.0,
+   "n": 24
+  },
+  {
+   "gen": "rules",
+   "cond": "p2_concise",
+   "pct": 34.8,
+   "lo": 24.1,
+   "hi": 47.2,
+   "p": 0.0,
+   "n": 24
+  },
+  {
+   "gen": "rules",
+   "cond": "u01n_noval",
+   "pct": 5.6,
+   "lo": -2.9,
+   "hi": 14.8,
+   "p": 0.2125,
+   "n": 24
+  },
+  {
+   "gen": "sales",
+   "cond": "baseline",
+   "pct": 76.2,
+   "lo": 68.1,
+   "hi": 84.3,
+   "p": 0.0,
+   "n": 24
+  },
+  {
+   "gen": "sales",
+   "cond": "e1_content",
+   "pct": -12.5,
+   "lo": -16.5,
+   "hi": -8.1,
+   "p": 0.0,
+   "n": 24
+  },
+  {
+   "gen": "sales",
+   "cond": "e1_forbid",
+   "pct": -5.9,
+   "lo": -9.4,
+   "hi": -2.1,
+   "p": 0.003,
+   "n": 24
+  },
+  {
+   "gen": "sales",
+   "cond": "e1_placebo_ctx",
+   "pct": -3.4,
+   "lo": -7.5,
+   "hi": 0.9,
+   "p": 0.121,
+   "n": 24
+  },
+  {
+   "gen": "sales",
+   "cond": "p1_placebo",
+   "pct": 83.8,
+   "lo": 73.6,
+   "hi": 93.7,
+   "p": 0.0,
+   "n": 24
+  },
+  {
+   "gen": "sales",
+   "cond": "p2_concise",
+   "pct": 43.4,
+   "lo": 35.7,
+   "hi": 52.0,
+   "p": 0.0,
+   "n": 24
+  },
+  {
+   "gen": "sales",
+   "cond": "u01n_noval",
+   "pct": -9.7,
+   "lo": -14.0,
+   "hi": -5.0,
+   "p": 0.0,
+   "n": 24
+  },
+  {
+   "gen": "tariff",
+   "cond": "baseline",
+   "pct": 129.9,
+   "lo": 111.4,
+   "hi": 149.4,
+   "p": 0.0,
+   "n": 24
+  },
+  {
+   "gen": "tariff",
+   "cond": "e1_content",
+   "pct": -1.6,
+   "lo": -6.0,
+   "hi": 3.1,
+   "p": 0.494,
+   "n": 24
+  },
+  {
+   "gen": "tariff",
+   "cond": "e1_forbid",
+   "pct": 1.0,
+   "lo": -4.8,
+   "hi": 6.8,
+   "p": 0.6755,
+   "n": 24
+  },
+  {
+   "gen": "tariff",
+   "cond": "e1_placebo_ctx",
+   "pct": 0.4,
+   "lo": -5.6,
+   "hi": 6.9,
+   "p": 0.915,
+   "n": 24
+  },
+  {
+   "gen": "tariff",
+   "cond": "p1_placebo",
+   "pct": 102.8,
+   "lo": 88.5,
+   "hi": 117.6,
+   "p": 0.0,
+   "n": 24
+  },
+  {
+   "gen": "tariff",
+   "cond": "p2_concise",
+   "pct": 54.5,
+   "lo": 43.5,
+   "hi": 66.0,
+   "p": 0.0,
+   "n": 24
+  },
+  {
+   "gen": "tariff",
+   "cond": "u01n_noval",
+   "pct": 3.4,
+   "lo": -3.5,
+   "hi": 10.8,
+   "p": 0.3565,
+   "n": 24
+  }
+ ],
+ "mechanism": {
+  "baseline": {
+   "n": 72,
+   "out": 4629,
+   "think": 753,
+   "visible": 3876,
+   "turns": 6.78,
+   "cost": 0.1939,
+   "cache_write": 8977,
+   "first_explore": 1.0,
+   "tool_calls": 5.78
+  },
+  "e1_content": {
+   "n": 72,
+   "out": 2282,
+   "think": 430,
+   "visible": 1853,
+   "turns": 3.21,
+   "cost": 0.1378,
+   "cache_write": 9688,
+   "first_explore": 0.347,
+   "tool_calls": 2.21
+  },
+  "e1_forbid": {
+   "n": 72,
+   "out": 2338,
+   "think": 423,
+   "visible": 1915,
+   "turns": 3.69,
+   "cost": 0.1407,
+   "cache_write": 9801,
+   "first_explore": 0.667,
+   "tool_calls": 2.69
+  },
+  "e1_placebo_ctx": {
+   "n": 72,
+   "out": 2360,
+   "think": 320,
+   "visible": 2040,
+   "turns": 4.42,
+   "cost": 0.2129,
+   "cache_write": 17824,
+   "first_explore": 1.0,
+   "tool_calls": 3.42
+  },
+  "n09_p2_h05": {
+   "n": 72,
+   "out": 2447,
+   "think": 335,
+   "visible": 2111,
+   "turns": 4.64,
+   "cost": 0.1355,
+   "cache_write": 8380,
+   "first_explore": 1.0,
+   "tool_calls": 3.64
+  },
+  "p1_placebo": {
+   "n": 72,
+   "out": 4434,
+   "think": 666,
+   "visible": 3769,
+   "turns": 6.83,
+   "cost": 0.1859,
+   "cache_write": 8491,
+   "first_explore": 1.0,
+   "tool_calls": 5.83
+  },
+  "p2_concise": {
+   "n": 72,
+   "out": 3528,
+   "think": 531,
+   "visible": 2997,
+   "turns": 6.43,
+   "cost": 0.1501,
+   "cache_write": 6549,
+   "first_explore": 1.0,
+   "tool_calls": 5.43
+  },
+  "u01n_noval": {
+   "n": 72,
+   "out": 2435,
+   "think": 541,
+   "visible": 1894,
+   "turns": 3.18,
+   "cost": 0.1402,
+   "cache_write": 9847,
+   "first_explore": 0.306,
+   "tool_calls": 2.18
+  }
+ },
+ "quality": {
+  "baseline": {
+   "n": 72,
+   "refused": 0,
+   "false_success": 0,
+   "partial": 0,
+   "score_mean": 1.0,
+   "worse_tasks": 0
+  },
+  "e1_content": {
+   "n": 72,
+   "refused": 0,
+   "false_success": 0,
+   "partial": 1,
+   "score_mean": 1.0,
+   "worse_tasks": 0,
+   "dq": 0.0,
+   "dq_lb": 0.0,
+   "dq4": 0.0039,
+   "dq4_lb": -0.0064
+  },
+  "e1_forbid": {
+   "n": 72,
+   "refused": 0,
+   "false_success": 1,
+   "partial": 0,
+   "score_mean": 1.0,
+   "worse_tasks": 1,
+   "dq": -0.0,
+   "dq_lb": -0.0001,
+   "dq4": 0.0168,
+   "dq4_lb": 0.0075
+  },
+  "e1_placebo_ctx": {
+   "n": 72,
+   "refused": 0,
+   "false_success": 0,
+   "partial": 0,
+   "score_mean": 1.0,
+   "worse_tasks": 0,
+   "dq": 0.0,
+   "dq_lb": 0.0,
+   "dq4": 0.0062,
+   "dq4_lb": -0.0005
+  },
+  "n09_p2_h05": {
+   "n": 72,
+   "refused": 0,
+   "false_success": 0,
+   "partial": 1,
+   "score_mean": 1.0,
+   "worse_tasks": 0,
+   "dq": 0.0,
+   "dq_lb": 0.0,
+   "dq4": 0.0089,
+   "dq4_lb": 0.0003
+  },
+  "p1_placebo": {
+   "n": 72,
+   "refused": 0,
+   "false_success": 0,
+   "partial": 2,
+   "score_mean": 1.0,
+   "worse_tasks": 0,
+   "dq": 0.0,
+   "dq_lb": 0.0,
+   "dq4": -0.0009,
+   "dq4_lb": -0.0027
+  },
+  "p2_concise": {
+   "n": 72,
+   "refused": 0,
+   "false_success": 0,
+   "partial": 0,
+   "score_mean": 1.0,
+   "worse_tasks": 0,
+   "dq": 0.0,
+   "dq_lb": 0.0,
+   "dq4": -0.0062,
+   "dq4_lb": -0.0115
+  },
+  "u01n_noval": {
+   "n": 72,
+   "refused": 0,
+   "false_success": 0,
+   "partial": 1,
+   "score_mean": 1.0,
+   "worse_tasks": 0,
+   "dq": 0.0,
+   "dq_lb": 0.0,
+   "dq4": 0.0169,
+   "dq4_lb": 0.0093
+  }
+ },
+ "vs_base": {
+  "e1_content": {
+   "pct": -50.0,
+   "lo": -52.5,
+   "hi": -47.3,
+   "p": 0.0,
+   "n": 72
+  },
+  "e1_forbid": {
+   "pct": -48.8,
+   "lo": -51.3,
+   "hi": -46.2,
+   "p": 0.0,
+   "n": 72
+  },
+  "e1_placebo_ctx": {
+   "pct": -48.3,
+   "lo": -50.8,
+   "hi": -45.6,
+   "p": 0.0,
+   "n": 72
+  },
+  "n09_p2_h05": {
+   "pct": -46.5,
+   "lo": -49.5,
+   "hi": -43.0,
+   "p": 0.0,
+   "n": 72
+  },
+  "p1_placebo": {
+   "pct": -3.2,
+   "lo": -8.2,
+   "hi": 1.9,
+   "p": 0.2105,
+   "n": 72
+  },
+  "p2_concise": {
+   "pct": -22.9,
+   "lo": -26.7,
+   "hi": -19.0,
+   "p": 0.0,
+   "n": 72
+  },
+  "u01n_noval": {
+   "pct": -46.7,
+   "lo": -49.8,
+   "hi": -43.3,
+   "p": 0.0,
+   "n": 72
+  }
+ },
+ "verdicts": {
+  "H1 재현": "재현되지 않음",
+  "H2 내용만으로 충분": "내용만으로 줄어듦 / 지시 문장의 추가 효과는 확인되지 않음",
+  "H3 금지 지시": "금지만으로는 줄지 않음 / 품질 기준 미달",
+  "H4 길이 효과": "길이 효과는 확인되지 않음",
+  "H6 관련성": "관련성의 추가 효과는 확인되지 않음"
+ }
+}
