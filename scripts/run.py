@@ -21,6 +21,28 @@ EXEC = os.environ.get('TD_EXEC', 'host')
 IMAGE = os.environ.get('TD_IMAGE', f'token-diet:{CLI_VERSION}')
 TOKEN_FILE = os.path.expanduser(os.environ.get('TD_TOKEN_FILE', '~/.config/token-diet/oauth_token'))
 DOCKER_MEM = os.environ.get('TD_DOCKER_MEM', '1g')
+# 컨테이너 작업 폴더: short(/work) 또는 long(호스트 R6와 같은 길이의 경로. 조건 이름 자리는 같은 길이의 무의미한 문자열)
+WORKDIR_MODE = os.environ.get('TD_WORKDIR_MODE', 'short')
+
+
+def container_workdir(cond, task, rep):
+    # 조건 폴더에 longpath 파일이 있어도 긴 경로를 쓴다(E1b). 조건 이름 자리는 10자 무의미 문자열(호스트 R6의 n09_p2_h05·u01n_noval과 같은 길이)
+    if WORKDIR_MODE != 'long' and not os.path.exists(os.path.join(ROOT, 'conditions', cond, 'longpath')):
+        return '/work'
+    import hashlib
+    return f"/private/tmp/claude-501/td-runs/round9/{hashlib.md5(cond.encode()).hexdigest()[:10]}/{task}/r{rep}"
+
+
+# 호스트 CLI가 시스템 프롬프트에 넣는 scratchpad 안내 문구 원문 (CLI 2.1.296, 컨테이너에서는 이 기능이 꺼져 있다)
+SCRATCHPAD_TEXT = ('Scratchpad directory: {path} \u2014 always use it for temporary files (intermediate results, scripts, outputs that '
+                   "don't belong in the project) instead of `/tmp` or other system temp directories; it is session-specific, isolated from the "
+                   'project, and can generally be used without permission prompts. Only use `/tmp` if the user explicitly asks.')
+
+
+def scratchpad_for(workdir, session):
+    # 호스트와 같은 형태: /private/tmp/claude-501/<작업 폴더 경로의 /·_·. 을 -로 바꾼 것>/<세션 ID>/scratchpad
+    import re as _re
+    return f"/private/tmp/claude-501/{_re.sub(r'[/_.]', '-', workdir)}/{session}/scratchpad"
 VENV_BIN = os.path.join(ROOT, '.venv', 'bin')
 OUT = os.path.join(ROOT, 'results', os.environ.get('TD_OUT', 'runs.jsonl'))
 RAW = os.path.join(ROOT, 'results', 'raw')
@@ -118,10 +140,18 @@ def run_docker(cond, task, rep, tdir, cdir, prompt, disallowed, allow):
                     for k, v in json.load(open(cfile('env.json'))).items()})
     cmd = ['docker', 'run', '--rm', '-i', '--memory', DOCKER_MEM,
            '-v', f"{os.path.realpath(os.path.join(tdir, 'fixture'))}:/in/fixture:ro",
-           '-v', f'{cdir}:/in/cond:ro', '-v', f'{cfg}:/in/cfg:ro', '-v', f'{out}:/out', '-e', f'TD_TASK={task}']
+           '-v', f'{cdir}:/in/cond:ro', '-v', f'{cfg}:/in/cfg:ro', '-v', f'{out}:/out', '-e', f'TD_TASK={task}',
+           '-e', f'TD_WORKDIR={container_workdir(cond, task, rep)}']
     for k, v in env.items():
         cmd += ['-e', f'{k}={v}']
-    cmd += [IMAGE] + cli_args(prompt, cdir, disallowed, allow, cfg_settings=settings, sys_prompt_path='/in/cond/system_prompt.txt')
+    extra = []
+    if os.path.exists(cfile('scratchpad')):  # E1b: 호스트 CLI의 scratchpad 안내를 재현한다
+        import uuid
+        session = str(uuid.uuid4())
+        sp = scratchpad_for(container_workdir(cond, task, rep), session)
+        cmd += ['-e', f'TD_SCRATCHPAD={sp}']
+        extra = ['--session-id', session, '--append-system-prompt', SCRATCHPAD_TEXT.format(path=sp)]
+    cmd += [IMAGE] + cli_args(prompt, cdir, disallowed, allow, cfg_settings=settings, sys_prompt_path='/in/cond/system_prompt.txt') + extra
     token = open(TOKEN_FILE).read().strip()
     p = subprocess.run(cmd, input=token + '\n', capture_output=True, text=True, timeout=1500)
     stream = os.path.join(out, 'stream.jsonl')
@@ -217,7 +247,9 @@ def finish(cond, task, rep, tdir, events, work, t0, tbase):
     other = [m for m in mu if m != MODEL and not m.startswith('claude-haiku')]
     rec = {
         'cond': cond, 'task': task, 'rep': rep, 'session_id': res.get('session_id'), 'cli_version': CLI_VERSION, 'work': tilde(work),
-        'exec': EXEC, 'model': MODEL, 'effort': EFFORT, **({'image': IMAGE, 'transcripts': tilde(tbase)} if EXEC == 'docker' else {}),
+        'exec': EXEC, 'model': MODEL, 'effort': EFFORT,
+        **({'image': IMAGE, 'transcripts': tilde(tbase), 'workdir': container_workdir(cond, task, rep),
+            'scratchpad_text': os.path.exists(os.path.join(ROOT, 'conditions', cond, 'scratchpad'))} if EXEC == 'docker' else {}),
         'valid': not res.get('is_error') and not other and bool(main),
         'is_error': res.get('is_error'), 'other_models': other,
         'pass': g.returncode == 0, 'grade': (g.stdout.strip() or g.stderr.strip())[-200:],

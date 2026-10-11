@@ -6,12 +6,18 @@
 #   /in/cfg     (읽기 전용): 실행별 settings.json (hook 경로를 컨테이너 경로로 바꾼 것)
 #   /out        (쓰기): stream.jsonl, stderr.txt, work/ (채점용 사본), transcripts/
 #   인자: claude CLI 인자 그대로
+#   TD_WORKDIR: 작업 폴더 (기본 /work). E1b의 긴 경로 조건은 호스트와 같은 길이의 경로를 쓴다
 IFS= read -r TOKEN || true
 
-cp -r /in/fixture/. /work/
-[ -f /in/cond/CLAUDE.md ] && cp /in/cond/CLAUDE.md /work/
-if [ -d /in/cond/dotclaude ]; then mkdir -p /work/.claude && cp -r /in/cond/dotclaude/. /work/.claude/; fi
-if [ -f /in/cond/prerun.py ]; then python3 /in/cond/prerun.py /work "$TD_TASK" || { echo "prerun failed" > /out/stderr.txt; exit 90; }; fi
+W="${TD_WORKDIR:-/work}"
+mkdir -p "$W"
+cp -r /in/fixture/. "$W"/
+[ -f /in/cond/CLAUDE.md ] && cp /in/cond/CLAUDE.md "$W"/
+if [ -d /in/cond/dotclaude ]; then mkdir -p "$W"/.claude && cp -r /in/cond/dotclaude/. "$W"/.claude/; fi
+if [ -f /in/cond/prerun.py ]; then python3 /in/cond/prerun.py "$W" "$TD_TASK" || { echo "prerun failed" > /out/stderr.txt; exit 90; }; fi
+cd "$W"
+# E1b: scratchpad 안내 조건이면 호스트 CLI처럼 그 디렉터리를 미리 만든다
+[ -n "$TD_SCRATCHPAD" ] && mkdir -p "$TD_SCRATCHPAD"
 
 exec 3< <(printf '%s' "$TOKEN")
 unset TOKEN
@@ -20,7 +26,7 @@ claude "$@" < /dev/null > /out/stream.jsonl 2> /out/stderr.txt
 rc=$?
 exec 3<&-
 
-cp -r /work /out/work
+cp -r "$W" /out/work
 mkdir -p /out/transcripts
 cp -r "$HOME/.claude/projects/." /out/transcripts/ 2>/dev/null || true
 exit $rc

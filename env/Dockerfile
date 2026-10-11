@@ -16,9 +16,11 @@ RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_VERSION} \
  && npm cache clean --force
 
 # 중립 사용자와 작업 폴더
+# /private/tmp: E1b의 긴 경로 조건(호스트와 같은 길이의 작업 폴더)에 쓴다
 RUN useradd -m -s /bin/bash agent \
- && mkdir -p /work /out \
- && chown agent:agent /work /out
+ && mkdir -p /work /out /private/tmp \
+ && chown agent:agent /work /out \
+ && chmod 1777 /private/tmp
 
 COPY entry.sh /usr/local/bin/td-entry
 RUN chmod 755 /usr/local/bin/td-entry
