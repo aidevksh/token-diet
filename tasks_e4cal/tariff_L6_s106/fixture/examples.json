@@ -1,0 +1,74 @@
+[
+ {
+  "order": {
+   "region": "gwangju",
+   "weight_g": 1602,
+   "subtotal": 27415,
+   "member": "none",
+   "date": "2025-04-16",
+   "items": 5,
+   "fragile": false
+  },
+  "fee": 3000
+ },
+ {
+  "order": {
+   "region": "busan",
+   "weight_g": 4085,
+   "subtotal": 39709,
+   "member": "silver",
+   "date": "2025-08-19",
+   "items": 4,
+   "fragile": false
+  },
+  "fee": 4950
+ },
+ {
+  "order": {
+   "region": "gyeonggi",
+   "weight_g": 4824,
+   "subtotal": 23455,
+   "member": "gold",
+   "date": "2025-06-18",
+   "items": 1,
+   "fragile": false
+  },
+  "fee": 5100
+ },
+ {
+  "order": {
+   "region": "gwangju",
+   "weight_g": 605,
+   "subtotal": 30111,
+   "member": "none",
+   "date": "2025-04-16",
+   "items": 8,
+   "fragile": false
+  },
+  "fee": 3000
+ },
+ {
+  "order": {
+   "region": "busan",
+   "weight_g": 1966,
+   "subtotal": 28646,
+   "member": "silver",
+   "date": "2025-02-18",
+   "items": 5,
+   "fragile": false
+  },
+  "fee": 2700
+ },
+ {
+  "order": {
+   "region": "gyeonggi",
+   "weight_g": 3001,
+   "subtotal": 14687,
+   "member": "gold",
+   "date": "2025-04-16",
+   "items": 2,
+   "fragile": false
+  },
+  "fee": 3830
+ }
+]

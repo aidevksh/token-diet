@@ -115,7 +115,102 @@ h. 2025년 8월 대비 9월 순매출 증가율(%), 소수 둘째 자리에서 �
 EXTRA_KEYS = ', "e_email": ..., "f_repeat": 정수, "g_avg": 정수, "h_growth": 실수'
 
 
+# ---- L7 (E4, 2026-10-12): 정의 일부를 산문에서 빼고, 직전 분기 참고 값으로만 알 수 있게 한다 ----
+# 일부러 뺀 규칙 (의도한 해석 / 다른 해석): tz 한국 시간 기준 / 저장된 UTC 그대로, seg 공백 제거·소문자 통일 / 원래 표기 그대로,
+# email 같은 email은 한 사람 / 계정마다 따로
+AMBIG7 = ('tz', 'seg', 'email')
+QUARTERS = {'Q2': (U(2025, 4, 1), U(2025, 7, 1), '2025-05', '2025-06'), 'Q3': (U(2025, 7, 1), U(2025, 10, 1), '2025-08', '2025-09')}
+
+
+def answers7(c, q, alt=()):
+    from decimal import Decimal, ROUND_HALF_UP
+    lo, hi, m_prev, m_cur = QUARTERS[q]
+    shift = dt.timedelta(hours=0 if 'tz' in alt else 9)
+    P = lambda s_: dt.datetime.strptime(s_, '%Y-%m-%dT%H:%M:%SZ') + shift
+    cust = {i: (e if 'email' not in alt else f'#{i}', e, s_ if 'seg' in alt else s_.strip().lower())
+            for i, e, s_ in c.execute('select id,email,segment from customers')}
+    cat = dict(c.execute('select id,category from products'))
+    ref = collections.Counter()
+    for o, p_, q_ in c.execute('select * from refunds'):
+        ref[(o, p_)] += q_
+    items = collections.defaultdict(list)
+    for o, p_, q_, u, d in c.execute('select * from order_items'):
+        items[o].append((p_, q_, u, d))
+    seg, catn, month, buyers = collections.Counter(), collections.Counter(), collections.Counter(), set()
+    refund_by, email_of, orders_by, n_orders, q_net = collections.Counter(), {}, collections.Counter(), 0, 0
+    for o, cu, ts, st in c.execute('select * from orders'):
+        if st != 'paid':
+            continue
+        t = P(ts)
+        if not (lo <= t < hi):
+            continue
+        net = 0
+        for p_, q_, u, d in items[o]:
+            line = q_ * u * (100 - d) // 100 - ref[(o, p_)] * (u * (100 - d) // 100)
+            net += line
+            catn[cat[p_]] += line
+        who, email, sg = cust[cu]
+        month[t.strftime('%Y-%m')] += net
+        seg[sg] += net
+        buyers.add(who)
+        orders_by[who] += 1
+        n_orders += 1
+        q_net += net
+        refund_by[who] += sum(ref[(o, p_)] * (u * (100 - d) // 100) for p_, q_, u, d in items[o])
+        email_of[who] = email
+    s_, sv = seg.most_common(1)[0]
+    k, kv = catn.most_common(1)[0]
+    top = max(refund_by.values())
+    return {'a_segment': s_, 'a_net': sv, 'b_customers': len(buyers), 'c_category': k, 'c_net': kv,
+            'd_month': max(month.items(), key=lambda x: (x[1], x[0]))[0],
+            'e_email': sorted(email_of[w] for w, v in refund_by.items() if v == top)[0],
+            'f_repeat': sum(1 for v in orders_by.values() if v >= 2), 'g_avg': q_net // n_orders,
+            'h_growth': float((Decimal(month[m_cur] - month[m_prev]) * 100 / Decimal(month[m_prev])).quantize(Decimal('0.1'), ROUND_HALF_UP))}
+
+
+def make7(seed, out):
+    os.makedirs(os.path.join(out, 'fixture'), exist_ok=True)
+    c = build(seed, 5, os.path.join(out, 'fixture', 'shop.db'))  # L5와 같은 데이터(UTC 저장, 표기가 섞인 세그먼트, 같은 email 중복 계정)
+    key, ref = answers7(c, 'Q3'), answers7(c, 'Q2')
+    fmt = lambda a: '\n'.join(f'- {k}: {json.dumps(v, ensure_ascii=False)}' for k, v in a.items())
+    open(os.path.join(out, 'prompt.md'), 'w').write(f"""shop.db(SQLite)로 2025년 3분기(7월 1일 ~ 9월 30일)를 분석해줘.
+
+정의:
+- 매출은 status가 'paid'인 주문만 센다.
+- 라인 금액 = qty × unit_price × (100 − discount_pct) / 100, 라인마다 원 단위 내림.
+- 순매출 = 라인 금액 − 환불액. 환불액 = refunds.qty × (unit_price × (100 − discount_pct) / 100, 원 단위 내림).
+
+질문 (모두 3분기 결제 완료 주문 기준):
+a. 순매출이 가장 높은 고객 세그먼트와 그 순매출
+b. 결제 완료 주문이 있는 고객 수
+c. 순매출이 가장 높은 상품 카테고리와 그 순매출
+d. 분기 안에서 순매출이 가장 큰 달 (YYYY-MM)
+e. 환불액 합계가 가장 큰 고객의 email (동률이면 사전순 첫 번째)
+f. 결제 완료 주문이 2건 이상인 고객 수
+g. 주문당 평균 순매출 (원 단위 내림)
+h. 분기 둘째 달 대비 셋째 달 순매출 증가율(%), 소수 둘째 자리에서 반올림(half up)해 소수 첫째 자리까지
+
+참고: 같은 정의와 같은 질문으로 2분기(4월 1일 ~ 6월 30일, h는 5월 대비 6월)를 계산한 값이다. 이 DB에서 이 값이 그대로 나와야 정의를 맞게 적용한 것이다.
+{fmt(ref)}
+
+답은 answer.json에 {{"a_segment": ..., "a_net": 정수, "b_customers": 정수, "c_category": ..., "c_net": 정수, "d_month": "YYYY-MM", "e_email": ..., "f_repeat": 정수, "g_avg": 정수, "h_growth": 실수}} 형식으로 저장해.""" + STATUS_NOTE)
+    json.dump({'gen': 'sales', 'answers': key, 'reference_q2': ref}, open(os.path.join(out, 'key.json'), 'w'))
+
+
+def ambiguity_check7(seed, path):
+    """참고 값(2분기)과 정답(3분기)이 각 모호성에 실제로 반응하는지 센다."""
+    c = build(seed, 5, path)
+    out = {}
+    for a in AMBIG7:
+        r0, r1 = answers7(c, 'Q2'), answers7(c, 'Q2', (a,))
+        k0, k1 = answers7(c, 'Q3'), answers7(c, 'Q3', (a,))
+        out[a] = (sum(r0[k] != r1[k] for k in r0), sum(k0[k] != k1[k] for k in k0))
+    return out
+
+
 def make(seed, level, out):
+    if level >= 7:
+        return make7(seed, out)
     os.makedirs(os.path.join(out, 'fixture'), exist_ok=True)
     c = build(seed, level, os.path.join(out, 'fixture', 'shop.db'))
     key = answers(c, level)

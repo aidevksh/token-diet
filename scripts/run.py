@@ -60,7 +60,7 @@ OUT = os.path.join(ROOT, 'results', os.environ.get('TD_OUT', 'runs.jsonl'))
 RAW = os.path.join(ROOT, 'results', 'raw')
 BASE_DISALLOWED = 'Agent,Task,WebSearch,WebFetch,AskUserQuestion,Skill'
 USAGE_LIMIT = float(os.environ.get('TD_USAGE_LIMIT', '0.85'))  # 5시간 한도 사용률이 이 값을 넘으면 새 실행을 시작하지 않는다
-USAGE_LIMIT_7D = float(os.environ.get('TD_USAGE_LIMIT_7D', '0.90'))  # 주간 한도도 같은 방식으로 지킨다
+USAGE_LIMIT_7D = float(os.environ.get('TD_USAGE_LIMIT_7D', '1.01'))  # 주간 한도는 보지 않는다(사용자 지시, 2026-10-12). 필요하면 이 변수로 다시 켠다
 # 기본 시스템 프롬프트는 서버 플래그로도 바뀔 수 있으므로 모든 조건에서 명시해 고정한다 (조건의 env.json이 덮어쓸 수 있음)
 PINNED_ENV = {'CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT': '1', 'CLAUDE_CODE_ACT_DONT_REDERIVE': '1',
               'CLAUDE_CODE_TOTAL_TOKENS_REMINDER_BUDGET': '15000000'} if os.environ.get('TD_PIN_PROMPT', '1') == '1' else {}

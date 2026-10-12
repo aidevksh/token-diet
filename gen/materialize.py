@@ -7,9 +7,9 @@ import argparse, importlib, json, os, shutil, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'gen'))
 GRADE = '''import json, os, sys
-sys.path.insert(0, {gen_dir!r})
-import {gen}
 here = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(here, '..', '..', 'gen'))  # tasks_*/<문제>/grade.py 기준 상대 경로 (로컬 경로·사용자 이름을 남기지 않는다)
+import {gen}
 {gen}.grade(sys.argv[1], json.load(open(os.path.join(here, 'key.json'))))
 '''
 
@@ -31,7 +31,7 @@ def main():
             d = os.path.join(ROOT, a.out, name)
             shutil.rmtree(d, ignore_errors=True)
             mod.make(seed, int(level), d)
-            open(os.path.join(d, 'grade.py'), 'w').write(GRADE.format(gen_dir=os.path.join(ROOT, 'gen'), gen=gen))
+            open(os.path.join(d, 'grade.py'), 'w').write(GRADE.format(gen=gen))
             json.dump({'disallowed': 'Bash,NotebookEdit' if nobash else ''}, open(os.path.join(d, 'task.json'), 'w'))
             names.append(name)
     print(','.join(names))
