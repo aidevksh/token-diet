@@ -1,0 +1,136 @@
+[
+ {
+  "order": {
+   "region": "gyeonggi",
+   "weight_g": 1891,
+   "subtotal": 11918,
+   "member": "none",
+   "date": "2025-08-19",
+   "items": 3,
+   "fragile": false
+  },
+  "fee": 4000
+ },
+ {
+  "order": {
+   "region": "gwangju",
+   "weight_g": 4212,
+   "subtotal": 26618,
+   "member": "silver",
+   "date": "2025-02-17",
+   "items": 5,
+   "fragile": false
+  },
+  "fee": 5230
+ },
+ {
+  "order": {
+   "region": "busan",
+   "weight_g": 7433,
+   "subtotal": 24518,
+   "member": "none",
+   "date": "2025-08-12",
+   "items": 2,
+   "fragile": false
+  },
+  "fee": 8500
+ },
+ {
+  "order": {
+   "region": "jeju",
+   "weight_g": 1216,
+   "subtotal": 53934,
+   "member": "none",
+   "date": "2025-03-10",
+   "items": 23,
+   "fragile": false
+  },
+  "fee": 7500
+ },
+ {
+  "order": {
+   "region": "gyeonggi",
+   "weight_g": 426,
+   "subtotal": 27487,
+   "member": "gold",
+   "date": "2025-03-19",
+   "items": 4,
+   "fragile": false,
+   "coupon": "SHIP1000"
+  },
+  "fee": 2200
+ },
+ {
+  "order": {
+   "region": "gwangju",
+   "weight_g": 607,
+   "subtotal": 51930,
+   "member": "none",
+   "date": "2025-02-19",
+   "items": 2,
+   "fragile": false
+  },
+  "fee": 0
+ },
+ {
+  "order": {
+   "region": "ulleung",
+   "weight_g": 4053,
+   "subtotal": 6291,
+   "member": "gold",
+   "date": "2025-05-19",
+   "items": 6,
+   "fragile": false
+  },
+  "fee": 8000
+ },
+ {
+  "order": {
+   "region": "busan",
+   "weight_g": 1211,
+   "subtotal": 37348,
+   "member": "silver",
+   "date": "2025-04-18",
+   "items": 12,
+   "fragile": false
+  },
+  "fee": 7600
+ },
+ {
+  "order": {
+   "region": "gyeonggi",
+   "weight_g": 2329,
+   "subtotal": 14845,
+   "member": "none",
+   "date": "2025-06-19",
+   "items": 7,
+   "fragile": true
+  },
+  "fee": 7400
+ },
+ {
+  "order": {
+   "region": "gwangju",
+   "weight_g": 808,
+   "subtotal": 19265,
+   "member": "silver",
+   "date": "2025-02-19",
+   "items": 1,
+   "fragile": false
+  },
+  "fee": 3330
+ },
+ {
+  "order": {
+   "region": "busan",
+   "weight_g": 2752,
+   "subtotal": 48588,
+   "member": "gold",
+   "date": "2025-09-26",
+   "items": 3,
+   "fragile": false,
+   "coupon": "SHIP30"
+  },
+  "fee": 2690
+ }
+]

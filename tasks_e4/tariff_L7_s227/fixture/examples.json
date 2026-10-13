@@ -1,0 +1,136 @@
+[
+ {
+  "order": {
+   "region": "busan",
+   "weight_g": 280,
+   "subtotal": 6694,
+   "member": "none",
+   "date": "2025-08-13",
+   "items": 3,
+   "fragile": false
+  },
+  "fee": 3000
+ },
+ {
+  "order": {
+   "region": "gyeonggi",
+   "weight_g": 3786,
+   "subtotal": 6312,
+   "member": "silver",
+   "date": "2025-07-14",
+   "items": 5,
+   "fragile": false
+  },
+  "fee": 5130
+ },
+ {
+  "order": {
+   "region": "seoul",
+   "weight_g": 10129,
+   "subtotal": 28194,
+   "member": "none",
+   "date": "2025-05-13",
+   "items": 2,
+   "fragile": false
+  },
+  "fee": 12200
+ },
+ {
+  "order": {
+   "region": "jeju",
+   "weight_g": 738,
+   "subtotal": 52481,
+   "member": "none",
+   "date": "2025-02-12",
+   "items": 23,
+   "fragile": false
+  },
+  "fee": 9000
+ },
+ {
+  "order": {
+   "region": "busan",
+   "weight_g": 805,
+   "subtotal": 29334,
+   "member": "gold",
+   "date": "2025-06-12",
+   "items": 4,
+   "fragile": false,
+   "coupon": "SHIP1000"
+  },
+  "fee": 1550
+ },
+ {
+  "order": {
+   "region": "gyeonggi",
+   "weight_g": 952,
+   "subtotal": 51813,
+   "member": "none",
+   "date": "2025-03-18",
+   "items": 2,
+   "fragile": false
+  },
+  "fee": 0
+ },
+ {
+  "order": {
+   "region": "ulleung",
+   "weight_g": 4052,
+   "subtotal": 7340,
+   "member": "gold",
+   "date": "2025-02-10",
+   "items": 6,
+   "fragile": false
+  },
+  "fee": 9180
+ },
+ {
+  "order": {
+   "region": "seoul",
+   "weight_g": 280,
+   "subtotal": 35931,
+   "member": "silver",
+   "date": "2025-04-11",
+   "items": 12,
+   "fragile": false
+  },
+  "fee": 5700
+ },
+ {
+  "order": {
+   "region": "busan",
+   "weight_g": 3638,
+   "subtotal": 26102,
+   "member": "none",
+   "date": "2025-05-12",
+   "items": 7,
+   "fragile": true
+  },
+  "fee": 7400
+ },
+ {
+  "order": {
+   "region": "gyeonggi",
+   "weight_g": 722,
+   "subtotal": 29909,
+   "member": "silver",
+   "date": "2025-03-10",
+   "items": 1,
+   "fragile": false
+  },
+  "fee": 2850
+ },
+ {
+  "order": {
+   "region": "seoul",
+   "weight_g": 6051,
+   "subtotal": 45389,
+   "member": "gold",
+   "date": "2025-09-30",
+   "items": 3,
+   "fragile": false,
+   "coupon": "SHIP30"
+  },
+  "fee": 4410
+ }
+]

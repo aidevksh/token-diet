@@ -86,3 +86,13 @@
 5. `experiments/E4/preregistration.md`, `plan.json` 작성 → 커밋 → `python scripts/drive.py experiments/E4/plan.json`
 6. Docker Desktop이 켜져 있는지 먼저 확인하기(이번에 꺼져 있었다)
 7. E4 뒤: E3(Sonnet·Haiku) 여부를 정하고, 실험을 모두 끝낸 뒤 논문을 쓴다.
+
+## 2026-10-13 이어서 진행
+
+- **19:42 재개**: 사용자 지시("이어서 진행해 실험"). Docker Desktop이 꺼져 있어 켰다. 5시간 사용률 13%(20:20 초기화), 주간 2%.
+- **19:43~19:45 남은 준비**
+  - `conditions/e4_hurry/CLAUDE.md`: "시간이 중요하다. 피할 수 있는 시간은 쓰지 않고, 올바른 결과는 빠를수록 좋다."
+  - `tasks_e4`: 배송비 L7·매출 L7 seed 201~236, 72개. 사용자 이름이 들어간 파일은 없다.
+  - `scripts/analyze_e4.py` 가짜 데이터 시험: 심은 효과(검증 금지 −0.42, 서두름 −0.04)를 "떨어졌다"로 잡았고, 효과를 심지 않은 비교는 "차이 없음, 비열등"으로 판정했다. 시험 출력은 저장소 밖(scratchpad)에 두었다.
+  - Q4 채점(`scripts/report_check.py`)은 매출 L7의 `key.json`의 `answers`를 그대로 쓴다. 고칠 것이 없었다.
+- **19:44 사전 등록 작성**: `preregistration.md`, `plan.json`(10칸 × 72문제 = 720회, seed 13, 동시 4개)

@@ -1,0 +1,136 @@
+[
+ {
+  "order": {
+   "region": "seoul",
+   "weight_g": 632,
+   "subtotal": 13847,
+   "member": "none",
+   "date": "2025-02-17",
+   "items": 3,
+   "fragile": false
+  },
+  "fee": 4000
+ },
+ {
+  "order": {
+   "region": "busan",
+   "weight_g": 4282,
+   "subtotal": 26618,
+   "member": "silver",
+   "date": "2025-03-10",
+   "items": 5,
+   "fragile": false
+  },
+  "fee": 5510
+ },
+ {
+  "order": {
+   "region": "daegu",
+   "weight_g": 7433,
+   "subtotal": 24518,
+   "member": "none",
+   "date": "2025-03-19",
+   "items": 2,
+   "fragile": false
+  },
+  "fee": 7800
+ },
+ {
+  "order": {
+   "region": "jeju",
+   "weight_g": 758,
+   "subtotal": 53934,
+   "member": "none",
+   "date": "2025-02-19",
+   "items": 23,
+   "fragile": false
+  },
+  "fee": 10500
+ },
+ {
+  "order": {
+   "region": "seoul",
+   "weight_g": 363,
+   "subtotal": 27487,
+   "member": "gold",
+   "date": "2025-05-19",
+   "items": 4,
+   "fragile": false,
+   "coupon": "SHIP1000"
+  },
+  "fee": 2400
+ },
+ {
+  "order": {
+   "region": "busan",
+   "weight_g": 453,
+   "subtotal": 51930,
+   "member": "none",
+   "date": "2025-04-18",
+   "items": 2,
+   "fragile": false
+  },
+  "fee": 0
+ },
+ {
+  "order": {
+   "region": "ulleung",
+   "weight_g": 3053,
+   "subtotal": 6291,
+   "member": "gold",
+   "date": "2025-06-19",
+   "items": 6,
+   "fragile": false
+  },
+  "fee": 8500
+ },
+ {
+  "order": {
+   "region": "daegu",
+   "weight_g": 1211,
+   "subtotal": 37348,
+   "member": "silver",
+   "date": "2025-02-19",
+   "items": 12,
+   "fragile": false
+  },
+  "fee": 4750
+ },
+ {
+  "order": {
+   "region": "seoul",
+   "weight_g": 1329,
+   "subtotal": 14845,
+   "member": "none",
+   "date": "2025-07-17",
+   "items": 7,
+   "fragile": true
+  },
+  "fee": 7400
+ },
+ {
+  "order": {
+   "region": "busan",
+   "weight_g": 504,
+   "subtotal": 19265,
+   "member": "silver",
+   "date": "2025-06-18",
+   "items": 1,
+   "fragile": false
+  },
+  "fee": 2850
+ },
+ {
+  "order": {
+   "region": "daegu",
+   "weight_g": 4492,
+   "subtotal": 31014,
+   "member": "gold",
+   "date": "2025-08-11",
+   "items": 3,
+   "fragile": false,
+   "coupon": "SHIP30"
+  },
+  "fee": 3160
+ }
+]
