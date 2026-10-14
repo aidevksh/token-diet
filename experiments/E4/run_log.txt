@@ -526,3 +526,595 @@ e4_hurry tariff_L7_s201 1 PASS 3689 1611 0.1455068 5h 0.85
 e2_base_med sales_L7_s214 1 PASS 3447 345 0.14548740000000002 5h 0.85 
 2026-10-13 21:02:32 반복 1 | 완료 522/720 | 5시간 0.86 | 주간 0.19
 2026-10-13 21:02:32 5시간 한도 85% 이상. 259분 기다림 (초기화 01:20)
+2026-10-14 18:42:28 == 시작 experiments/E4/plan.json | 목표 720 회 | 완료 522 | 5시간 한도 기준 0.85
+2026-10-14 18:42:32 반복 0 | 완료 522/720 | 5시간 0.02 | 주간 0.44
+2026-10-14 18:42:32 배치 실행: scripts/run.py --conds baseline,e2_base_med,e2_base_low,n09_p2_h05,e2_n09_med,e2_n09_low,e2_p1_med,e2_p2_med,e4_noverify,e4_hurry --tasks all --reps 1 --par 4 --seed 13
+198 runs (skipped 522 done), docker image token-diet:2.1.296, model claude-opus-5-5 high, usage limit 0.85
+e2_n09_low sales_L7_s236 1 PASS 2260 197 0.1185968 5h 0.03 
+e4_noverify tariff_L7_s236 1 FAIL 2461 630 0.1070942 5h 0.03 
+e2_n09_med sales_L7_s204 1 PASS 2872 271 0.1388274 5h 0.03 
+e2_p2_med tariff_L7_s204 1 PASS 3001 1047 0.1422804 5h 0.03 
+e2_n09_low sales_L7_s232 1 PASS 2585 198 0.12410179999999998 5h 0.03 
+n09_p2_h05 sales_L7_s223 1 PASS 2748 276 0.12670900000000002 5h 0.03 
+baseline sales_L7_s232 1 PASS 4007 449 0.16313439999999998 5h 0.03 
+e2_p1_med tariff_L7_s221 1 PASS 4200 1609 0.15896300000000002 5h 0.04 
+e2_p2_med tariff_L7_s202 1 PASS 3465 1334 0.138644 5h 0.04 
+e2_p1_med tariff_L7_s225 1 FAIL 3857 1487 0.14536320000000003 5h 0.04 
+n09_p2_h05 sales_L7_s206 1 PASS 2615 235 0.120925 5h 0.04 
+e2_n09_med tariff_L7_s227 1 PASS 2603 914 0.11191219999999999 5h 0.04 
+e2_base_med sales_L7_s216 1 PASS 2962 296 0.12887279999999998 5h 0.04 
+e2_n09_low tariff_L7_s209 1 PASS 1995 263 0.0947718 5h 0.04 
+e2_p1_med sales_L7_s230 1 PASS 3418 349 0.1481082 5h 0.04 
+e2_base_low sales_L7_s207 1 PASS 2545 227 0.11750000000000002 5h 0.05 
+e2_base_low tariff_L7_s214 1 PASS 2774 788 0.1174082 5h 0.05 
+baseline sales_L7_s235 1 PASS 5406 574 0.20924639999999997 5h 0.05 
+baseline tariff_L7_s229 1 FAIL 5515 2372 0.2067822 5h 0.05 
+baseline tariff_L7_s211 1 PASS 5230 2286 0.1888976 5h 0.05 
+n09_p2_h05 sales_L7_s232 1 PASS 3212 378 0.12315600000000002 5h 0.05 
+e2_n09_med sales_L7_s220 1 PASS 2714 261 0.1192416 5h 0.05 
+e2_n09_med sales_L7_s201 1 PASS 2731 296 0.12429940000000002 5h 0.05 
+e2_p1_med sales_L7_s205 1 PASS 2970 200 0.1309764 5h 0.06 
+e4_noverify sales_L7_s209 1 FAIL 2703 472 0.1110756 5h 0.06 
+n09_p2_h05 tariff_L7_s225 1 PASS 3113 1339 0.12937900000000002 5h 0.06 
+e2_base_med tariff_L7_s212 1 PASS 3825 1334 0.1526476 5h 0.06 
+e2_p2_med tariff_L7_s205 1 PASS 2964 1054 0.12662220000000002 5h 0.06 
+e2_n09_med sales_L7_s233 1 PASS 3239 392 0.1450906 5h 0.06 
+e4_hurry tariff_L7_s224 1 PASS 4259 1977 0.16585179999999997 5h 0.06 
+e4_noverify tariff_L7_s227 1 FAIL 2272 559 0.0926786 5h 0.07 
+baseline tariff_L7_s221 1 PASS 4297 1583 0.15950780000000003 5h 0.07 
+e4_noverify sales_L7_s221 1 FAIL 2984 630 0.11778060000000001 5h 0.07 
+e4_noverify tariff_L7_s208 1 FAIL 2342 539 0.09332599999999999 5h 0.07 
+baseline sales_L7_s226 1 PASS 3880 496 0.164459 5h 0.07 
+e2_p2_med tariff_L7_s229 1 PASS 3009 1126 0.12824 5h 0.07 
+e2_n09_med sales_L7_s230 1 PASS 4779 516 0.2075014 5h 0.07 
+e2_base_med tariff_L7_s231 1 PASS 3958 1450 0.1508058 5h 0.07 
+e2_n09_low tariff_L7_s208 1 PASS 2168 479 0.0981168 5h 0.08 
+e2_n09_med tariff_L7_s221 1 PASS 3129 1081 0.1348792 5h 0.08 
+baseline sales_L7_s223 1 PASS 3993 488 0.1599518 5h 0.08 
+baseline tariff_L7_s230 1 PASS 5697 2116 0.20952260000000003 5h 0.08 
+e2_n09_med sales_L7_s227 1 PASS 2392 144 0.1080562 5h 0.08 
+e4_hurry sales_L7_s215 1 PASS 3396 310 0.15013900000000002 5h 0.08 
+n09_p2_h05 tariff_L7_s216 1 PASS 3200 1209 0.13774419999999998 5h 0.08 
+e2_n09_low tariff_L7_s203 1 FAIL 2430 508 0.10597200000000001 5h 0.09 
+baseline sales_L7_s217 1 PASS 4518 466 0.18743859999999996 5h 0.09 
+e2_base_low sales_L7_s204 1 PASS 3153 339 0.1451202 5h 0.09 
+e2_base_low sales_L7_s222 1 PASS 2641 133 0.114929 5h 0.09 
+n09_p2_h05 sales_L7_s231 1 PASS 3015 278 0.13030339999999999 5h 0.09 
+e4_noverify sales_L7_s223 1 FAIL 3466 740 0.136316 5h 0.09 
+e2_n09_low tariff_L7_s213 1 PASS 2172 356 0.09810279999999999 5h 0.09 
+e2_n09_low tariff_L7_s219 1 PASS 2043 484 0.09574600000000001 5h 0.09 
+e4_hurry tariff_L7_s217 1 PASS 3661 1475 0.14032 5h 0.09 
+n09_p2_h05 tariff_L7_s222 1 PASS 3163 1213 0.1364058 5h 0.1 
+e4_noverify sales_L7_s216 1 FAIL 2722 619 0.1193076 5h 0.1 
+e2_base_med tariff_L7_s227 1 PASS 4090 1636 0.1489926 5h 0.1 
+e2_base_low sales_L7_s235 1 PASS 2772 58 0.11717260000000002 5h 0.1 
+e2_p2_med sales_L7_s233 1 PASS 3033 203 0.1305254 5h 0.1 
+e2_n09_low tariff_L7_s229 1 PASS 2132 468 0.1031136 5h 0.1 
+e2_n09_low sales_L7_s201 1 PASS 3071 364 0.12537259999999997 5h 0.1 
+e2_p1_med sales_L7_s204 1 PASS 3063 271 0.139001 5h 0.1 
+e2_n09_med tariff_L7_s218 1 PASS 2797 1029 0.1274314 5h 0.11 
+e2_n09_low tariff_L7_s232 1 PASS 2017 472 0.09552300000000001 5h 0.11 
+e2_base_med tariff_L7_s213 1 PASS 3070 923 0.12684399999999998 5h 0.11 
+e4_hurry sales_L7_s208 1 PASS 3584 296 0.16165299999999996 5h 0.11 
+e2_n09_low sales_L7_s228 1 PASS 2720 201 0.1270496 5h 0.11 
+e4_noverify sales_L7_s231 1 FAIL 3190 695 0.1262962 5h 0.11 
+e2_n09_med sales_L7_s213 1 PASS 2531 164 0.1119022 5h 0.11 
+e2_p2_med tariff_L7_s206 1 PASS 2780 869 0.1254634 5h 0.11 
+e4_noverify sales_L7_s232 1 FAIL 3333 970 0.13570659999999998 5h 0.11 
+e2_p1_med tariff_L7_s236 1 PASS 3108 880 0.12479319999999999 5h 0.11 
+e4_hurry tariff_L7_s218 1 PASS 2599 765 0.11070540000000001 5h 0.12 
+n09_p2_h05 sales_L7_s201 1 PASS 3173 487 0.13036019999999998 5h 0.12 
+e2_base_med sales_L7_s236 1 PASS 3050 292 0.14070940000000004 5h 0.12 
+e2_n09_med sales_L7_s210 1 FAIL 3818 767 0.1533338 5h 0.12 
+e2_p1_med tariff_L7_s226 1 PASS 3393 956 0.1427184 5h 0.12 
+e4_hurry tariff_L7_s231 1 PASS 4522 2124 0.17420660000000002 5h 0.12 
+e2_n09_med tariff_L7_s233 1 PASS 2706 896 0.113078 5h 0.13 
+e2_p1_med tariff_L7_s220 1 PASS 4428 1622 0.169465 5h 0.13 
+e4_hurry tariff_L7_s221 1 PASS 4422 2084 0.16859439999999998 5h 0.13 
+baseline sales_L7_s208 1 PASS 4446 464 0.1801136 5h 0.13 
+e2_base_med sales_L7_s218 1 PASS 2981 252 0.12615099999999999 5h 0.13 
+e2_n09_med sales_L7_s212 1 PASS 2434 140 0.1093804 5h 0.13 
+e4_noverify tariff_L7_s221 1 FAIL 2437 612 0.0980582 5h 0.13 
+e2_p1_med tariff_L7_s228 1 FAIL 3788 1532 0.143925 5h 0.13 
+e2_p2_med sales_L7_s220 1 PASS 2958 291 0.1314764 5h 0.14 
+e4_noverify sales_L7_s217 1 FAIL 2911 746 0.11491979999999999 5h 0.14 
+e2_base_low sales_L7_s231 1 PASS 2374 186 0.10587280000000002 5h 0.14 
+e2_p1_med sales_L7_s219 1 PASS 2953 186 0.13826099999999997 5h 0.14 
+e2_p2_med tariff_L7_s224 1 PASS 3205 1372 0.12887559999999998 5h 0.14 
+n09_p2_h05 tariff_L7_s223 1 PASS 3289 1497 0.140363 5h 0.14 
+e4_hurry sales_L7_s235 1 PASS 2938 261 0.1291082 5h 0.14 
+e2_p2_med tariff_L7_s201 1 PASS 3479 1388 0.1361862 5h 0.14 
+e2_n09_low tariff_L7_s225 1 PASS 2243 590 0.0852742 5h 0.14 
+e4_hurry sales_L7_s204 1 PASS 3085 326 0.133528 5h 0.14 
+e2_n09_med tariff_L7_s224 1 PASS 2712 747 0.1184222 5h 0.15 
+n09_p2_h05 sales_L7_s205 1 PASS 2908 241 0.1204462 5h 0.15 
+e2_p1_med sales_L7_s222 1 PASS 2904 227 0.134765 5h 0.15 
+e4_noverify tariff_L7_s215 1 FAIL 2722 654 0.102402 5h 0.15 
+n09_p2_h05 sales_L7_s225 1 PASS 2923 291 0.13663319999999998 5h 0.15 
+e2_p2_med tariff_L7_s226 1 PASS 3712 1750 0.14766759999999998 5h 0.15 
+e2_base_low tariff_L7_s218 1 PASS 2518 638 0.10997379999999998 5h 0.15 
+baseline sales_L7_s215 1 PASS 4163 501 0.1667052 5h 0.15 
+n09_p2_h05 tariff_L7_s203 1 PASS 3493 1490 0.1305868 5h 0.16 
+e2_n09_med tariff_L7_s231 1 PASS 2389 673 0.10438539999999999 5h 0.16 
+e2_p2_med sales_L7_s226 1 PASS 2473 154 0.1091854 5h 0.16 
+e4_hurry sales_L7_s236 1 PASS 3511 322 0.152794 5h 0.16 
+n09_p2_h05 tariff_L7_s207 1 PASS 3172 1208 0.13620000000000002 5h 0.16 
+n09_p2_h05 sales_L7_s217 1 PASS 3259 349 0.1403304 5h 0.16 
+e2_n09_low tariff_L7_s210 1 PASS 1744 276 0.0851024 5h 0.16 
+e2_n09_low sales_L7_s215 1 PASS 2581 196 0.11688559999999999 5h 0.16 
+baseline tariff_L7_s231 1 PASS 4869 1870 0.16976080000000002 5h 0.16 
+e4_hurry tariff_L7_s215 1 PASS 4014 1841 0.1547942 5h 0.17 
+baseline tariff_L7_s236 1 PASS 5282 2331 0.19243479999999996 5h 0.17 
+e2_n09_med sales_L7_s205 1 PASS 2849 299 0.1139702 5h 0.17 
+e2_n09_med tariff_L7_s208 1 PASS 2369 773 0.0895662 5h 0.17 
+e2_base_low sales_L7_s201 1 PASS 2945 263 0.1251296 5h 0.17 
+e2_base_low tariff_L7_s236 1 PASS 2241 595 0.08578920000000001 5h 0.17 
+e2_n09_med tariff_L7_s212 1 PASS 3020 1017 0.13849899999999998 5h 0.17 
+e4_hurry tariff_L7_s204 1 PASS 4000 1751 0.15356260000000002 5h 0.17 
+e2_n09_low sales_L7_s208 1 PASS 2423 164 0.11021600000000001 5h 0.18 
+e2_n09_med sales_L7_s214 1 PASS 2525 191 0.124977 5h 0.18 
+e2_n09_low tariff_L7_s202 1 PASS 2328 716 0.1028002 5h 0.18 
+e4_hurry sales_L7_s220 1 PASS 3325 274 0.1414204 5h 0.18 
+e4_noverify tariff_L7_s222 1 FAIL 2482 468 0.09645580000000001 5h 0.18 
+e4_hurry tariff_L7_s229 1 PASS 4752 2259 0.1737714 5h 0.18 
+e2_base_med sales_L7_s225 1 PASS 2850 156 0.12298619999999999 5h 0.18 
+e2_base_low tariff_L7_s215 1 PASS 2454 633 0.109733 5h 0.18 
+n09_p2_h05 tariff_L7_s221 1 PASS 3304 1429 0.11718200000000001 5h 0.19 
+e2_p2_med tariff_L7_s235 1 PASS 3541 1505 0.141018 5h 0.19 
+e2_base_med tariff_L7_s224 1 PASS 3791 1371 0.1509576 5h 0.19 
+e2_n09_low tariff_L7_s205 1 PASS 1969 444 0.096704 5h 0.19 
+e2_p1_med sales_L7_s229 1 PASS 3103 234 0.1359784 5h 0.19 
+e2_n09_med tariff_L7_s234 1 PASS 2760 1064 0.1150214 5h 0.19 
+baseline tariff_L7_s227 1 PASS 5699 2529 0.18757079999999998 5h 0.19 
+baseline tariff_L7_s212 1 PASS 5610 2226 0.1895308 5h 0.2 
+e4_hurry sales_L7_s226 1 PASS 3641 390 0.1488148 5h 0.2 
+baseline tariff_L7_s203 1 PASS 5483 2273 0.19571299999999997 5h 0.2 
+e2_n09_low tariff_L7_s218 1 PASS 1919 267 0.07755500000000001 5h 0.2 
+e4_hurry tariff_L7_s233 1 PASS 3733 1452 0.1421896 5h 0.2 
+n09_p2_h05 sales_L7_s219 1 PASS 2784 225 0.11712600000000001 5h 0.2 
+e2_p2_med sales_L7_s221 1 PASS 3699 354 0.1634986 5h 0.2 
+e4_noverify tariff_L7_s219 1 FAIL 2157 441 0.08885040000000001 5h 0.2 
+baseline sales_L7_s231 1 PASS 3526 262 0.13458 5h 0.2 
+baseline sales_L7_s219 1 PASS 3234 231 0.1396516 5h 0.21 
+e2_n09_med tariff_L7_s210 1 PASS 2570 968 0.0948 5h 0.21 
+e2_n09_low tariff_L7_s227 1 PASS 2084 546 0.082072 5h 0.21 
+e4_noverify sales_L7_s214 1 FAIL 2988 905 0.127226 5h 0.21 
+e2_p2_med tariff_L7_s221 1 PASS 2978 1173 0.12208920000000001 5h 0.21 
+baseline tariff_L7_s210 1 PASS 5650 2388 0.20415300000000003 5h 0.21 
+e4_hurry tariff_L7_s210 1 PASS 4196 1864 0.15990819999999997 5h 0.21 
+e4_noverify tariff_L7_s229 1 FAIL 2550 545 0.0979738 5h 0.22 
+e4_hurry sales_L7_s227 1 PASS 4667 508 0.19174180000000002 5h 0.22 
+e4_noverify tariff_L7_s225 1 FAIL 2508 529 0.1028248 5h 0.22 
+e2_n09_med sales_L7_s236 1 PASS 2490 119 0.0998632 5h 0.22 
+baseline sales_L7_s213 1 PASS 3679 394 0.15942 5h 0.22 
+e2_base_med sales_L7_s233 1 PASS 3385 217 0.15394960000000002 5h 0.22 
+baseline tariff_L7_s232 1 PASS 4910 2195 0.1821184 5h 0.22 
+n09_p2_h05 tariff_L7_s230 1 PASS 3576 1430 0.1469858 5h 0.22 
+e2_base_low tariff_L7_s202 1 PASS 2843 649 0.13065120000000002 5h 0.23 
+e4_hurry tariff_L7_s208 1 PASS 3871 1701 0.14635059999999997 5h 0.23 
+baseline tariff_L7_s209 1 PASS 5174 1823 0.1904056 5h 0.23 
+e2_base_low tariff_L7_s221 1 PASS 2276 518 0.0919564 5h 0.23 
+e2_p2_med tariff_L7_s222 1 PASS 2900 933 0.12717720000000002 5h 0.23 
+e4_noverify tariff_L7_s214 1 FAIL 2222 524 0.09091479999999999 5h 0.23 
+e2_base_low sales_L7_s227 1 PASS 2288 138 0.09562340000000001 5h 0.23 
+e2_n09_med tariff_L7_s201 1 PASS 3052 1119 0.1269168 5h 0.23 
+e4_hurry sales_L7_s224 1 PASS 4043 430 0.16811220000000002 5h 0.23 
+e2_base_low sales_L7_s215 1 PASS 2348 154 0.10423780000000002 5h 0.24 
+e2_p2_med tariff_L7_s209 1 PASS 2325 576 0.10335339999999998 5h 0.24 
+e2_p1_med sales_L7_s209 1 PASS 3247 222 0.1383522 5h 0.24 
+e4_noverify sales_L7_s227 1 FAIL 3614 1202 0.139151 5h 0.24 
+e2_base_med tariff_L7_s211 1 FAIL 4520 1897 0.15799080000000001 5h 0.24 
+e2_base_med tariff_L7_s236 1 PASS 3590 1483 0.122859 5h 0.24 
+e2_n09_med sales_L7_s202 1 PASS 2475 236 0.1128136 5h 0.24 
+e2_base_low sales_L7_s229 1 PASS 2900 301 0.1441516 5h 0.24 
+n09_p2_h05 tariff_L7_s227 1 PASS 3188 1186 0.11683080000000001 5h 0.25 
+e4_hurry sales_L7_s213 1 PASS 3377 373 0.14267020000000002 5h 0.25 
+e2_base_med tariff_L7_s209 1 PASS 3472 975 0.12950299999999998 5h 0.25 
+baseline sales_L7_s204 1 PASS 4016 440 0.15130180000000001 5h 0.25 
+e2_base_med sales_L7_s231 1 PASS 3139 225 0.1314218 5h 0.25 
+e4_hurry sales_L7_s222 1 PASS 3464 362 0.15149020000000002 5h 0.25 
+e2_n09_med tariff_L7_s219 1 PASS 2852 984 0.10699659999999998 5h 0.25 
+e2_base_low sales_L7_s208 1 PASS 2320 120 0.094723 5h 0.25 
+n09_p2_h05 sales_L7_s214 1 PASS 3352 234 0.133693 5h 0.25 
+e2_base_med sales_L7_s220 1 PASS 2844 269 0.1311836 5h 0.26 
+baseline sales_L7_s224 1 PASS 3968 421 0.15700699999999998 5h 0.26 
+e2_p1_med tariff_L7_s230 1 PASS 4057 1718 0.1500376 5h 0.26 
+e2_base_low tariff_L7_s233 1 PASS 2584 613 0.11156840000000001 5h 0.26 
+baseline sales_L7_s216 1 PASS 4095 415 0.1506438 5h 0.26 
+e2_p1_med sales_L7_s224 1 PASS 2752 203 0.118914 5h 0.26 
+e2_p2_med tariff_L7_s231 1 PASS 3474 1278 0.1343162 5h 0.26 
+baseline sales_L7_s220 1 PASS 3360 285 0.13267400000000001 5h 0.26 
+baseline tariff_L7_s235 1 PASS 4837 1680 0.18139319999999998 5h 0.27 
+e2_p2_med sales_L7_s230 1 PASS 2917 236 0.13486920000000002 5h 0.27 
+e2_n09_low sales_L7_s227 1 PASS 2194 184 0.0888854 5h 0.27 
+e2_base_med tariff_L7_s235 1 PASS 4819 1879 0.16476079999999999 5h 0.27 
+2026-10-14 19:11:49 == 실행 종료 | 완료 720 / 720
+2026-10-14 19:11:49 Q4 채점 시작
+360 reports to check
+e4_hurry sales_L7_s202 1.0
+baseline sales_L7_s202 1.0
+e2_base_low sales_L7_s218 1.0
+e2_p1_med sales_L7_s207 1.0
+e4_hurry sales_L7_s232 0.9
+n09_p2_h05 sales_L7_s213 1.0
+e2_base_low sales_L7_s205 1.0
+e2_p2_med sales_L7_s234 1.0
+e4_noverify sales_L7_s234 0.2
+e2_n09_med sales_L7_s219 0.9
+e2_p2_med sales_L7_s235 1.0
+n09_p2_h05 sales_L7_s204 1.0
+e2_p1_med sales_L7_s236 1.0
+e4_hurry sales_L7_s207 1.0
+baseline sales_L7_s227 1.0
+e2_p2_med sales_L7_s229 1.0
+e2_n09_med sales_L7_s223 1.0
+baseline sales_L7_s207 1.0
+e4_hurry sales_L7_s201 1.0
+e2_n09_med sales_L7_s222 1.0
+e2_p1_med sales_L7_s215 1.0
+baseline sales_L7_s214 1.0
+e4_hurry sales_L7_s212 1.0
+e2_base_low sales_L7_s233 1.0
+e4_noverify sales_L7_s212 0.4
+e4_hurry sales_L7_s203 1.0
+n09_p2_h05 sales_L7_s233 1.0
+e4_noverify sales_L7_s225 0.3
+e2_base_low sales_L7_s217 1.0
+e2_base_med sales_L7_s207 0.9
+baseline sales_L7_s233 1.0
+e2_n09_low sales_L7_s216 1.0
+e2_p2_med sales_L7_s228 0.9
+e2_p1_med sales_L7_s232 1.0
+e2_p1_med sales_L7_s202 1.0
+e2_p1_med sales_L7_s216 1.0
+e2_n09_med sales_L7_s231 1.0
+e4_noverify sales_L7_s233 0.6
+n09_p2_h05 sales_L7_s211 1.0
+baseline sales_L7_s210 1.0
+e2_p2_med sales_L7_s231 1.0
+e2_p2_med sales_L7_s219 1.0
+n09_p2_h05 sales_L7_s220 1.0
+baseline sales_L7_s230 1.0
+e2_p2_med sales_L7_s212 1.0
+n09_p2_h05 sales_L7_s209 1.0
+e4_noverify sales_L7_s206 0.2
+e4_hurry sales_L7_s233 0.9
+e4_hurry sales_L7_s230 1.0
+e2_p1_med sales_L7_s214 1.0
+e2_n09_low sales_L7_s206 1.0
+e2_n09_low sales_L7_s221 1.0
+e2_n09_low sales_L7_s210 0.4
+e4_noverify sales_L7_s210 0.5
+e4_noverify sales_L7_s202 0.4
+baseline sales_L7_s225 1.0
+e2_base_med sales_L7_s224 1.0
+e4_noverify sales_L7_s218 1.0
+e2_base_med sales_L7_s229 1.0
+e2_base_low sales_L7_s224 0.9
+baseline sales_L7_s234 0.9
+e2_base_low sales_L7_s221 1.0
+e2_p1_med sales_L7_s233 1.0
+e2_base_low sales_L7_s225 1.0
+e2_p2_med sales_L7_s209 1.0
+e2_base_med sales_L7_s211 1.0
+e2_n09_med sales_L7_s217 1.0
+baseline sales_L7_s211 1.0
+e2_p1_med sales_L7_s210 0.9
+e2_p2_med sales_L7_s227 0.9
+e2_base_med sales_L7_s230 1.0
+e2_n09_low sales_L7_s218 1.0
+n09_p2_h05 sales_L7_s226 1.0
+n09_p2_h05 sales_L7_s224 1.0
+e4_noverify sales_L7_s228 0.5
+e2_p1_med sales_L7_s228 0.9
+e2_p2_med sales_L7_s218 1.0
+e2_p2_med sales_L7_s204 1.0
+e4_hurry sales_L7_s205 1.0
+e2_base_low sales_L7_s210 1.0
+e2_base_med sales_L7_s223 1.0
+e2_p1_med sales_L7_s220 1.0
+e2_base_med sales_L7_s226 1.0
+e2_n09_med sales_L7_s224 1.0
+n09_p2_h05 sales_L7_s229 1.0
+e4_hurry sales_L7_s234 0.9
+e2_p1_med sales_L7_s231 1.0
+e2_base_low sales_L7_s203 1.0
+e2_base_low sales_L7_s223 1.0
+e2_n09_low sales_L7_s213 1.0
+baseline sales_L7_s201 1.0
+e2_n09_med sales_L7_s209 1.0
+e2_p1_med sales_L7_s234 1.0
+e2_n09_low sales_L7_s219 1.0
+n09_p2_h05 sales_L7_s210 0.9
+e2_base_low sales_L7_s226 1.0
+e2_n09_low sales_L7_s204 1.0
+e2_p2_med sales_L7_s215 1.0
+e4_hurry sales_L7_s214 1.0
+e2_n09_med sales_L7_s235 1.0
+baseline sales_L7_s236 1.0
+n09_p2_h05 sales_L7_s212 1.0
+e2_n09_low sales_L7_s203 1.0
+e2_n09_low sales_L7_s234 0.9
+e4_hurry sales_L7_s216 1.0
+e4_noverify sales_L7_s204 0.2
+n09_p2_h05 sales_L7_s227 1.0
+e4_hurry sales_L7_s229 1.0
+e2_base_med sales_L7_s203 1.0
+e2_n09_low sales_L7_s222 1.0
+e2_base_med sales_L7_s208 1.0
+baseline sales_L7_s228 1.0
+e2_p1_med sales_L7_s221 1.0
+e2_p2_med sales_L7_s207 1.0
+e2_p2_med sales_L7_s211 1.0
+e2_p2_med sales_L7_s236 0.9
+e2_n09_low sales_L7_s233 1.0
+baseline sales_L7_s221 1.0
+n09_p2_h05 sales_L7_s203 1.0
+e4_hurry sales_L7_s209 1.0
+e2_n09_low sales_L7_s224 1.0
+e2_base_low sales_L7_s232 1.0
+e2_n09_med sales_L7_s229 1.0
+n09_p2_h05 sales_L7_s234 1.0
+e2_p1_med sales_L7_s235 1.0
+e2_n09_med sales_L7_s221 1.0
+e4_hurry sales_L7_s218 1.0
+e2_base_med sales_L7_s219 1.0
+e4_hurry sales_L7_s231 1.0
+e2_n09_med sales_L7_s215 1.0
+e4_noverify sales_L7_s229 1.0
+e2_base_low sales_L7_s202 1.0
+e2_p1_med sales_L7_s223 1.0
+e2_base_med sales_L7_s212 1.0
+n09_p2_h05 sales_L7_s235 1.0
+e4_noverify sales_L7_s201 0.3
+e4_noverify sales_L7_s211 0.4
+e2_base_med sales_L7_s209 1.0
+e2_p2_med sales_L7_s206 1.0
+e4_noverify sales_L7_s230 1.0
+e2_n09_low sales_L7_s207 0.9
+e2_n09_med sales_L7_s211 1.0
+e2_p1_med sales_L7_s211 1.0
+e2_p1_med sales_L7_s217 1.0
+e2_n09_med sales_L7_s208 1.0
+e2_n09_low sales_L7_s229 1.0
+e4_noverify sales_L7_s213 0.3
+e2_base_med sales_L7_s204 1.0
+baseline sales_L7_s212 1.0
+e4_hurry sales_L7_s223 1.0
+baseline sales_L7_s205 1.0
+baseline sales_L7_s222 1.0
+e2_n09_med sales_L7_s225 1.0
+e2_p2_med sales_L7_s217 1.0
+n09_p2_h05 sales_L7_s218 1.0
+e2_n09_low sales_L7_s211 1.0
+n09_p2_h05 sales_L7_s215 1.0
+n09_p2_h05 sales_L7_s207 0.9
+e2_p2_med sales_L7_s223 1.0
+e2_base_med sales_L7_s222 1.0
+e2_n09_low sales_L7_s226 1.0
+e2_n09_low sales_L7_s230 1.0
+e2_n09_low sales_L7_s220 1.0
+e2_base_low sales_L7_s219 0.9
+e2_n09_low sales_L7_s231 1.0
+e2_base_low sales_L7_s236 1.0
+e2_p2_med sales_L7_s205 1.0
+e2_p1_med sales_L7_s212 1.0
+e2_base_med sales_L7_s234 1.0
+e4_noverify sales_L7_s224 0.2
+e4_noverify sales_L7_s219 0.3
+e2_p1_med sales_L7_s201 1.0
+e2_base_med sales_L7_s227 1.0
+e2_base_med sales_L7_s206 1.0
+e4_noverify sales_L7_s222 0.3
+e2_base_low sales_L7_s212 0.9
+e4_noverify sales_L7_s226 0.2
+e2_n09_med sales_L7_s234 0.9
+e2_base_med sales_L7_s217 1.0
+e2_base_med sales_L7_s232 1.0
+e2_n09_med sales_L7_s218 1.0
+e4_hurry sales_L7_s225 1.0
+e2_base_med sales_L7_s228 0.9
+e4_noverify sales_L7_s208 0.5
+e2_base_med sales_L7_s202 1.0
+n09_p2_h05 sales_L7_s208 0.9
+n09_p2_h05 sales_L7_s202 1.0
+e4_noverify sales_L7_s203 0.5
+n09_p2_h05 sales_L7_s236 0.9
+e2_base_low sales_L7_s234 1.0
+e2_base_low sales_L7_s230 1.0
+e2_n09_med sales_L7_s226 1.0
+e4_noverify sales_L7_s207 0.4
+e2_base_med sales_L7_s205 1.0
+e2_p2_med sales_L7_s202 1.0
+e2_base_low sales_L7_s206 1.0
+e2_p1_med sales_L7_s226 1.0
+e2_base_med sales_L7_s210 1.0
+e2_p1_med sales_L7_s225 1.0
+e2_base_low sales_L7_s220 1.0
+e2_p2_med sales_L7_s210 1.0
+e2_p2_med sales_L7_s224 1.0
+e2_p2_med sales_L7_s225 1.0
+n09_p2_h05 sales_L7_s222 1.0
+e4_hurry sales_L7_s221 1.0
+baseline sales_L7_s209 1.0
+e2_n09_med sales_L7_s228 0.9
+e2_n09_low sales_L7_s212 0.9
+e2_p1_med sales_L7_s213 1.0
+e2_base_med sales_L7_s215 1.0
+e4_hurry sales_L7_s217 0.9
+e2_base_med sales_L7_s201 1.0
+e2_base_low sales_L7_s228 0.9
+e2_n09_med sales_L7_s216 1.0
+e2_p2_med sales_L7_s208 1.0
+e2_p2_med sales_L7_s214 1.0
+e2_p2_med sales_L7_s216 1.0
+e4_noverify sales_L7_s220 0.3
+e2_p1_med sales_L7_s206 1.0
+e4_noverify sales_L7_s205 0.2
+baseline sales_L7_s203 1.0
+e4_noverify sales_L7_s215 0.3
+e4_noverify sales_L7_s236 0.5
+e2_n09_low sales_L7_s235 1.0
+e2_p2_med sales_L7_s222 1.0
+baseline sales_L7_s218 1.0
+e2_base_low sales_L7_s209 1.0
+e2_n09_med sales_L7_s206 1.0
+e2_p2_med sales_L7_s201 1.0
+e2_n09_low sales_L7_s202 1.0
+e2_base_low sales_L7_s216 1.0
+n09_p2_h05 sales_L7_s221 1.0
+e4_hurry sales_L7_s219 1.0
+n09_p2_h05 sales_L7_s216 1.0
+n09_p2_h05 sales_L7_s228 1.0
+e4_hurry sales_L7_s206 1.0
+e2_p1_med sales_L7_s203 1.0
+e2_n09_med sales_L7_s232 1.0
+baseline sales_L7_s229 1.0
+e2_p2_med sales_L7_s232 1.0
+e2_p2_med sales_L7_s203 1.0
+e2_base_med sales_L7_s221 1.0
+n09_p2_h05 sales_L7_s230 1.0
+e4_hurry sales_L7_s210 1.0
+e2_base_low sales_L7_s213 1.0
+e2_p1_med sales_L7_s227 1.0
+e2_n09_low sales_L7_s223 0.9
+e2_base_med sales_L7_s213 1.0
+e2_base_med sales_L7_s235 1.0
+e2_n09_med sales_L7_s203 1.0
+e4_hurry sales_L7_s211 0.9
+e2_n09_low sales_L7_s214 1.0
+e2_p1_med sales_L7_s218 1.0
+e2_n09_low sales_L7_s225 1.0
+e2_p1_med sales_L7_s208 1.0
+e2_n09_low sales_L7_s205 1.0
+e2_p2_med sales_L7_s213 1.0
+e4_noverify sales_L7_s235 0.4
+e4_hurry sales_L7_s228 1.0
+e2_n09_low sales_L7_s209 1.0
+e2_n09_med sales_L7_s207 0.9
+e2_n09_low sales_L7_s217 1.0
+e2_base_low sales_L7_s211 1.0
+e2_base_med sales_L7_s214 1.0
+baseline sales_L7_s206 1.0
+e2_base_low sales_L7_s214 1.0
+e2_n09_low sales_L7_s236 1.0
+e2_n09_med sales_L7_s204 1.0
+n09_p2_h05 sales_L7_s223 0.9
+e2_n09_low sales_L7_s232 1.0
+n09_p2_h05 sales_L7_s206 1.0
+baseline sales_L7_s232 1.0
+e2_base_med sales_L7_s216 1.0
+e2_p1_med sales_L7_s230 1.0
+e2_base_low sales_L7_s207 0.9
+baseline sales_L7_s235 1.0
+e2_n09_med sales_L7_s220 1.0
+n09_p2_h05 sales_L7_s232 0.9
+e2_p1_med sales_L7_s205 1.0
+e4_noverify sales_L7_s209 0.4
+e2_n09_med sales_L7_s233 1.0
+e4_noverify sales_L7_s221 0.2
+e2_n09_med sales_L7_s201 1.0
+baseline sales_L7_s223 1.0
+baseline sales_L7_s226 1.0
+e2_n09_med sales_L7_s227 1.0
+e2_n09_med sales_L7_s230 1.0
+e4_hurry sales_L7_s215 1.0
+baseline sales_L7_s217 1.0
+e2_base_low sales_L7_s204 1.0
+e2_base_low sales_L7_s222 1.0
+n09_p2_h05 sales_L7_s231 1.0
+e4_noverify sales_L7_s223 0.4
+e4_noverify sales_L7_s216 0.2
+e2_p2_med sales_L7_s233 1.0
+e2_base_low sales_L7_s235 1.0
+e2_n09_low sales_L7_s201 1.0
+e2_p1_med sales_L7_s204 1.0
+e4_noverify sales_L7_s231 0.4
+e4_noverify sales_L7_s232 0.3
+e2_n09_med sales_L7_s213 1.0
+e2_n09_low sales_L7_s228 0.9
+n09_p2_h05 sales_L7_s201 1.0
+e4_hurry sales_L7_s208 1.0
+e2_base_med sales_L7_s236 1.0
+e2_n09_med sales_L7_s210 0.4
+baseline sales_L7_s208 1.0
+e2_base_med sales_L7_s218 1.0
+e4_noverify sales_L7_s217 0.4
+e2_p2_med sales_L7_s220 1.0
+e2_n09_med sales_L7_s212 1.0
+e2_base_low sales_L7_s231 1.0
+e2_p1_med sales_L7_s219 1.0
+e4_hurry sales_L7_s235 1.0
+n09_p2_h05 sales_L7_s205 1.0
+e2_p1_med sales_L7_s222 1.0
+n09_p2_h05 sales_L7_s225 0.9
+baseline sales_L7_s215 1.0
+e2_p2_med sales_L7_s226 1.0
+e4_hurry sales_L7_s236 1.0
+e4_hurry sales_L7_s204 1.0
+n09_p2_h05 sales_L7_s217 0.9
+e2_n09_low sales_L7_s215 1.0
+e2_n09_med sales_L7_s205 1.0
+e2_n09_low sales_L7_s208 1.0
+e4_hurry sales_L7_s220 1.0
+e2_base_low sales_L7_s201 1.0
+e2_n09_med sales_L7_s214 0.9
+e2_base_med sales_L7_s225 0.9
+e2_p1_med sales_L7_s229 1.0
+n09_p2_h05 sales_L7_s219 1.0
+e4_hurry sales_L7_s226 1.0
+e2_p2_med sales_L7_s221 1.0
+e4_noverify sales_L7_s214 0.5
+baseline sales_L7_s231 1.0
+baseline sales_L7_s219 1.0
+e4_hurry sales_L7_s227 1.0
+e2_n09_med sales_L7_s236 1.0
+baseline sales_L7_s213 1.0
+e2_base_med sales_L7_s233 1.0
+e2_base_low sales_L7_s227 1.0
+e4_noverify sales_L7_s227 0.0
+e2_base_low sales_L7_s215 1.0
+e4_hurry sales_L7_s224 1.0
+e2_p1_med sales_L7_s209 1.0
+e2_n09_med sales_L7_s202 1.0
+e2_base_low sales_L7_s229 0.9
+e4_hurry sales_L7_s213 1.0
+baseline sales_L7_s204 1.0
+e2_base_low sales_L7_s208 1.0
+e2_base_med sales_L7_s231 0.9
+n09_p2_h05 sales_L7_s214 1.0
+e4_hurry sales_L7_s222 1.0
+e2_base_med sales_L7_s220 1.0
+baseline sales_L7_s224 1.0
+e2_p1_med sales_L7_s224 1.0
+baseline sales_L7_s216 1.0
+e2_p2_med sales_L7_s230 1.0
+baseline sales_L7_s220 1.0
+e2_n09_low sales_L7_s227 1.0
+2026-10-14 19:15:21 Q4 채점 끝
+2026-10-14 19:15:21 분석: scripts/analyze_e4.py
+# E4 분석 결과 (자동 생성)
+
+실행 720회(실행 오류 0회, 토큰 분석 유효 720회), 문제 72개.
+정확도 차이는 같은 문제끼리 짝지은 점수 차이의 평균, 괄호는 95% 부트스트랩 CI. 토큰은 기하평균 비율.
+
+## 주 비교: 정확도 차이 (Holm 보정)
+
+| ID | 질문 | 조건 | 기준 | 차이 (95% CI) | 나빠진 / 좋아진 문제 | p | Holm p |
+|---|---|---|---|---|---|---|---|
+| M1 | 검증을 막으면 정확도가 떨어지는가 (조작 확인) | 검증 금지 (양성 대조) (high) | 베이스라인 (high) | -0.397 (-0.482 ~ -0.315) | 69 / 0 | 0.0 | 0.0 |
+| M2 | 서두름 신호가 정확도를 바꾸는가 | 서두름 신호 (high) | 베이스라인 (high) | +0.000 (+0.000 ~ +0.001) | 0 / 2 | 0.2665 | 1.0 |
+| E_low | effort를 low로 낮추면 정확도가 바뀌는가 | 베이스라인 (low) | 베이스라인 (high) | +0.000 (-0.001 ~ +0.001) | 1 / 2 | 1.0 | 1.0 |
+| N_high | effort high에서 n09가 정확도를 바꾸는가 | n09 (high) | 베이스라인 (high) | +0.000 (+0.000 ~ +0.001) | 0 / 2 | 0.2665 | 1.0 |
+| N_medium | effort medium에서 n09가 정확도를 바꾸는가 | n09 (medium) | 베이스라인 (medium) | -0.010 (-0.031 ~ +0.001) | 1 / 2 | 0.7025 | 1.0 |
+| N_low | effort low에서 n09가 정확도를 바꾸는가 | n09 (low) | 베이스라인 (low) | -0.010 (-0.032 ~ +0.001) | 3 / 1 | 0.3995 | 1.0 |
+
+## 판정 (사전 등록 규칙)
+
+- **V0 조작 확인 (검증 금지)**: 정확도가 떨어졌다 (-0.397). 이 문제들로 정확도 하락을 잡을 수 있다
+- **V1 서두름 신호**: 정확도 차이가 없고 비열등하다 (차이 +0.000, 하한 +0.000)
+- **V2 effort low**: 정확도 차이가 없고 비열등하다 (차이 +0.000, 하한 -0.001)
+- **V3 n09 (high)**: 정확도 차이가 없고 비열등하다 (차이 +0.000, 하한 +0.000)
+- **V3 n09 (medium)**: 정확도 차이가 없고 비열등하다 (차이 -0.010, 하한 -0.031)
+- **V3 n09 (low)**: 정확도 차이가 없고 비열등하다 (차이 -0.010, 하한 -0.031)
+2026-10-14 19:15:28 == 끝
