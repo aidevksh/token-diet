@@ -1,0 +1,40 @@
+{
+ "env": {
+  "TD_EXEC": "docker",
+  "TD_RUNROOT": "~/td-data/runs",
+  "TD_ROUND": "e3_sonnet_acc",
+  "TD_OUT": "e3/sonnet_acc/runs.jsonl",
+  "TD_TASKS": "tasks_e4",
+  "TD_MODEL": "claude-sonnet-5-5",
+  "TD_EFFORT": "high",
+  "TD_DOCKER_MEM": "1g",
+  "TD_TOKEN_FILE": "~/.config/token-diet/oauth_token"
+ },
+ "batches": [
+  {
+   "conds": [
+    "baseline",
+    "e2_base_low",
+    "n09_p2_h05",
+    "e2_n09_low",
+    "e4_noverify"
+   ],
+   "tasks": "all",
+   "reps": 1,
+   "par": 4,
+   "seed": 33
+  }
+ ],
+ "total": 360,
+ "q4": {
+  "runs": "e3/sonnet_acc/runs.jsonl",
+  "out": "e3/sonnet_acc/q4.jsonl",
+  "par": 8
+ },
+ "analysis": [
+  [
+   "scripts/analyze_e3.py"
+  ]
+ ],
+ "log": "experiments/E3/run_log.txt"
+}

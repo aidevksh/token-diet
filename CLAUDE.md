@@ -394,6 +394,7 @@ u01(사전 맥락 적재)을 논문으로 이어 가기 위한 실험부터 적�
   - 그래서 "검증해야 맞힐 수 있는 문제"(L7)를 만들었다. 산문 명세의 모호한 곳을 배송비는 예시가, 매출은 2분기 참고 값이 정한다.
   - 보정 결과, 검증 금지 조건은 매출 0.27, 배송비 0.92였고 베이스라인은 거의 만점이었다. 측정이 정확도 하락을 잡는다.
   - 생성기: `gen/tariff.py`(L6, L7), `gen/sales.py`(L7). 문제의 `grade.py`는 이제 상대 경로를 쓴다(`gen/materialize.py`).
+- **진행**: E3(다른 모델: Sonnet 5.5, Haiku 5.5) 시작, 2026-10-16. 사용자 지시 "e3도 해야지 신빙성이 높아지지? 진행해". E4 문제 72개 × 5조건(정확도)과 E2 문제 48개 × 6조건(토큰)을 모델마다 돌린다. 1,296회. 사전 등록 `experiments/E3/preregistration.md`, 실행 `sh experiments/E3/run.sh`.
 
 ## 최종 권장 설정 (2026-10-10 갱신)
 
@@ -448,5 +449,6 @@ scripts/analyze_e1.py, analyze_e1b.py, analyze_family.py, analyze_u01.py  # E1·
 scripts/reanalyze_a1.py  # A1 재분석 (배송비 명세 모호성 민감도)
 scripts/analyze_e2.py    # E2 분석 (effort × 지시)
 scripts/analyze_e4.py    # E4 분석 (정확도: 양성 대조, 비열등성)
+scripts/analyze_e3.py    # E3 분석 (다른 모델: 모델별 판정, Opus 참고 열)
 paper/               # 논문 준비 (관련 연구, 계획)
 ```
