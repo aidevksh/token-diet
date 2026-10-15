@@ -11,10 +11,11 @@ usage: TD_TASKS=tasks_gen2 TD_ROUND=round4 python scripts/report_check.py runs_r
 import argparse, concurrent.futures as cf, json, os, re, subprocess, sys, tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from run import CLAUDE, ROOT
+from run import ROOT, host_claude
 
 # 보고를 읽는 세션은 에이전트 모델과 관계없이 고정한다 (TD_MODEL을 바꿔도 채점자는 그대로)
 MODEL, EFFORT = os.environ.get('TD_READER_MODEL', 'claude-opus-5-5'), os.environ.get('TD_READER_EFFORT', 'high')
+READER_CLI = subprocess.run([host_claude(), '--version'], capture_output=True, text=True).stdout.split(' ')[0].strip()  # 리더 CLI 버전 (기록용)
 
 RUNROOT = os.path.join('/private/tmp/claude-501/td-runs', os.environ.get('TD_ROUND', 'round4'))
 TASKS = os.path.join(ROOT, os.environ.get('TD_TASKS', 'tasks_gen2'))
@@ -30,7 +31,7 @@ Q = {
 
 def ask(prompt):
     d = tempfile.mkdtemp(dir='/private/tmp/claude-501')
-    p = subprocess.run([CLAUDE, '-p', prompt, '--model', MODEL, '--effort', EFFORT, '--output-format', 'json',
+    p = subprocess.run([host_claude(), '-p', prompt, '--model', MODEL, '--effort', EFFORT, '--output-format', 'json',
                         '--setting-sources', 'project,local', '--disallowedTools', NO_TOOLS], cwd=d, capture_output=True, text=True, timeout=600)
     res = json.loads(p.stdout)
     m = re.search(r'\{.*\}', res.get('result') or '', re.S)
@@ -54,7 +55,7 @@ def score(r):
         k = key['answers']
         norm = lambda v: str(v).strip().lower().replace(',', '')
         q4 = sum(norm(ans.get(f)) == norm(v) for f, v in k.items()) / len(k)
-    return {'cond': r['cond'], 'task': r['task'], 'rep': r['rep'], 'q4': round(q4, 4), 'reader_cost': cost}
+    return {'cond': r['cond'], 'task': r['task'], 'rep': r['rep'], 'q4': round(q4, 4), 'reader_cost': cost, 'reader_cli': READER_CLI}
 
 
 def main():

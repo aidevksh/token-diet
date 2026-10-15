@@ -13,7 +13,7 @@ import json, os, subprocess, sys, time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'scripts'))
-HOST_CLAUDE = os.path.expanduser('~/.vscode/extensions/anthropic.claude-code-2.1.296-darwin-arm64/resources/native-binary/claude')
+HOST_CLAUDE = os.path.expanduser('~/.vscode/extensions/anthropic.claude-code-2.1.296-darwin-arm64/resources/native-binary/claude')  # 계획의 TD_HOST_CLAUDE가 있으면 그것을 쓴다 (한도 조회용)
 PY = os.path.join(ROOT, '.venv', 'bin', 'python')
 
 
@@ -33,7 +33,7 @@ def main():
         return sum('error' not in json.loads(l) for l in open(out)) if os.path.exists(out) else 0
 
     def usage():
-        p = subprocess.run([HOST_CLAUDE, '-p', 'ok', '--model', 'claude-haiku-5-5', '--output-format', 'stream-json', '--verbose',
+        p = subprocess.run([os.path.expanduser(env.get('TD_HOST_CLAUDE') or HOST_CLAUDE), '-p', 'ok', '--model', 'claude-haiku-5-5', '--output-format', 'stream-json', '--verbose',
                             '--setting-sources', 'project,local'], cwd='/private/tmp', capture_output=True, text=True, timeout=300)
         for l in p.stdout.splitlines():
             if l.startswith('{'):

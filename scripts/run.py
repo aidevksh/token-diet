@@ -16,6 +16,19 @@ ROUND = os.environ.get('TD_ROUND', 'round1')
 RUNROOT = os.path.join(os.path.expanduser(os.environ.get('TD_RUNROOT', '/private/tmp/claude-501/td-runs')), ROUND)  # 저장소 밖. 논문 트랙은 재부팅에도 남는 ~/td-data/runs를 쓴다
 CLI_VERSION = os.environ.get('TD_CLAUDE_VERSION', '2.1.296')  # CLI 버전 고정 (R1~R4는 2.1.295). 최신 자동 선택은 라운드 중간에 버전이 바뀔 수 있다
 CLAUDE = os.path.expanduser(f'~/.vscode/extensions/anthropic.claude-code-{CLI_VERSION}-darwin-arm64/resources/native-binary/claude')
+
+
+def host_claude():
+    """호스트에서 도는 보조 호출(Q4 리더, 한도 조회)에 쓰는 CLI. 실험 실행(docker)은 이미지 안의 CLI를 쓴다.
+    VS Code 확장이 업데이트되면 고정 버전 경로가 사라진다(2026-10-16). 그래서 TD_HOST_CLAUDE(저장소 밖에 복사해 둔 바이너리)를 먼저 쓴다."""
+    p = os.path.expanduser(os.environ.get('TD_HOST_CLAUDE', ''))
+    if p and os.path.exists(p):
+        return p
+    if os.path.exists(CLAUDE):
+        return CLAUDE
+    sys.exit(f'호스트 CLI가 없다: {CLAUDE} (TD_HOST_CLAUDE로 지정한다)')
+
+
 MODEL = os.environ.get('TD_MODEL', 'claude-opus-5-5')  # 기본 규칙: Opus 5.5 high 고정. 논문 트랙에서만 바꾼다
 EFFORT = os.environ.get('TD_EFFORT', 'high')
 

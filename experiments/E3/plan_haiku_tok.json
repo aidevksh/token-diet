@@ -8,7 +8,8 @@
   "TD_MODEL": "claude-haiku-5-5",
   "TD_EFFORT": "high",
   "TD_DOCKER_MEM": "1g",
-  "TD_TOKEN_FILE": "~/.config/token-diet/oauth_token"
+  "TD_TOKEN_FILE": "~/.config/token-diet/oauth_token",
+  "TD_HOST_CLAUDE": "~/td-data/bin/claude-2.1.301"
  },
  "batches": [
   {
