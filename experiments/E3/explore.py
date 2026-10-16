@@ -182,6 +182,38 @@ def main():
             p = min(1.0, 2 * sum(comb(n, k) for k in range(max(up, down), n + 1)) / 2 ** n) if n else 1.0
             L.append(f'- {c}: {len(x)}개 {sorted(t[-3:] for t in x)} | 이 조건만 own {up}, 베이스라인만 own {down}, 양측 p {p:.3f}')
         L.append('')
+    # 5. 출력의 구성: 어떤 성분이 줄었는가 (원고 4.4절). 문제를 재표집하는 부트스트랩 4000회, 총합 비율
+    import random
+    L += ['', '## 5. 출력의 구성과 메커니즘', '',
+          '같은 문제끼리 짝지어 조건의 총합을 기준의 총합으로 나눈 비율(−1)이다. 괄호는 문제 재표집 부트스트랩 95% CI다. '
+          '보이는 출력 = 출력 − thinking. "도구 인자 비중"은 보이는 출력의 문자 중 도구 호출 인자의 비율이다.', '',
+          '| 모델 | 부분 | 비교 | thinking | 보이는 출력 | 턴 |', '|---|---|---|---|---|---|']
+
+    def ratio_ci(rs, a, b, field, n=4000):
+        A = {r['task']: r for r in rs if r['cond'] == a and r.get('valid')}
+        Bm = {r['task']: r for r in rs if r['cond'] == b and r.get('valid')}
+        ts = sorted(set(A) & set(Bm))
+        pt = sum(A[t][field] for t in ts) / sum(Bm[t][field] for t in ts)
+        rnd, bs = random.Random(0), []
+        for _ in range(n):
+            smp = [rnd.choice(ts) for _ in ts]
+            bs.append(sum(A[t][field] for t in smp) / sum(Bm[t][field] for t in smp))
+        bs.sort()
+        return f"{(pt - 1) * 100:+.0f}% ({(bs[int(n * .025)] - 1) * 100:+.0f} ~ {(bs[int(n * .975)] - 1) * 100:+.0f})"
+    comp = []
+    for m in ('opus', 'sonnet', 'haiku'):
+        for part in ('tok', 'acc'):
+            rs = [r for r in runs.get((m, part), []) if 'error' not in r and r['task'].startswith(('rules_L5', 'sales_L5', 'tariff_L5') if part == 'tok' else ('tariff_L7', 'sales_L7'))]
+            for a, b in (('n09_p2_h05', 'baseline'), ('p2_concise', 'baseline'), ('e2_base_low', 'baseline'), ('e2_n09_low', 'baseline')):
+                if any(r['cond'] == a for r in rs):
+                    L.append(f"| {m} | {part} | {a} 대 {b} | {ratio_ci(rs, a, b, 'think_tok')} | {ratio_ci(rs, a, b, 'visible_tok')} | {ratio_ci(rs, a, b, 'turns')} |")
+            if part == 'tok':
+                for c in ('baseline', 'n09_p2_h05', 'e2_base_low'):
+                    x = [r for r in rs if r['cond'] == c and r.get('valid')]
+                    out, th = sum(r['out_tok'] for r in x), sum(r['think_tok'] for r in x)
+                    tc, tx = sum(r.get('tool_chars_total') or 0 for r in x), sum(r.get('text_chars') or 0 for r in x)
+                    comp.append(f"| {m} | {c} | {out / len(x):,.0f} | {th / len(x):,.0f} ({th / out:.0%}) | {tc / (tc + tx):.0%} | {sum(r['turns'] for r in x) / len(x):.2f} |")
+    L += ['', '토큰 부분(명세가 분명한 문제 48개)의 실행당 평균:', '', '| 모델 | 조건 | 출력 | thinking (비중) | 보이는 출력 중 도구 인자 비중 (문자) | 턴 |', '|---|---|---|---|---|---|'] + comp
     os.makedirs(R('e3'), exist_ok=True)
     open(R('e3/explore.md'), 'w').write('\n'.join(L) + '\n')
     print('\n'.join(L))
